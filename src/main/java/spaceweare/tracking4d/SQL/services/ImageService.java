@@ -37,7 +37,7 @@ public class ImageService {
             imageFound.setName(image.getName());
             imageFound.setCompany(image.getCompany());
             imageFound.setExtension(image.getExtension());
-            imageFound.setPerson(image.getPerson());
+            imageFound.setCustomer(image.getCustomer());
             return imageDao.save(imageFound);
         }
         return null;

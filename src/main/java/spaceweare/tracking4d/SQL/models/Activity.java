@@ -20,7 +20,7 @@ public class Activity {
     // Relations
     @OneToMany(mappedBy = "activity", cascade = CascadeType.ALL, fetch= FetchType.EAGER)
     @JsonIgnore
-    private List<Person> personList = new ArrayList<>();
+    private List<Customer> customerList = new ArrayList<>();
 
     //Other attributes
     private String name;

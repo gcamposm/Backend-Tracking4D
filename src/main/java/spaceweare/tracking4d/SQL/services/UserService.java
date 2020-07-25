@@ -87,7 +87,7 @@ public class UserService {
         confirmationTokenDao.save(confirmationToken);
 
         EmailForNotification emailForNotification  = new EmailForNotification(userName,
-                RestorePassword.createEmailContent(token, user.getPerson().getFirstName(), user.getPerson().getLastName()), "Recuperar contraseña");
+                RestorePassword.createEmailContent(token, user.getCustomer().getFirstName(), user.getCustomer().getLastName()), "Recuperar contraseña");
         emailForNotification.sendEmail();
     }
 
@@ -104,8 +104,8 @@ public class UserService {
             Map<Object, Object> model = new HashMap<>();
 
             model.put("token", tokenDB);
-            model.put("firstName", user.getPerson().getFirstName());
-            model.put("lastName", user.getPerson().getLastName());
+            model.put("firstName", user.getCustomer().getFirstName());
+            model.put("lastName", user.getCustomer().getLastName());
             return ok(model);
         }else{
             return ResponseEntity.status(500).body("The reset password confirmation could not be made");

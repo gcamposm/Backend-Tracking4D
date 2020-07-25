@@ -37,7 +37,7 @@ public class MatchService {
             matchFound.setName(match.getName());
             matchFound.setCompany(match.getCompany());
             matchFound.setHour(match.getHour());
-            matchFound.setPerson(match.getPerson());
+            matchFound.setCustomer(match.getCustomer());
             return matchDao.save(matchFound);
         }
         return null;

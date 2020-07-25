@@ -35,7 +35,7 @@ public class ActivityService {
         if(activityDao.findById(id).isPresent()){
             Activity activityFound = activityDao.findById(id).get();
             activityFound.setName(activity.getName());
-            activityFound.setPersonList(activity.getPersonList());
+            activityFound.setCustomerList(activity.getCustomerList());
             return activityDao.save(activityFound);
         }
         return null;

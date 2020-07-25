@@ -37,7 +37,7 @@ public class CompanyService {
             companyFound.setAddresses(company.getAddresses());
             companyFound.setMaps(company.getMaps());
             companyFound.setMatches(company.getMatches());
-            companyFound.setPersonList(company.getPersonList());
+            companyFound.setCustomerList(company.getCustomerList());
             companyFound.setRut(company.getRut());
             return companyDao.save(companyFound);
         }

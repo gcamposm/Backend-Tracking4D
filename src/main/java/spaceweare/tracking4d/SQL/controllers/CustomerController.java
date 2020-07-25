@@ -1,7 +1,7 @@
 package spaceweare.tracking4d.SQL.controllers;
 
-import spaceweare.tracking4d.SQL.models.Person;
-import spaceweare.tracking4d.SQL.services.PersonService;
+import spaceweare.tracking4d.SQL.models.Customer;
+import spaceweare.tracking4d.SQL.services.CustomerService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -11,22 +11,22 @@ import java.util.List;
 
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
-@RequestMapping("/persons")
-public class PersonController {
+@RequestMapping("/customers")
+public class CustomerController {
 
-    private final PersonService personService;
+    private final CustomerService customerService;
 
-    public PersonController(PersonService personService) {
-        this.personService = personService;
+    public CustomerController(CustomerService customerService) {
+        this.customerService = customerService;
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
-    public ResponseEntity<Person> create (@RequestBody Person person){
+    public ResponseEntity<Customer> create (@RequestBody Customer customer){
         try{
-            return ResponseEntity.ok(personService.create(person));
+            return ResponseEntity.ok(customerService.create(customer));
         }
         catch (Exception e){
             return ResponseEntity.badRequest().build();
@@ -35,9 +35,9 @@ public class PersonController {
 
     @GetMapping("/")
     @ResponseBody
-    public ResponseEntity<List<Person>> readAll(){
+    public ResponseEntity<List<Customer>> readAll(){
         try{
-            return ResponseEntity.ok(personService.readAll());
+            return ResponseEntity.ok(customerService.readAll());
         }
         catch (Exception e){
             return ResponseEntity.badRequest().build();
@@ -46,9 +46,9 @@ public class PersonController {
 
     @GetMapping("/{id}")
     @ResponseBody
-    public ResponseEntity<Person> readById (@PathVariable("id") Integer id){
+    public ResponseEntity<Customer> readById (@PathVariable("id") Integer id){
         try{
-            return ResponseEntity.ok(personService.readById(id));
+            return ResponseEntity.ok(customerService.readById(id));
         }
         catch(Exception e){
             return ResponseEntity.badRequest().build();
@@ -58,9 +58,9 @@ public class PersonController {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PutMapping("/edit/{id}")
     @ResponseBody
-    public ResponseEntity<Person> update (@PathVariable("id") Integer id, @RequestBody Person person){
+    public ResponseEntity<Customer> update (@PathVariable("id") Integer id, @RequestBody Customer customer){
         try{
-            return ResponseEntity.ok(personService.update(person, id));
+            return ResponseEntity.ok(customerService.update(customer, id));
         }
         catch (Exception e){
             return ResponseEntity.badRequest().build();
@@ -72,7 +72,7 @@ public class PersonController {
     @ResponseBody
     public ResponseEntity<String> delete (@PathVariable Integer id){
         try{
-            return ResponseEntity.ok(personService.delete(id));
+            return ResponseEntity.ok(customerService.delete(id));
         }
         catch (Exception e){
             return ResponseEntity.badRequest().build();

@@ -11,7 +11,7 @@ import java.util.List;
 @Entity
 @Data
 @NoArgsConstructor
-public class Person {
+public class Customer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,15 +26,15 @@ public class Person {
     @JoinColumn
     private Activity activity;
 
-    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, fetch= FetchType.EAGER)
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch= FetchType.EAGER)
     @JsonIgnore
     private List<Image> images = new ArrayList<>();
 
-    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, fetch= FetchType.EAGER)
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch= FetchType.EAGER)
     @JsonIgnore
     private List<Match> matches = new ArrayList<>();
 
-    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, fetch= FetchType.EAGER)
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch= FetchType.EAGER)
     @JsonIgnore
     private List<Address> addresses = new ArrayList<>();
 

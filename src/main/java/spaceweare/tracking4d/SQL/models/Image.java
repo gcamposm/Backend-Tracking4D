@@ -17,7 +17,7 @@ public class Image {
     // Relations
     @ManyToOne
     @JoinColumn
-    private Person person;
+    private Customer customer;
 
     @ManyToOne
     @JoinColumn
