@@ -1,0 +1,39 @@
+#
+version: '3.3'
+
+services:
+  backend:
+    container_name: backendnimbolu
+    image: backendnimbolu
+    restart: always
+    network_mode: host
+    #ports:
+    #  - 8080:8080
+    volumes:
+      - /usr/proyects:/usr/proyects
+    # links:
+    #   - mongodb
+    #   - postgres
+
+  #mongodb:
+  #  container_name: mongonimbolu
+  #  image: mongo
+  #  restart: always
+    # Same network than principal service
+  #  network_mode: service:backend
+    # ports:
+    #   - 27017:27017
+  #  environment:
+  #   MONGO_INITDB_DATABASE: nimbolu
+
+  #postgres:
+  # container_name: postgresnimbolu
+  # image: postgres
+  # restart: always
+    # Same network than principal service
+  # network_mode: service:backend
+  # ports:
+  #   - 5432:5432
+  # environment:
+  # POSTGRES_PASSWORD: secret
+  # POSTGRES_DB: nimbolu
