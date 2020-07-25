@@ -1,7 +1,7 @@
-package drii.pingeso.backend.Security.config;
+package spaceweare.tracking4d.Security.config;
 
-import drii.pingeso.backend.Security.security.jwt.JwtSecurityConfigurer;
-import drii.pingeso.backend.Security.security.jwt.JwtTokenProvider;
+import spaceweare.tracking4d.Security.security.jwt.JwtSecurityConfigurer;
+import spaceweare.tracking4d.Security.security.jwt.JwtTokenProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;

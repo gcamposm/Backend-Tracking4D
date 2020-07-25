@@ -1,4 +1,4 @@
-package drii.pingeso.backend.Security.security.jwt;
+package spaceweare.tracking4d.Security.security.jwt;
 
 import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Autowired;

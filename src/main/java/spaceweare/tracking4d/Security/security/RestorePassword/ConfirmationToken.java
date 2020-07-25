@@ -1,8 +1,9 @@
-package drii.pingeso.backend.Security.security.RestorePassword;
+package spaceweare.tracking4d.Security.security.RestorePassword;
 
-import drii.pingeso.backend.SQL.models.User;
+import spaceweare.tracking4d.SQL.models.User;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 

@@ -1,4 +1,4 @@
-package drii.pingeso.backend.Security.security.jwt;
+package spaceweare.tracking4d.Security.security.jwt;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

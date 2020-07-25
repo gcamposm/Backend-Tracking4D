@@ -1,8 +1,8 @@
-package drii.pingeso.backend.Security.web;
+package spaceweare.tracking4d.Security.web;
 
-import drii.pingeso.backend.SQL.dao.UserDao;
-import drii.pingeso.backend.SQL.models.User;
-import drii.pingeso.backend.Security.security.jwt.JwtTokenProvider;
+import spaceweare.tracking4d.SQL.dao.UserDao;
+import spaceweare.tracking4d.SQL.models.User;
+import spaceweare.tracking4d.Security.security.jwt.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -11,6 +11,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.HashMap;
 import java.util.Map;
 

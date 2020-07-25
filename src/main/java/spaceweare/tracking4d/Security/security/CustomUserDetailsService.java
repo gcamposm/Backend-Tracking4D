@@ -1,6 +1,6 @@
-package drii.pingeso.backend.Security.security;
+package spaceweare.tracking4d.Security.security;
 
-import drii.pingeso.backend.SQL.dao.UserDao;
+import spaceweare.tracking4d.SQL.dao.UserDao;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

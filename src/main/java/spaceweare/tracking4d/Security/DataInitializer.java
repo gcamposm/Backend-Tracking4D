@@ -1,13 +1,14 @@
-package drii.pingeso.backend.Security;
+package spaceweare.tracking4d.Security;
 
-import drii.pingeso.backend.SQL.dao.UserDao;
-import drii.pingeso.backend.SQL.models.User;
+import spaceweare.tracking4d.SQL.dao.UserDao;
+import spaceweare.tracking4d.SQL.models.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+
 import java.util.Arrays;
 import java.util.List;
 

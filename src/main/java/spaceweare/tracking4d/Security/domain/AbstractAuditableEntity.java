@@ -1,4 +1,4 @@
-package drii.pingeso.backend.Security.domain;
+package spaceweare.tracking4d.Security.domain;
 
 import lombok.Getter;
 import lombok.Setter;

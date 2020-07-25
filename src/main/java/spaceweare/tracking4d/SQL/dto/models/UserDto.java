@@ -1,4 +1,4 @@
-package drii.pingeso.backend.SQL.dto.models;
+package spaceweare.tracking4d.SQL.dto.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;

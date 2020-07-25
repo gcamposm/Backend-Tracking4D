@@ -1,7 +1,7 @@
-package drii.pingeso.backend.Security.security.RestorePassword;
+package spaceweare.tracking4d.Security.security.RestorePassword;
 
-import drii.pingeso.backend.SQL.models.User;
-import drii.pingeso.backend.Security.security.jwt.JwtProperties;
+import spaceweare.tracking4d.SQL.models.User;
+import spaceweare.tracking4d.Security.security.jwt.JwtProperties;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -9,6 +9,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import javax.annotation.PostConstruct;
 import java.util.Base64;
 import java.util.Date;

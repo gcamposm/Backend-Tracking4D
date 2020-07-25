@@ -1,4 +1,4 @@
-package drii.pingeso.backend.Security.security.jwt;
+package spaceweare.tracking4d.Security.security.jwt;
 
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

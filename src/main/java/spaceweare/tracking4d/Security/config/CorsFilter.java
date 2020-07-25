@@ -1,4 +1,4 @@
-package drii.pingeso.backend.Security.config;
+package spaceweare.tracking4d.Security.config;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import javax.servlet.*;
