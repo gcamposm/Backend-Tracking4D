@@ -1,4 +1,4 @@
-package spaceweare.tracking4d.SQL.dto.Payloads.Address;
+package spaceweare.tracking4d.SQL.dto.payloads.Address;
 
 import lombok.Data;
 import java.util.List;

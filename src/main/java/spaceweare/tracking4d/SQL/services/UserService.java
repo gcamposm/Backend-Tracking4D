@@ -8,7 +8,7 @@ import spaceweare.tracking4d.Email.EmailForNotification;
 import spaceweare.tracking4d.Email.RestorePassword;
 import spaceweare.tracking4d.SQL.dao.ConfirmationTokenDao;
 import spaceweare.tracking4d.SQL.dao.UserDao;
-import spaceweare.tracking4d.SQL.dto.Payloads.Register.RegisterPayloadDto;
+import spaceweare.tracking4d.SQL.dto.payloads.Register.RegisterPayloadDto;
 import spaceweare.tracking4d.SQL.models.*;
 import spaceweare.tracking4d.Security.security.RestorePassword.ConfirmationToken;
 import spaceweare.tracking4d.Security.security.RestorePassword.ConfirmationTokenProvider;

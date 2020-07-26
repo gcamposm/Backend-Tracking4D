@@ -23,6 +23,7 @@ public class Image {
     @JoinColumn
     private Company company;
     //Other attributes
+    private Boolean principal;
     private String name;
     private String extension;
 }

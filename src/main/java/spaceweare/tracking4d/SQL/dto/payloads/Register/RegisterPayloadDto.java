@@ -1,4 +1,4 @@
-package spaceweare.tracking4d.SQL.dto.Payloads.Register;
+package spaceweare.tracking4d.SQL.dto.payloads.Register;
 
 import lombok.Data;
 

@@ -1,7 +1,7 @@
 package spaceweare.tracking4d.SQL.controllers;
 
 import spaceweare.tracking4d.SQL.dao.UserDao;
-import spaceweare.tracking4d.SQL.dto.Payloads.Register.RegisterPayloadDto;
+import spaceweare.tracking4d.SQL.dto.payloads.Register.RegisterPayloadDto;
 import spaceweare.tracking4d.SQL.dto.models.UserDto;
 import spaceweare.tracking4d.SQL.mappers.UserMapper;
 import spaceweare.tracking4d.SQL.models.User;

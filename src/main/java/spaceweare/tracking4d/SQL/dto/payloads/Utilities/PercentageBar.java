@@ -1,4 +1,4 @@
-package spaceweare.tracking4d.SQL.dto.Payloads.Utilities;
+package spaceweare.tracking4d.SQL.dto.payloads.Utilities;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -1,17 +1,26 @@
 package spaceweare.tracking4d.SQL.services;
 
-import spaceweare.tracking4d.SQL.dao.CustomerDao;
-import spaceweare.tracking4d.SQL.models.Customer;
 import org.springframework.stereotype.Service;
-
+import spaceweare.tracking4d.FileManagement.service.FileStorageService;
+import spaceweare.tracking4d.SQL.dao.CustomerDao;
+import spaceweare.tracking4d.SQL.dao.ImageDao;
+import spaceweare.tracking4d.SQL.models.Customer;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 
 @Service
 public class CustomerService {
 
+    private final FileStorageService fileStorageService;
+    private final ImageDao imageDao;
     private final CustomerDao customerDao;
-    public CustomerService(CustomerDao customerDao) {
+    public CustomerService(CustomerDao customerDao, ImageDao imageDao, FileStorageService fileStorageService) {
         this.customerDao = customerDao;
+        this.imageDao = imageDao;
+        this.fileStorageService = fileStorageService;
     }
 
     public Customer create(Customer customer){
@@ -56,6 +65,26 @@ public class CustomerService {
         }
         else{
             return  null;
+        }
+    }
+
+    public Customer uploadImage(Customer customerToUpdate, String name, byte[] fileBytes) throws IOException {
+        String ext = name.substring(name.lastIndexOf("."));
+        Path absoluteFilePath = fileStorageService.getFileStorageLocation();
+        Integer index = 0;
+        if (imageDao.findTopByOrderByIdDesc() != null)
+        {
+            index = imageDao.findTopByOrderByIdDesc().getId()+1;
+        }
+        String fileName = customerToUpdate.getRut() + "_" + index.toString();
+        File convertFile = new File(absoluteFilePath + "/" + fileName + ext);
+        try(FileOutputStream fos = new FileOutputStream(convertFile)) {
+            byte[] bytes = fileBytes;
+            fos.write(bytes);
+            ImageService.createImageWithCustomer(customerToUpdate, ext, fileName);
+            return customerToUpdate;
+        }catch(IOException IEX){
+            return null;
         }
     }
 }
