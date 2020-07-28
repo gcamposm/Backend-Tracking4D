@@ -155,7 +155,42 @@ public class ImageService {
                 Path path = Paths.get(absoluteFilePath + "/nodisponible.png");
                 return Files.readAllBytes(path);
             }
-            String rpath =  absoluteFilePath + "/" + image.getName() + image.getExtension(); // whatever path you used for storing the file
+            String rpath =  absoluteFilePath + "/" + customer.getFirstName() + " " + customer.getLastName() + "/" + image.getName() + image.getExtension(); // whatever path you used for storing the file
+            Path path = Paths.get(rpath);
+            return Files.readAllBytes(path);
+        } catch (IOException x) {
+            System.err.format("IOException: %s%n", x);
+            return new byte[]{0};
+        }
+
+    }
+
+    //GET THE IMAGE BYTE ARRAY FROM CUSTOMER Name AND INDEX
+    public byte[] getImageFromCustomerNameAndIndex(String customerName, Integer index) {
+        System.out.println(customerName);
+        String[] data = customerName.split(" ");
+        String firstName = data[0];
+        String lastName = data[1];
+        System.out.println(firstName + " " + lastName);
+        Customer customer = customerDao.findCustomerByFirstNameAndLastName(firstName, lastName);
+        Path absoluteFilePath = fileStorageService.getFileStorageLocation();
+
+        List<Image> imageList;
+        if(customer != null){
+            imageList = customer.getImages();
+        }else{
+            throw new RutNotFoundException("Could not found the customer with name: " + customerName);
+        }
+        if(index > imageList.size()){
+            throw new GetObjectException("The index is bigger than the actual number of images in the customer");
+        }
+        try {
+            Image image = imageList.get(index-1);
+            if(image == null){
+                Path path = Paths.get(absoluteFilePath + "/nodisponible.png");
+                return Files.readAllBytes(path);
+            }
+            String rpath =  absoluteFilePath + "/" + customerName + "/" + image.getName() + image.getExtension(); // whatever path you used for storing the file
             Path path = Paths.get(rpath);
             return Files.readAllBytes(path);
         } catch (IOException x) {
@@ -186,10 +221,12 @@ public class ImageService {
     //_______________________________________________________
     //_______________________________________________________
     private String getImageName(Customer customer){
-        if(imageDao.findTopByOrderByIdDesc() == null){
-            return customer.getRut() + "_" + "0";
+        if(customer.getImages() != null)
+        {
+            Integer index = customer.getImages().size() + 1;
+            return index.toString();
         }
-        return customer.getRut() + "_" + imageDao.findTopByOrderByIdDesc().getId() + 1;
+        return "1";
     }
 
     //create image by customer and filename
@@ -213,7 +250,12 @@ public class ImageService {
         String ext = imageName.substring(imageName.lastIndexOf("."));
         Path absoluteFilePath = fileStorageService.getFileStorageLocation();
         String fileName = getImageName(customerToUpdate);
-        File convertFile = new File(absoluteFilePath + "/" + fileName + ext);
+        String directory = absoluteFilePath + "/" + customerToUpdate.getFirstName() + " " + customerToUpdate.getLastName();
+        File directoryFile = new File(directory);
+        File convertFile = new File(directory + "/" + fileName + ext);
+        if (! directoryFile.exists()){
+            directoryFile.mkdir();
+        }
         try(FileOutputStream fos = new FileOutputStream(convertFile)) {
             fos.write(fileBytes);
             Image image = createImageWithCustomer(customerToUpdate, ext, fileName);

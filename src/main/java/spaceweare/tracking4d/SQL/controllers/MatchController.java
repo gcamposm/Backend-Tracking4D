@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import spaceweare.tracking4d.SQL.models.Match;
 import spaceweare.tracking4d.SQL.services.MatchService;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @CrossOrigin(origins = "*", allowedHeaders = "*")
@@ -77,5 +78,52 @@ public class MatchController {
         catch (Exception e){
             return ResponseEntity.badRequest().build();
         }
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @PostMapping("/createByDetection")
+    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseBody
+    public ResponseEntity<String> createByDetection (@RequestBody String match){
+        try{
+            return ResponseEntity.ok(matchService.createByDetection(match));
+        }
+        catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @PostMapping("/detection2")
+    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseBody
+    public ResponseEntity<String> registerDetection (@RequestBody String detection){
+        try{
+            return ResponseEntity.ok(matchService.registerDetection(detection));
+        }
+        catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/detection3", method = RequestMethod.POST)
+    public void sendMsg(HttpSession session,
+                        @RequestParam(value = "detections")String[] detections)
+    {
+        for (String data : detections) {
+            System.out.println("Your Data =>" + data);
+        }
+    }
+
+    @ResponseBody
+    @RequestMapping(path = "/detection", method = RequestMethod.POST)
+    public String BookingItemList(@RequestBody Long[] detections)
+    {
+        for (Long detection:detections
+             ) {
+            System.out.println(detection);
+        }
+        return detections.toString();
     }
 }

@@ -1,17 +1,20 @@
 package spaceweare.tracking4d.SQL.services;
 
 import org.springframework.stereotype.Service;
+import spaceweare.tracking4d.SQL.dao.CustomerDao;
 import spaceweare.tracking4d.SQL.dao.MatchDao;
+import spaceweare.tracking4d.SQL.models.Customer;
 import spaceweare.tracking4d.SQL.models.Match;
-
 import java.util.List;
 
 @Service
 public class MatchService {
 
     private final MatchDao matchDao;
-    public MatchService(MatchDao matchDao) {
+    private final CustomerDao customerDao;
+    public MatchService(MatchDao matchDao, CustomerDao customerDao) {
         this.matchDao = matchDao;
+        this.customerDao = customerDao;
     }
 
     public Match create(Match match){
@@ -51,5 +54,26 @@ public class MatchService {
         else{
             return  null;
         }
+    }
+
+    public String createByDetection(String match) {
+        String[] data = match.split("=");
+        match = data[1];
+        data = match.split("&");
+        String name = data[0];
+        data = name.split(java.util.regex.Pattern.quote("+"));
+        String firstName = data[0];
+        String lastName = data[1];
+        Customer customer = customerDao.findCustomerByFirstNameAndLastName(firstName, lastName);
+        if(customer != null)
+        {
+            return customer.getFirstName();
+        }
+        return "No encontré al pinche wero, debe ser NN";
+    }
+
+    public String registerDetection(String detection) {
+        System.out.println(detection);
+        return detection;
     }
 }

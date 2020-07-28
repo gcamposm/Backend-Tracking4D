@@ -110,6 +110,18 @@ public class ImageController {
         }
     }
 
+    //RETURN THE IMAGE IN BYTE FORMAT USING THE PATH IN THE "getAllImageFromCustomer" RESPONSE
+    @GetMapping("/web/get/labels/{customerName}/{index}")
+    @ResponseBody
+    public ResponseEntity getImageFromCustomerNameAndIndex(@PathVariable("customerName") String customerName,
+                                                          @PathVariable("index") Integer index){
+        try{
+            return ResponseEntity.status(200).body(imageService.getImageFromCustomerNameAndIndex(customerName, index));
+        }catch (Exception e){
+            return ResponseEntity.status(500).body("Could not get the principal image");
+        }
+    }
+
     //RETURN THE BYTE ARRAY OF THE PRINCIPAL IMAGE
     @GetMapping("/web/getPrincipalImageFromCustomer/{customerRut}")
     @ResponseBody
@@ -159,16 +171,20 @@ public class ImageController {
     }
     //UPLOAD ONE IMAGE USING THE CUSTOMER RUT AND THE ARRAY OF FILES
     //RETURN A IMAGES RESPONSE THAT'S CONTAINS THE URL AND OTHER PARAMETERS
-    @PostMapping("/uploadImage/{customerRut}")
+    @PostMapping("/uploadImage/{name}")
     @ResponseBody
-    public ResponseEntity uploadImage(@PathVariable String customerRut ,
+    public ResponseEntity uploadImage(@PathVariable String name ,
                                       @RequestParam("file") MultipartFile file){
         try{
-            Customer customer = customerDao.findByRut(customerRut);
+            String[] data = name.split(" ");
+            String firstName = data[0];
+            String lastName = data[1];
+            System.out.println(firstName + " " + lastName);
+            Customer customer = customerDao.findCustomerByFirstNameAndLastName(firstName, lastName);
             if(customer != null) {
                 return ResponseEntity.status(200).body(imageService.uploadImage(customer, file.getOriginalFilename(), file.getBytes()));
             }else{
-                return ResponseEntity.status(500).body("The customer with rut: " + customerRut + " could not be found");
+                return ResponseEntity.status(500).body("The customer with name: " + name + " could not be found");
             }
         }catch (Exception e){
             return ResponseEntity.status(500).body("Could not upload the images: " + e.getMessage());
