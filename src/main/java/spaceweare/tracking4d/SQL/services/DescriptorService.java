@@ -34,7 +34,7 @@ public class DescriptorService {
     public Descriptor update(Descriptor descriptor, Integer id){
         if(descriptorDao.findById(id).isPresent()){
             Descriptor descriptorFound = descriptorDao.findById(id).get();
-            descriptorFound.setDescriptor(descriptor.getDescriptor());
+            //descriptorFound.setDescriptor(descriptor.getDescriptor());
             descriptorFound.setMatch(descriptor.getMatch());
             descriptorFound.setPath(descriptor.getPath());
             return descriptorDao.save(descriptorFound);
