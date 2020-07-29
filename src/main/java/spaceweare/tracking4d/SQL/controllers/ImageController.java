@@ -1,6 +1,7 @@
 package spaceweare.tracking4d.SQL.controllers;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -80,6 +81,29 @@ public class ImageController {
     public ResponseEntity<String> delete (@PathVariable Integer id){
         try{
             return ResponseEntity.ok(imageService.delete(id));
+        }
+        catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @RequestMapping(value = "/create/withData", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity chargeData(@RequestParam("descriptor") List<Float> descriptorList,
+                                     @RequestParam("path") String path,
+                                     @RequestParam("user") String userName){
+        try{
+            return ResponseEntity.ok(imageService.chargeData(descriptorList, path, userName));
+        }
+        catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping("/getAllFaces")
+    @ResponseBody
+    public ResponseEntity getAllFaces(){
+        try{
+            return ResponseEntity.ok(imageService.getAllFaces());
         }
         catch (Exception e){
             return ResponseEntity.badRequest().build();

@@ -8,9 +8,11 @@ import spaceweare.tracking4d.Exceptions.IdNotFoundException;
 import spaceweare.tracking4d.Exceptions.RutNotFoundException;
 import spaceweare.tracking4d.FileManagement.service.FileStorageService;
 import spaceweare.tracking4d.SQL.dao.CustomerDao;
+import spaceweare.tracking4d.SQL.dao.DetectionDao;
 import spaceweare.tracking4d.SQL.dao.ImageDao;
 import spaceweare.tracking4d.SQL.dto.responses.ImageResponse;
 import spaceweare.tracking4d.SQL.models.Customer;
+import spaceweare.tracking4d.SQL.models.Detection;
 import spaceweare.tracking4d.SQL.models.Image;
 
 import java.io.File;
@@ -29,11 +31,13 @@ public class ImageService {
 
     private final CustomerDao customerDao;
     private final ImageDao imageDao;
+    private final DetectionDao detectionDao;
     private final FileStorageService fileStorageService;
-    public ImageService(ImageDao imageDao, FileStorageService fileStorageService, CustomerDao customerDao) {
+    public ImageService(ImageDao imageDao, FileStorageService fileStorageService, CustomerDao customerDao, DetectionDao detectionDao) {
         this.imageDao = imageDao;
         this.fileStorageService = fileStorageService;
         this.customerDao = customerDao;
+        this.detectionDao = detectionDao;
     }
 
     public Image create(Image image){
@@ -75,6 +79,40 @@ public class ImageService {
         else{
             return  null;
         }
+    }
+
+    public Object getAllFaces() {
+        return null;
+    }
+
+    public Image chargeData(List<Float> descriptorList, String path, String userName) {
+        String[] data = userName.split(" ");
+        String firstName = data[0];
+        String lastName = data[1];
+        if(!customerDao.findCustomerByFirstNameAndLastName(firstName, lastName).isPresent())
+        {
+            Customer customer = new Customer();
+            customer.setFirstName(firstName);
+            customer.setLastName(lastName);
+            return createDescriptorWithCustomer(customerDao.save(customer), descriptorList, path);
+        }
+        Customer customer = customerDao.findCustomerByFirstNameAndLastName(firstName, lastName).get();
+        return createDescriptorWithCustomer(customer, descriptorList, path);
+    }
+
+    private Image createDescriptorWithCustomer(Customer customer, List<Float> descriptorList, String path) {
+        Image image = new Image();
+        image.setPath(path);
+        image.setCustomer(customer);
+        imageDao.save(image);
+        for (Float descriptorFor: descriptorList
+        ) {
+            Detection detection = new Detection();
+            detection.setImage(image);
+            detection.setValue(descriptorFor);
+            detectionDao.save(detection);
+        }
+        return imageDao.save(image);
     }
 
     public List<ImageResponse> getAllImagesFromCustomer(int customerId){
