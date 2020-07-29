@@ -87,4 +87,20 @@ public class CustomerService {
             return null;
         }
     }
+
+    public Customer register(String name) {
+        String[] data = name.split(" ");
+        String firstName = data[0];
+        String lastName = data[1];
+        Path absoluteFilePath = fileStorageService.getFileStorageLocation();
+        String directory = absoluteFilePath + "/" + firstName + " " + lastName;
+        File directoryFile = new File(directory);
+        if (! directoryFile.exists()){
+            directoryFile.mkdir();
+        }
+        Customer customer = new Customer();
+        customer.setFirstName(firstName);
+        customer.setLastName(lastName);
+        return customerDao.save(customer);
+    }
 }
