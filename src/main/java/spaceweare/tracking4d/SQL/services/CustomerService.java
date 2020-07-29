@@ -24,6 +24,12 @@ public class CustomerService {
     }
 
     public Customer create(Customer customer){
+        Path absoluteFilePath = fileStorageService.getFileStorageLocation();
+        String directory = absoluteFilePath + "/" + customer.getRut();
+        File directoryFile = new File(directory);
+        if (! directoryFile.exists()){
+            directoryFile.mkdir();
+        }
         return customerDao.save(customer);
     }
 

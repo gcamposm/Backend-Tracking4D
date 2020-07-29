@@ -16,5 +16,5 @@ public class Detection {
 
     @ManyToOne
     @JoinColumn
-    private Descriptor descriptor;
+    private Image image;
 }

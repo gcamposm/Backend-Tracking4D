@@ -35,7 +35,6 @@ public class CompanyService {
             Company companyFound = companyDao.findById(id).get();
             companyFound.setName(company.getName());
             companyFound.setAddresses(company.getAddresses());
-            companyFound.setMaps(company.getMaps());
             companyFound.setMatches(company.getMatches());
             companyFound.setCustomerList(company.getCustomerList());
             companyFound.setRut(company.getRut());

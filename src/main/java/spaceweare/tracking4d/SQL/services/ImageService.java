@@ -57,10 +57,11 @@ public class ImageService {
         if(imageDao.findById(id).isPresent()){
             Image imageFound = imageDao.findById(id).get();
             imageFound.setName(image.getName());
-            imageFound.setCompany(image.getCompany());
             imageFound.setExtension(image.getExtension());
             imageFound.setCustomer(image.getCustomer());
             imageFound.setPrincipal(image.getPrincipal());
+            imageFound.setPath(image.getPath());
+            imageFound.setDetections(image.getDetections());
             return imageDao.save(imageFound);
         }
         return null;

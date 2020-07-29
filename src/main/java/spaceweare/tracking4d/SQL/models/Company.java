@@ -18,9 +18,6 @@ public class Company {
     private Integer id;
 
     // Relations
-    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, fetch= FetchType.EAGER)
-    @JsonIgnore
-    private List<Image> maps = new ArrayList<>();
 
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, fetch= FetchType.EAGER)
     @JsonIgnore

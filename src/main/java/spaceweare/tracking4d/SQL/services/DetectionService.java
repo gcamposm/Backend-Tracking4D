@@ -34,7 +34,7 @@ public class DetectionService {
     public Detection update(Detection detection, Integer id){
         if(detectionDao.findById(id).isPresent()){
             Detection detectionFound = detectionDao.findById(id).get();
-            detectionFound.setDescriptor(detection.getDescriptor());
+            detectionFound.setImage(detection.getImage());
             detectionFound.setValue(detection.getValue());
             return detectionDao.save(detectionFound);
         }

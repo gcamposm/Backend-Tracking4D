@@ -34,10 +34,6 @@ public class Customer {
     @JsonIgnore
     private List<Match> matches = new ArrayList<>();
 
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<Descriptor> descriptors = new ArrayList<>();
-
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch= FetchType.EAGER)
     @JsonIgnore
     private List<Address> addresses = new ArrayList<>();
