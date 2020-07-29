@@ -180,7 +180,7 @@ public class ImageController {
             String firstName = data[0];
             String lastName = data[1];
             System.out.println(firstName + " " + lastName);
-            Customer customer = customerDao.findCustomerByFirstNameAndLastName(firstName, lastName);
+            Customer customer = customerDao.findCustomerByFirstNameAndLastName(firstName, lastName).get();
             if(customer != null) {
                 return ResponseEntity.status(200).body(imageService.uploadImage(customer, file.getOriginalFilename(), file.getBytes()));
             }else{

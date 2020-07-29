@@ -40,7 +40,7 @@ public class MatchService {
             matchFound.setName(match.getName());
             matchFound.setCompany(match.getCompany());
             matchFound.setHour(match.getHour());
-            matchFound.setUser(match.getUser());
+            matchFound.setCustomer(match.getCustomer());
             return matchDao.save(matchFound);
         }
         return null;
@@ -64,7 +64,7 @@ public class MatchService {
         data = name.split(java.util.regex.Pattern.quote("+"));
         String firstName = data[0];
         String lastName = data[1];
-        Customer customer = customerDao.findCustomerByFirstNameAndLastName(firstName, lastName);
+        Customer customer = customerDao.findCustomerByFirstNameAndLastName(firstName, lastName).get();
         if(customer != null)
         {
             return customer.getFirstName();

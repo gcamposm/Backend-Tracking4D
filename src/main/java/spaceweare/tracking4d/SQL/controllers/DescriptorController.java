@@ -1,6 +1,7 @@
 package spaceweare.tracking4d.SQL.controllers;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -15,9 +16,20 @@ import java.util.List;
 public class DescriptorController {
 
     private final DescriptorService descriptorService;
-
     public DescriptorController(DescriptorService descriptorService) {
         this.descriptorService = descriptorService;
+    }
+
+    @RequestMapping(value = "/create/withData", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity chargeData(@RequestParam("descriptor") List<Float> descriptorList,
+                                     @RequestParam("path") String path,
+                                     @RequestParam("user") String userName){
+        try{
+            return ResponseEntity.ok(descriptorService.chargeData(descriptorList, path, userName));
+        }
+        catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")

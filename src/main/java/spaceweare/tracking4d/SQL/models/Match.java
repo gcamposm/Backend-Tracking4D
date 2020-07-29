@@ -18,7 +18,7 @@ public class Match {
     // Relations
     @ManyToOne
     @JoinColumn
-    private Customer user;
+    private Customer customer;
 
     @ManyToOne
     @JoinColumn

@@ -172,7 +172,7 @@ public class ImageService {
         String firstName = data[0];
         String lastName = data[1];
         System.out.println(firstName + " " + lastName);
-        Customer customer = customerDao.findCustomerByFirstNameAndLastName(firstName, lastName);
+        Customer customer = customerDao.findCustomerByFirstNameAndLastName(firstName, lastName).get();
         Path absoluteFilePath = fileStorageService.getFileStorageLocation();
 
         List<Image> imageList;

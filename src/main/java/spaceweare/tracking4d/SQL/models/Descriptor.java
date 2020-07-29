@@ -1,9 +1,12 @@
 package spaceweare.tracking4d.SQL.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Data
@@ -13,8 +16,12 @@ public class Descriptor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String path;
-    /*private Float[] descriptor;*/
+
     @ManyToOne
     @JoinColumn
-    private Match match;
+    private Customer customer;
+
+    @OneToMany(mappedBy = "descriptor", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Detection> detections = new ArrayList<>();
 }
