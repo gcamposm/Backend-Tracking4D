@@ -8,4 +8,5 @@ import java.util.Optional;
 public interface CustomerDao extends JpaRepository<Customer, Integer> {
     Customer findByRut(String rut);
     Optional<Customer> findCustomerByFirstNameAndLastName(String firstName, String lastName);
+    Optional<Customer> findCustomerByRut(String rut);
 }

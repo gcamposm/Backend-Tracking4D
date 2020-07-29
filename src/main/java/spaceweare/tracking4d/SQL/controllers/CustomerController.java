@@ -99,18 +99,6 @@ public class CustomerController {
         }
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @PostMapping("/register/{name}")
-    @ResponseBody
-    public ResponseEntity<Customer> register (@PathVariable("name") String name){
-        try{
-            return ResponseEntity.ok(customerService.register(name));
-        }
-        catch (Exception e){
-            return ResponseEntity.badRequest().build();
-        }
-    }
-
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
     @RequestMapping(value = "{id}/getprincipalimage", method = RequestMethod.GET)
     public byte[] getPrincipalImage(@PathVariable Integer id, HttpServletRequest request) {

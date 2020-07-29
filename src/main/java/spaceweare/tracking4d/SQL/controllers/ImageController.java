@@ -6,7 +6,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import spaceweare.tracking4d.SQL.dao.CustomerDao;
-import spaceweare.tracking4d.SQL.models.Customer;
 import spaceweare.tracking4d.SQL.models.Image;
 import spaceweare.tracking4d.SQL.services.ImageService;
 
@@ -81,6 +80,23 @@ public class ImageController {
     public ResponseEntity<String> delete (@PathVariable Integer id){
         try{
             return ResponseEntity.ok(imageService.delete(id));
+        }
+        catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping("/pathsByCustomer/{customerId}")
+    @ResponseBody
+    public ResponseEntity pathsByCustomer(@PathVariable Integer customerId){
+        try{
+            if(customerDao.findById(customerId).isPresent())
+            {
+                return ResponseEntity.ok(imageService.pathsByCustomer(customerDao.findById(customerId).get()));
+            }
+        else{
+            return ResponseEntity.status(500).body("The customer with id: " + customerId + " could not be found");
+        }
         }
         catch (Exception e){
             return ResponseEntity.badRequest().build();
@@ -171,20 +187,15 @@ public class ImageController {
     }
     //UPLOAD ONE IMAGE USING THE CUSTOMER RUT AND THE ARRAY OF FILES
     //RETURN A IMAGES RESPONSE THAT'S CONTAINS THE URL AND OTHER PARAMETERS
-    @PostMapping("/uploadImage/{name}")
+    @PostMapping("/uploadImage/{customerRut}")
     @ResponseBody
-    public ResponseEntity uploadImage(@PathVariable String name ,
+    public ResponseEntity uploadImage(@PathVariable String customerRut ,
                                       @RequestParam("file") MultipartFile file){
         try{
-            String[] data = name.split(" ");
-            String firstName = data[0];
-            String lastName = data[1];
-            System.out.println(firstName + " " + lastName);
-            Customer customer = customerDao.findCustomerByFirstNameAndLastName(firstName, lastName).get();
-            if(customer != null) {
-                return ResponseEntity.status(200).body(imageService.uploadImage(customer, file.getOriginalFilename(), file.getBytes()));
+            if(customerDao.findCustomerByRut(customerRut).isPresent()) {
+                return ResponseEntity.status(200).body(imageService.uploadImage(customerDao.findCustomerByRut(customerRut).get(), file.getOriginalFilename(), file.getBytes()));
             }else{
-                return ResponseEntity.status(500).body("The customer with name: " + name + " could not be found");
+                return ResponseEntity.status(500).body("The customer with rut: " + customerRut + " could not be found");
             }
         }catch (Exception e){
             return ResponseEntity.status(500).body("Could not upload the images: " + e.getMessage());

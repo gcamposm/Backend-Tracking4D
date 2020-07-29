@@ -237,6 +237,7 @@ public class ImageService {
         image.setName(fileName);
         image.setExtension(ext);
         image.setPrincipal(false);
+        image.setPath("/data/users/"+customerToUpdate.getRut()+"/"+fileName);
         List<Image> imageList = customerToUpdate.getImages();
         if (imageList.size() == 0) {
             image.setPrincipal(true);
@@ -251,12 +252,8 @@ public class ImageService {
         String ext = imageName.substring(imageName.lastIndexOf("."));
         Path absoluteFilePath = fileStorageService.getFileStorageLocation();
         String fileName = getImageName(customerToUpdate);
-        String directory = absoluteFilePath + "/" + customerToUpdate.getFirstName() + " " + customerToUpdate.getLastName();
-        File directoryFile = new File(directory);
+        String directory = absoluteFilePath + "/" + customerToUpdate.getRut();
         File convertFile = new File(directory + "/" + fileName + ext);
-        if (! directoryFile.exists()){
-            directoryFile.mkdir();
-        }
         try(FileOutputStream fos = new FileOutputStream(convertFile)) {
             fos.write(fileBytes);
             Image image = createImageWithCustomer(customerToUpdate, ext, fileName);
@@ -329,5 +326,15 @@ public class ImageService {
         }else{
             throw new IdNotFoundException("The image with id: " + imageId + " could not be found");
         }
+    }
+
+    public List<String> pathsByCustomer(Customer customer) {
+        List<Image> images = imageDao.findAllByCustomer(customer);
+        List<String> paths = new ArrayList<>();
+        for (Image image:images
+             ) {
+            paths.add(image.getPath());
+        }
+        return paths;
     }
 }
