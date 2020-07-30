@@ -168,16 +168,17 @@ public class ImageService {
         }
     }
 
-    public List<ImageResponse> uploadMultipleImages(String customerRut, MultipartFile[] fileList) throws IOException {
+    public List<String> uploadMultipleImages(String customerRut, MultipartFile[] fileList) throws IOException {
         Customer customer = customerDao.findByRut(customerRut);
         List<ImageResponse> imageResponseList = new ArrayList<>();
         if(customer != null) {
+            List<String> paths = new ArrayList<>();
             for (MultipartFile file : fileList
             ) {
                 System.out.println("OriginalFileName: " + file.getOriginalFilename());
-                imageResponseList.add(uploadImage(customer, file.getOriginalFilename(), file.getBytes()));
+                paths.add(uploadImage(customer, file.getOriginalFilename(), file.getBytes()));
             }
-            return imageResponseList;
+            return paths;
         }else{
             throw new RutNotFoundException("The customer with rut: " + customerRut + " could not be found");
         }
@@ -306,7 +307,7 @@ public class ImageService {
         image.setName(fileName);
         image.setExtension(ext);
         image.setPrincipal(false);
-        String path = "/data/users/"+customerToUpdate.getRut()+"/"+fileName+ext;
+        String path = "@/data/users/"+customerToUpdate.getRut()+"/"+fileName+ext;
         image.setPath(path);
         List<Image> imageList = customerToUpdate.getImages();
         if (imageList.size() == 0) {
@@ -318,7 +319,7 @@ public class ImageService {
     }
 
     //upload a single image for customer
-    public ImageResponse uploadImage(Customer customerToUpdate, String imageName, byte[] fileBytes) throws IOException {
+    public String uploadImage(Customer customerToUpdate, String imageName, byte[] fileBytes) throws IOException {
         String ext = imageName.substring(imageName.lastIndexOf("."));
         Path absoluteFilePath = fileStorageService.getFileStorageLocation();
         String fileName = getImageName(customerToUpdate);
@@ -328,7 +329,8 @@ public class ImageService {
             fos.write(fileBytes);
             Image image = createImageWithCustomer(customerToUpdate, ext, fileName);
             customerDao.save(customerToUpdate);
-            return mapToImageResponse(image);
+            //return mapToImageResponse(image);
+            return image.getPath();
             //return customerDao.save(customerToUpdate);
         }catch(Exception e){
             throw new IOException("The image could not be uploaded" + e.getMessage());
