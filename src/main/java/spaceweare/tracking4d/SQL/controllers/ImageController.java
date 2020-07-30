@@ -138,6 +138,16 @@ public class ImageController {
         }
     }
 
+    @GetMapping("/pathsWithCustomer")
+    @ResponseBody
+    public ResponseEntity pathsWithCustomer(){
+        try{
+            return ResponseEntity.ok(imageService.pathsWithCustomer());
+        }
+        catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
     //RETURN A LIST OF IMAGE RESPONSE THAT CONTAINS THE PATH
     @GetMapping("/web/allImageFromCustomer/{customerId}")
     @ResponseBody

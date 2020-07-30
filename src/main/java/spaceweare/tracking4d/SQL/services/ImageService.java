@@ -406,4 +406,25 @@ public class ImageService {
         }
         return paths;
     }
+
+    public Object pathsWithCustomer() {
+        List<Map<Object, Object>> pathWithCustomerList = new ArrayList<>();
+        List<Customer> customers = customerDao.findAll();
+        for (Customer customer:customers
+             ) {
+            Map<Object, Object> pathWithCustomer = new HashMap<>();
+
+            List<Image> images = imageDao.findAllByCustomer(customer);
+
+            List<String> paths = new ArrayList<>();
+            for (Image image:images
+            ) {
+                paths.add(image.getPath());
+            }
+            pathWithCustomer.put("paths", paths);
+            pathWithCustomer.put("customer", customer);
+            pathWithCustomerList.add(pathWithCustomer);
+        }
+        return pathWithCustomerList;
+    }
 }
