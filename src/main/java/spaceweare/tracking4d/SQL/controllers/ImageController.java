@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
+import java.util.Map;
 
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
@@ -93,6 +94,16 @@ public class ImageController {
                                      @RequestParam("user") String userName){
         try{
             return ResponseEntity.ok(imageService.chargeData(descriptorList, path, userName));
+        }
+        catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @RequestMapping(value = "/chargeFaces", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity chargeFaces(@RequestParam("descriptor") List<Map<Object, Object>> faces){
+        try{
+            return ResponseEntity.ok(imageService.chargeFaces(faces));
         }
         catch (Exception e){
             return ResponseEntity.badRequest().build();

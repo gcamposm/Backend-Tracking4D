@@ -22,7 +22,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -81,10 +83,6 @@ public class ImageService {
         }
     }
 
-    public Object getAllFaces() {
-        return null;
-    }
-
     public Image chargeData(List<Float> descriptorList, String path, String userName) {
         String[] data = userName.split(" ");
         String firstName = data[0];
@@ -113,6 +111,39 @@ public class ImageService {
             detectionDao.save(detection);
         }
         return imageDao.save(image);
+    }
+
+    public String chargeFaces(List<Map<Object, Object>> faces) {
+        System.out.println(faces.toArray().toString());
+        return faces.toArray().toString();
+    }
+
+    public Object getAllFaces() {
+        List<Map<Object, Object>> faces = new ArrayList<>();
+        List<Customer> customers = customerDao.findAll();
+        for (Customer customer : customers
+        ) {
+            Map<Object, Object> face = new HashMap<>();
+            List<Map<Object, Object>> descriptors = new ArrayList<>();
+            List<Image> images = imageDao.findAllByCustomer(customer);
+            for (Image image:images
+                 ) {
+                Map<Object, Object> descriptor = new HashMap<>();
+                List<Float> floats = new ArrayList<>();
+                List<Detection> detections = image.getDetections();
+                for (Detection detection : detections
+                ) {
+                    floats.add(detection.getValue());
+                }
+                descriptor.put("descriptor", floats);
+                descriptor.put("path", image.getPath());
+                descriptors.add(descriptor);
+            }
+            face.put("descriptors", descriptors);
+            face.put("user", customer.getFirstName());
+            faces.add(face);
+        }
+        return faces;
     }
 
     public List<ImageResponse> getAllImagesFromCustomer(int customerId){
