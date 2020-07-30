@@ -306,7 +306,8 @@ public class ImageService {
         image.setName(fileName);
         image.setExtension(ext);
         image.setPrincipal(false);
-        image.setPath("@/data/users/"+customerToUpdate.getRut()+"/"+fileName+ext);
+        String path = "/data/users/"+customerToUpdate.getRut()+"/"+fileName+ext;
+        image.setPath(path);
         List<Image> imageList = customerToUpdate.getImages();
         if (imageList.size() == 0) {
             image.setPrincipal(true);
