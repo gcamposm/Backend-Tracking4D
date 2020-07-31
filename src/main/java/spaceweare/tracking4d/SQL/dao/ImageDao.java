@@ -8,6 +8,7 @@ import spaceweare.tracking4d.SQL.models.Image;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 public interface ImageDao extends JpaRepository<Image, Integer> {
     Image findImageById(Integer id);
@@ -15,6 +16,8 @@ public interface ImageDao extends JpaRepository<Image, Integer> {
     List<Image> findAllByCustomer(Customer customer);
 
     Image findImageByName(String name);
+
+    Optional<Image> findImageByPath(String path);
 
     Image findTopByOrderByIdDesc();
 

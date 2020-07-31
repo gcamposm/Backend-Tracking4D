@@ -9,4 +9,5 @@ public interface CustomerDao extends JpaRepository<Customer, Integer> {
     Customer findByRut(String rut);
     Optional<Customer> findCustomerByFirstNameAndLastName(String firstName, String lastName);
     Optional<Customer> findCustomerByRut(String rut);
+    Optional<Customer> findCustomerByFirstName(String firstName);
 }

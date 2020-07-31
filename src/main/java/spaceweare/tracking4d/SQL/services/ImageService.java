@@ -83,27 +83,23 @@ public class ImageService {
         }
     }
 
-    public Image chargeData(List<Float> descriptorList, String path, String userName) {
-        String[] data = userName.split(" ");
-        String firstName = data[0];
-        String lastName = data[1];
-        if(!customerDao.findCustomerByFirstNameAndLastName(firstName, lastName).isPresent())
+    public Image chargeData(List<String> descriptorList, String path, String userName) {
+        if(customerDao.findCustomerByFirstName(userName).isPresent())
         {
-            Customer customer = new Customer();
-            customer.setFirstName(firstName);
-            customer.setLastName(lastName);
-            return createDescriptorWithCustomer(customerDao.save(customer), descriptorList, path);
+            Customer customer = customerDao.findCustomerByFirstName(userName).get();
+            return createDescriptorWithCustomer(customer, descriptorList, path);
         }
-        Customer customer = customerDao.findCustomerByFirstNameAndLastName(firstName, lastName).get();
-        return createDescriptorWithCustomer(customer, descriptorList, path);
+        Customer customer = new Customer();
+        customer.setFirstName(userName);
+        return createDescriptorWithCustomer(customerDao.save(customer), descriptorList, path);
     }
 
-    private Image createDescriptorWithCustomer(Customer customer, List<Float> descriptorList, String path) {
+    private Image createDescriptorWithCustomer(Customer customer, List<String> descriptorList, String path) {
         Image image = new Image();
         image.setPath(path);
         image.setCustomer(customer);
         imageDao.save(image);
-        for (Float descriptorFor: descriptorList
+        for (String descriptorFor: descriptorList
         ) {
             Detection detection = new Detection();
             detection.setImage(image);
@@ -129,7 +125,7 @@ public class ImageService {
             for (Image image:images
                  ) {
                 Map<Object, Object> descriptor = new HashMap<>();
-                List<Float> floats = new ArrayList<>();
+                List<String> floats = new ArrayList<>();
                 List<Detection> detections = image.getDetections();
                 for (Detection detection : detections
                 ) {
@@ -168,10 +164,10 @@ public class ImageService {
         }
     }
 
-    public List<String> uploadMultipleImages(String customerRut, MultipartFile[] fileList) throws IOException {
-        Customer customer = customerDao.findByRut(customerRut);
-        List<ImageResponse> imageResponseList = new ArrayList<>();
-        if(customer != null) {
+    public List<String> uploadMultipleImages(String customerName, MultipartFile[] fileList) throws IOException {
+        //List<ImageResponse> imageResponseList = new ArrayList<>();
+        if(customerDao.findCustomerByFirstName(customerName).isPresent()) {
+            Customer customer = customerDao.findCustomerByFirstName(customerName).get();
             List<String> paths = new ArrayList<>();
             for (MultipartFile file : fileList
             ) {
@@ -180,7 +176,7 @@ public class ImageService {
             }
             return paths;
         }else{
-            throw new RutNotFoundException("The customer with rut: " + customerRut + " could not be found");
+            throw new RutNotFoundException("The customer name rut: " + customerName + " could not be found");
         }
     }
 
@@ -307,7 +303,7 @@ public class ImageService {
         image.setName(fileName);
         image.setExtension(ext);
         image.setPrincipal(false);
-        String path = "@/data/users/"+customerToUpdate.getRut()+"/"+fileName+ext;
+        String path = "@/data/users/"+customerToUpdate.getFirstName()+"/"+fileName+ext;
         image.setPath(path);
         List<Image> imageList = customerToUpdate.getImages();
         if (imageList.size() == 0) {
@@ -323,7 +319,8 @@ public class ImageService {
         String ext = imageName.substring(imageName.lastIndexOf("."));
         Path absoluteFilePath = fileStorageService.getFileStorageLocation();
         String fileName = getImageName(customerToUpdate);
-        String directory = absoluteFilePath + "/" + customerToUpdate.getRut();
+        String directory = absoluteFilePath + "/" + customerToUpdate.getFirstName();
+        System.out.println(directory);
         File convertFile = new File(directory + "/" + fileName + ext);
         try(FileOutputStream fos = new FileOutputStream(convertFile)) {
             fos.write(fileBytes);
@@ -429,5 +426,15 @@ public class ImageService {
             pathWithCustomerList.add(pathWithCustomer);
         }
         return pathWithCustomerList;
+    }
+
+    public List<String> detectionsByPath(Image image) {
+        List<Detection> detections = detectionDao.findAllByImage(image);
+        List<String> descriptors = new ArrayList<>();
+        for (Detection detection:detections
+             ) {
+            descriptors.add(detection.getValue());
+        }
+        return descriptors;
     }
 }

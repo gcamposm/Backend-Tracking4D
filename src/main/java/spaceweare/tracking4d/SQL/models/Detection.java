@@ -12,7 +12,7 @@ public class Detection {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private Float value;
+    private String value;
 
     @ManyToOne
     @JoinColumn
