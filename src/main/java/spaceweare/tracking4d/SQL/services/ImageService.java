@@ -83,14 +83,14 @@ public class ImageService {
         }
     }
 
-    public Image chargeData(List<String> descriptorList, String path, String userName) {
-        if(customerDao.findCustomerByFirstName(userName).isPresent())
+    public Image chargeData(List<String> descriptorList, String path, String customerRut) {
+        if(customerDao.findCustomerByRut(customerRut).isPresent())
         {
-            Customer customer = customerDao.findCustomerByFirstName(userName).get();
+            Customer customer = customerDao.findCustomerByRut(customerRut).get();
             return createDescriptorWithCustomer(customer, descriptorList, path);
         }
         Customer customer = new Customer();
-        customer.setFirstName(userName);
+        customer.setRut(customerRut);
         return createDescriptorWithCustomer(customerDao.save(customer), descriptorList, path);
     }
 
@@ -314,7 +314,7 @@ public class ImageService {
         image.setName(fileName);
         image.setExtension(ext);
         image.setPrincipal(false);
-        String path = "@/data/users/"+customerToUpdate.getRut()+"/"+fileName+ext;
+        String path = "/data/users/"+customerToUpdate.getRut()+"/"+fileName+ext;
         image.setPath(path);
         List<Image> imageList = customerToUpdate.getImages();
         if (imageList.size() == 0) {

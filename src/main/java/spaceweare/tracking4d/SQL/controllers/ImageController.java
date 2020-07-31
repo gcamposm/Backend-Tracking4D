@@ -94,9 +94,9 @@ public class ImageController {
     @RequestMapping(value = "/create/withData", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity chargeData(@RequestParam("descriptor") List<String> descriptorList,
                                      @RequestParam("path") String path,
-                                     @RequestParam("user") String userName){
+                                     @RequestParam("user") String customerRut){
         try{
-            return ResponseEntity.ok(imageService.chargeData(descriptorList, path, userName));
+            return ResponseEntity.ok(imageService.chargeData(descriptorList, path, customerRut));
         }
         catch (Exception e){
             return ResponseEntity.badRequest().build();
