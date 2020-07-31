@@ -95,8 +95,19 @@ public class ImageService {
     }
 
     private Image createDescriptorWithCustomer(Customer customer, List<String> descriptorList, String path) {
-        Image image = new Image();
-        image.setPath(path);
+        if(imageDao.findImageByPath(path).isPresent())
+        {
+            Image image = imageDao.findImageByPath(path).get();
+            return createDescriptorWithImage(customer, descriptorList, image);
+        }
+        else{
+            Image image = new Image();
+            image.setPath(path);
+            return createDescriptorWithImage(customer, descriptorList, image);
+        }
+    }
+
+    private Image createDescriptorWithImage(Customer customer, List<String> descriptorList, Image image) {
         image.setCustomer(customer);
         imageDao.save(image);
         for (String descriptorFor: descriptorList
@@ -164,10 +175,10 @@ public class ImageService {
         }
     }
 
-    public List<String> uploadMultipleImages(String customerName, MultipartFile[] fileList) throws IOException {
+    public List<String> uploadMultipleImages(String customerRut, MultipartFile[] fileList) throws IOException {
         //List<ImageResponse> imageResponseList = new ArrayList<>();
-        if(customerDao.findCustomerByFirstName(customerName).isPresent()) {
-            Customer customer = customerDao.findCustomerByFirstName(customerName).get();
+        if(customerDao.findCustomerByRut(customerRut).isPresent()) {
+            Customer customer = customerDao.findCustomerByRut(customerRut).get();
             List<String> paths = new ArrayList<>();
             for (MultipartFile file : fileList
             ) {
@@ -176,7 +187,7 @@ public class ImageService {
             }
             return paths;
         }else{
-            throw new RutNotFoundException("The customer name rut: " + customerName + " could not be found");
+            throw new RutNotFoundException("The customer with rut: " + customerRut + " could not be found");
         }
     }
 
@@ -291,7 +302,7 @@ public class ImageService {
         if(customer.getImages() != null)
         {
             Integer index = customer.getImages().size() + 1;
-            return index.toString();
+            return customer.getRut() + "_" + index.toString();
         }
         return "1";
     }
@@ -303,7 +314,7 @@ public class ImageService {
         image.setName(fileName);
         image.setExtension(ext);
         image.setPrincipal(false);
-        String path = "@/data/users/"+customerToUpdate.getFirstName()+"/"+fileName+ext;
+        String path = "@/data/users/"+customerToUpdate.getRut()+"/"+fileName+ext;
         image.setPath(path);
         List<Image> imageList = customerToUpdate.getImages();
         if (imageList.size() == 0) {
@@ -319,7 +330,7 @@ public class ImageService {
         String ext = imageName.substring(imageName.lastIndexOf("."));
         Path absoluteFilePath = fileStorageService.getFileStorageLocation();
         String fileName = getImageName(customerToUpdate);
-        String directory = absoluteFilePath + "/" + customerToUpdate.getFirstName();
+        String directory = absoluteFilePath + "/" + customerToUpdate.getRut();
         System.out.println(directory);
         File convertFile = new File(directory + "/" + fileName + ext);
         try(FileOutputStream fos = new FileOutputStream(convertFile)) {
