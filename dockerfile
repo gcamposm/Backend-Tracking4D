@@ -1,6 +1,6 @@
 FROM openjdk:8-jre
-COPY /target/tracking4d-1.0.0.RELEASE.war /usr/app/
+COPY /target/backend-0.0.1-SNAPSHOT.war /usr/app/
 WORKDIR /usr/app
 EXPOSE 9443
 ENV TZ America/Santiago
-ENTRYPOINT ["java", "-jar", "tracking4d-1.0.0.RELEASE.war"]
+ENTRYPOINT ["java", "-jar", "backend-0.0.1-SNAPSHOT.war"]
