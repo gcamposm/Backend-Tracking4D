@@ -6,14 +6,10 @@
 mvn clean package
 
 # Cleaning
-docker stop backendnimbolu
-docker stop postgresnimbolu
-docker stop mongonimbolu
-docker rm backendnimbolu
-docker rm postgresnimbolu
-docker rm mongonimbolu
-docker image rm backendnimbolu
+docker stop backendtracking
+docker rm backendtracking
+docker image rm backendtracking
 
 # Building
-docker build -t backendnimbolu .
+docker build -t backendtracking .
 docker-compose up -d
