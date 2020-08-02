@@ -2,13 +2,12 @@ package spaceweare.tracking4d.SQL.services;
 
 import org.springframework.stereotype.Service;
 import spaceweare.tracking4d.Helpers.DateHelper;
+import spaceweare.tracking4d.SQL.dao.CameraDao;
 import spaceweare.tracking4d.SQL.dao.CustomerDao;
 import spaceweare.tracking4d.SQL.dao.DetectionDao;
 import spaceweare.tracking4d.SQL.dao.ImageDao;
 import spaceweare.tracking4d.SQL.dto.models.DetectionDayStat;
-import spaceweare.tracking4d.SQL.models.Customer;
-import spaceweare.tracking4d.SQL.models.Detection;
-import spaceweare.tracking4d.SQL.models.Image;
+import spaceweare.tracking4d.SQL.models.*;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -22,10 +21,12 @@ public class DetectionService {
     private final CustomerDao customerDao;
     private final ImageDao imageDao;
     private final DetectionDao detectionDao;
-    public DetectionService(DetectionDao detectionDao, CustomerDao customerDao, ImageDao imageDao) {
+    private final CameraDao cameraDao;
+    public DetectionService(DetectionDao detectionDao, CustomerDao customerDao, ImageDao imageDao, CameraDao cameraDao) {
         this.detectionDao = detectionDao;
         this.customerDao = customerDao;
         this.imageDao = imageDao;
+        this.cameraDao = cameraDao;
     }
 
     public Detection create(Detection detection){
@@ -50,6 +51,7 @@ public class DetectionService {
             Detection detectionFound = detectionDao.findById(id).get();
             detectionFound.setImage(detection.getImage());
             detectionFound.setValue(detection.getValue());
+            detectionFound.setClock(detection.getClock());
             return detectionDao.save(detectionFound);
         }
         return null;
@@ -65,7 +67,8 @@ public class DetectionService {
         }
     }
 
-    public Image saveUnknown(List<String> unknown) {
+    public Image saveUnknown(List<String> unknown, Integer cameraId) {
+        Camera camera = cameraDao.findById(cameraId).get();
         Customer customer = new Customer();
         customerDao.save(customer);
         customer.setFirstName("unknown "+customer.getId().toString());
@@ -79,6 +82,10 @@ public class DetectionService {
             detection.setValue(descriptorFor);
             detectionDao.save(detection);
         }
+        List<Image> cameraImages = camera.getImages();
+        cameraImages.add(image);
+        camera.setImages(cameraImages);
+        cameraDao.save(camera);
         return imageDao.save(image);
     }
 

@@ -20,4 +20,8 @@ public class Camera {
     @OneToMany(mappedBy = "camera", cascade = CascadeType.ALL, fetch= FetchType.EAGER)
     @JsonIgnore
     private List<Match> matchList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "camera", cascade = CascadeType.ALL, fetch= FetchType.EAGER)
+    @JsonIgnore
+    private List<Image> images = new ArrayList<>();
 }

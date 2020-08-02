@@ -68,6 +68,7 @@ public class ImageService {
             imageFound.setPrincipal(image.getPrincipal());
             imageFound.setPath(image.getPath());
             imageFound.setDetections(image.getDetections());
+            imageFound.setCamera(image.getCamera());
             return imageDao.save(imageFound);
         }
         return null;

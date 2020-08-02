@@ -84,9 +84,10 @@ public class MatchController {
     }
 
     @RequestMapping(value = "/create/withFilteredMatches", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity chargeData(@RequestParam("matches") List<String> matches){
+    public ResponseEntity chargeData(@RequestParam("matches") List<String> matches,
+                                     @RequestParam("cameraId") Integer cameraId){
         try{
-            return ResponseEntity.ok(matchService.withFilteredMatches(matches));
+            return ResponseEntity.ok(matchService.withFilteredMatches(matches, cameraId));
         }
         catch (Exception e){
             return ResponseEntity.badRequest().build();

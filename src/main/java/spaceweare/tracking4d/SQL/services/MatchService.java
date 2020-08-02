@@ -1,8 +1,10 @@
 package spaceweare.tracking4d.SQL.services;
 
 import org.springframework.stereotype.Service;
+import spaceweare.tracking4d.SQL.dao.CameraDao;
 import spaceweare.tracking4d.SQL.dao.CustomerDao;
 import spaceweare.tracking4d.SQL.dao.MatchDao;
+import spaceweare.tracking4d.SQL.models.Camera;
 import spaceweare.tracking4d.SQL.models.Customer;
 import spaceweare.tracking4d.SQL.models.Match;
 
@@ -18,9 +20,11 @@ public class MatchService {
 
     private final MatchDao matchDao;
     private final CustomerDao customerDao;
-    public MatchService(MatchDao matchDao, CustomerDao customerDao) {
+    private final CameraDao cameraDao;
+    public MatchService(MatchDao matchDao, CustomerDao customerDao, CameraDao cameraDao) {
         this.matchDao = matchDao;
         this.customerDao = customerDao;
+        this.cameraDao = cameraDao;
     }
 
     public Match create(Match match){
@@ -83,7 +87,8 @@ public class MatchService {
         return detection;
     }
 
-    public List<Match> withFilteredMatches(List<String> rutList) {
+    public List<Match> withFilteredMatches(List<String> rutList, Integer cameraId) {
+        Camera camera = cameraDao.findById(cameraId).get();
         List<Match> matches = new ArrayList<>();
         for (String rut:rutList
              ) {
@@ -97,6 +102,10 @@ public class MatchService {
                 matches.add(match);
             }
         }
+        List<Match> cameraMatches = camera.getMatchList();
+        cameraMatches.addAll(matches);
+        camera.setMatchList(cameraMatches);
+        cameraDao.save(camera);
         return matches;
     }
 
