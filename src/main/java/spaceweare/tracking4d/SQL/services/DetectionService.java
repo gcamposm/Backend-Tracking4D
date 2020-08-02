@@ -2,10 +2,7 @@ package spaceweare.tracking4d.SQL.services;
 
 import org.springframework.stereotype.Service;
 import spaceweare.tracking4d.Helpers.DateHelper;
-import spaceweare.tracking4d.SQL.dao.CameraDao;
-import spaceweare.tracking4d.SQL.dao.CustomerDao;
-import spaceweare.tracking4d.SQL.dao.DetectionDao;
-import spaceweare.tracking4d.SQL.dao.ImageDao;
+import spaceweare.tracking4d.SQL.dao.*;
 import spaceweare.tracking4d.SQL.dto.models.DetectionDayStat;
 import spaceweare.tracking4d.SQL.models.*;
 
@@ -23,11 +20,13 @@ public class DetectionService {
     private final ImageDao imageDao;
     private final DetectionDao detectionDao;
     private final CameraDao cameraDao;
-    public DetectionService(DetectionDao detectionDao, CustomerDao customerDao, ImageDao imageDao, CameraDao cameraDao) {
+    private final MatchDao matchDao;
+    public DetectionService(DetectionDao detectionDao, CustomerDao customerDao, ImageDao imageDao, CameraDao cameraDao, MatchDao matchDao) {
         this.detectionDao = detectionDao;
         this.customerDao = customerDao;
         this.imageDao = imageDao;
         this.cameraDao = cameraDao;
+        this.matchDao = matchDao;
     }
 
     public Detection create(Detection detection){
@@ -108,11 +107,10 @@ public class DetectionService {
         System.out.println("Date: " + date);
         System.out.println("Date + 1: " + datePlus1Day);
         List<Detection> detectionList = detectionDao.findDetectionByclockBetween(date, datePlus1Day);
-
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         String formatDateTime = date.format(formatter);
         System.out.println("---------------------------");
-        DetectionDayStat detectionDayStat = getTotalByDay(detectionList);
+        DetectionDayStat detectionDayStat = getTotalByDay(detectionList, matchDao.findMatchByHourBetween(date, datePlus1Day).size());
         detectionDayStat.setDay(date);
         detectionDayStat.setFormattedDate(formatDateTime);
         System.out.println(detectionDayStat);
@@ -120,16 +118,12 @@ public class DetectionService {
         return detectionDayStat;
 
     }
-    private DetectionDayStat getTotalByDay(List<Detection> detections){
+    private DetectionDayStat getTotalByDay(List<Detection> detections, Integer matches){
         Integer unknowns = 0;
-        Integer matches = 0;
         for (Detection detection: detections
         ) {
             if(detection.getImage().getCustomer().getUnknown()) {
                 unknowns = unknowns + 1;
-            }
-            else{
-                matches = matches + 1;
             }
         };
         DetectionDayStat detectionDayStat = new DetectionDayStat();

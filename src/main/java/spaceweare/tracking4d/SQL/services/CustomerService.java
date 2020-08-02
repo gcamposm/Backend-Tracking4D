@@ -320,4 +320,8 @@ public class CustomerService {
         }
         System.out.println("Writing on XLSX file Finished ...");
     }
+
+    public Customer byRut(String customerRut) {
+        return customerDao.findCustomerByRut(customerRut).get();
+    }
 }

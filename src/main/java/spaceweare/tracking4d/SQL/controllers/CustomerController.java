@@ -118,6 +118,17 @@ public class CustomerController {
         }
     }
 
+    @GetMapping("/byRut/{customerRut}")
+    @ResponseBody
+    public ResponseEntity<Customer> byRut(@PathVariable String customerRut){
+        try{
+            return ResponseEntity.ok(customerService.byRut(customerRut));
+        }
+        catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PostMapping("/contactsBetweenCustomers")
     @ResponseStatus(HttpStatus.CREATED)
