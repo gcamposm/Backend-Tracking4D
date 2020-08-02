@@ -13,5 +13,4 @@ public interface CustomerDao extends JpaRepository<Customer, Integer> {
     Optional<Customer> findCustomerByFirstNameAndLastName(String firstName, String lastName);
     Optional<Customer> findCustomerByRut(String rut);
     Optional<Customer> findCustomerByFirstName(String firstName);
-    List<Customer> findCustomerByHourBetween(LocalDateTime firstDate, LocalDateTime secondDate);
 }

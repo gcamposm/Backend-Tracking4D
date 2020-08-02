@@ -1,10 +1,8 @@
 package spaceweare.tracking4d.SQL.controllers;
 
-import org.apache.commons.math3.stat.descriptive.summary.Product;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -64,6 +62,7 @@ public class CustomerController {
     @ResponseBody
     public ResponseEntity<Customer> create (@RequestBody Customer customer){
         try{
+            customer.setUnknown(false);
             return ResponseEntity.ok(customerService.create(customer));
         }
         catch (Exception e){
@@ -238,17 +237,20 @@ public class CustomerController {
         return ResponseEntity.badRequest().build();
     }
 
+
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @RequestMapping(value = "/write", method = RequestMethod.GET, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Object> writeFile(@RequestParam("day") @DateTimeFormat(pattern = "yyyy-MM-dd") Date day) throws IOException
+    @RequestMapping(value = "/write", method = RequestMethod.GET)
+    public ResponseEntity<Object> writeFile() throws IOException
     {
+        Date day = new Date();
         Instant firstCurrent = day.toInstant();
         Instant secondCurrent = day.toInstant();
         LocalDateTime firstLocalDate = LocalDateTime.ofInstant(firstCurrent,
                 ZoneId.systemDefault());
         LocalDateTime secondLocalDate = LocalDateTime.ofInstant(secondCurrent,
                 ZoneId.systemDefault()).plusDays(1);
-        List<Match> matches = matchDao.findMatchByHourBetween(firstLocalDate, secondLocalDate);
+        //List<Match> matches = matchDao.findMatchByHourBetween(firstLocalDate, secondLocalDate);
+        List<Match>matches = matchDao.findAll();
         /*List<Customer> customerList = new ArrayList<>();
         for (Match match:matches
              ) {
@@ -263,7 +265,7 @@ public class CustomerController {
         }
         //Path path = fileStorageService.getFileStorageLocation();
         Path filePath = fileStorageService.getFileStorageLocation().resolve("output.xlsx").normalize();
-        customerService.writeXlsx(matches, filePath.toString());
+        customerService.writeXlsx(matches, filePath.toString(), day);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body("Se creó el archivo de salida.");

@@ -22,9 +22,7 @@ public class Customer {
     @JoinColumn
     private Company company;
 
-    @ManyToOne
-    @JoinColumn
-    private Activity activity;
+    private String activity;
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch= FetchType.EAGER)
     @JsonIgnore
