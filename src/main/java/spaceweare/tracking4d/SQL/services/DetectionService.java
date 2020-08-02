@@ -14,6 +14,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class DetectionService {
@@ -90,6 +91,7 @@ public class DetectionService {
     }
 
     public List<DetectionDayStat> getVisitsBetweenDates(Date firstDate, Date secondDate){
+        secondDate = new Date(secondDate.getTime() + TimeUnit.DAYS.toMillis( 1 ));
         List<LocalDateTime> localDateTimeList = DateHelper.intervalDateToList(firstDate, secondDate, 0);
         List<DetectionDayStat> detectionDayStatList = new ArrayList<>();
         for (LocalDateTime localDateTime: localDateTimeList
