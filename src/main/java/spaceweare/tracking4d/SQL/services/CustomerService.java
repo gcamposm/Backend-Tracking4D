@@ -141,7 +141,6 @@ public class CustomerService {
             linkFont.setColor(new XSSFColor(Color.BLUE.brighter()));
             linkFont.setUnderline(fontUnderline);
             linkStyle.setFont(linkFont);
-            System.out.println("here4");
 
             String path = "";
 
@@ -184,38 +183,41 @@ public class CustomerService {
                             .setCellValue(match.getCustomer().getPhoneNumber());
                     row.createCell(7)
                             .setCellValue(match.getCustomer().getActivity());
-                    if(inOut.size()>0)
+                    if(match.getCamera()!= null)
                     {
                         row.createCell(8)
-                                .setCellValue(inOut.get(0).getHour().toString());
+                                .setCellValue(match.getCamera().getValue());
                     }
                     else{
                         row.createCell(8)
+                                .setCellValue("");
+                    }
+                    if(inOut.size()>0)
+                    {
+                        row.createCell(9)
+                                .setCellValue(inOut.get(0).getHour().toString());
+                    }
+                    else{
+                        row.createCell(9)
                                 .setCellValue("");
                     }
                     if(inOut.size()>1)
                     {
-                        row.createCell(9)
-                                .setCellValue(inOut.get(1).getHour().toString());
                         row.createCell(10)
+                                .setCellValue(inOut.get(1).getHour().toString());
+                        row.createCell(11)
                                 .setCellValue(Duration.between(inOut.get(0).getHour(), inOut.get(1).getHour()).toHours());
                     }
                     else{
-                        row.createCell(9)
-                                .setCellValue("");
                         row.createCell(10)
                                 .setCellValue("");
-                    }
-                    if(match.getCamera()!= null)
-                    {
-                        row.createCell(11)
-                                .setCellValue(match.getCamera().getValue());
-                    }
-                    else{
                         row.createCell(11)
                                 .setCellValue("");
                     }
+                    for (Map<Object, Object> contact:contacts
+                         ) {
 
+                    }
                 }
             }
             for (int i = 0; i < columns.length; i++) {
