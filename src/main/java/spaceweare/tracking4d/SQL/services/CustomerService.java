@@ -126,7 +126,6 @@ public class CustomerService {
     }
     public XSSFWorkbook writeOutputFile(List<Match> customerList, Date day){
         try {
-            System.out.println("here3");
             XSSFWorkbook myWorkBook = new XSSFWorkbook();
             myWorkBook.createSheet("Sheet1");
             XSSFSheet mySheet = myWorkBook.getSheetAt(0);
@@ -155,8 +154,7 @@ public class CustomerService {
             for (Match match : customerList) {
                 if(!match.getCustomer().getUnknown()){
                     System.out.println("Creando");
-                    //List<Match> inOut = matchService.getIncomeOutcome(day, match.getCustomer().getId());
-                    List<Match> inOut = new ArrayList<>();
+                    List<Match> inOut = matchService.getIncomeOutcome(day, match.getCustomer().getId());
                     Row row = mySheet.createRow(rownum++);
                     Hyperlink link = (Hyperlink) createHelper.createHyperlink(HyperlinkType.URL);
                     //path = URLEncoder.encode(path, "UTF-8");
