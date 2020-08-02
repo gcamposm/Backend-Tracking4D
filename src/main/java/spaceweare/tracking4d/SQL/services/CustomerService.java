@@ -59,6 +59,7 @@ public class CustomerService {
             customerFound.setMail(customer.getMail());
             customerFound.setPhoneNumber(customer.getPhoneNumber());
             customerFound.setUser(customer.getUser());
+            customerFound.setUnknown(customer.getUnknown());
             return customerDao.save(customerFound);
         }
         return null;

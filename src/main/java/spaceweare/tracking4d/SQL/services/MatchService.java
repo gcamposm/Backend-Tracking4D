@@ -110,13 +110,24 @@ public class MatchService {
         return matchDao.findMatchByHourBetween(firstLocalDate, secondLocalDate);
     }
 
-    public List<Match> getIncomeOutcome(Date day, Integer customerId) {
-        List<Match> matchListPerDay = getMatchesByDate(day, day);
-        Integer matchIdIn = 0;
-        Integer matchIdOut = 0;
+    public List<Match> filterByCustomer(List<Match> matchListPerDay, Integer customerId) {
+        List<Match> matchListByCustomer = new ArrayList<>();
         for (Match match:matchListPerDay
              ) {
             if(match.getCustomer().getId().equals(customerId)) {
+                matchListByCustomer.add(match);
+            }
+        }
+        return matchListByCustomer;
+    }
+
+    public List<Match> getIncomeOutcome(Date day, Integer customerId) {
+        List<Match> matchListPerDay = getMatchesByDate(day, day);
+        List<Match> matchListByCustomer = filterByCustomer(matchListPerDay, customerId);
+        Integer matchIdIn = 0;
+        Integer matchIdOut = 0;
+        for (Match match:matchListByCustomer
+             ) {
                 if (matchIdIn.equals(0)) {
                     matchIdIn = match.getId();
                 }
@@ -129,26 +140,18 @@ public class MatchService {
                 if (matchDao.findById(matchIdOut).get().getHour().compareTo(match.getHour()) < 0) {
                     matchIdOut = match.getId();
                 }
-            }
         }
         List<Match> matchList = new ArrayList<>();
-        Match matchIn = matchDao.findById(matchIdIn).get();
-        Match matchOut = matchDao.findById(matchIdOut).get();
-        matchList.add(matchIn);
-        matchList.add(matchOut);
-        return matchList;
-    }
-
-    public Object testHour(Date firstDate, Date secondDate) {
-        Instant firstCurrent = firstDate.toInstant();
-        Instant secondCurrent = secondDate.toInstant();
-        LocalDateTime firstLocalDate = LocalDateTime.ofInstant(firstCurrent,
-                ZoneId.systemDefault());
-        LocalDateTime secondLocalDate = LocalDateTime.ofInstant(secondCurrent,
-                ZoneId.systemDefault()).plusDays(1);
-        if (firstLocalDate.compareTo(secondLocalDate) > 0) {
-            return "El primero";
+        if(matchDao.findById(matchIdIn).isPresent())
+        {
+            Match matchIn = matchDao.findById(matchIdIn).get();
+            matchList.add(matchIn);
         }
-        return "El segundo";
+        if(matchDao.findById(matchIdOut).isPresent())
+        {
+            Match matchOut = matchDao.findById(matchIdOut).get();
+            matchList.add(matchOut);
+        }
+        return matchList;
     }
 }

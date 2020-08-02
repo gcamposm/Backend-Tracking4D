@@ -153,11 +153,4 @@ public class MatchController {
 
         return ResponseEntity.ok(matchService.getIncomeOutcome(day, customerId));
     }
-
-    @PostMapping("/testHour")
-    public ResponseEntity testHour(@RequestParam("firstDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date firstDate,
-                                   @RequestParam("secondDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date secondDate){
-
-        return ResponseEntity.ok(matchService.testHour(firstDate, secondDate));
-    }
 }

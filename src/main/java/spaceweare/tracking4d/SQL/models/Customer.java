@@ -49,4 +49,5 @@ public class Customer {
     private String phoneNumber;
     private String mail;
     private String genre;
+    private Boolean unknown;
 }
