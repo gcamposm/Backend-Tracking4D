@@ -1,14 +1,23 @@
 package spaceweare.tracking4d.SQL.services;
 
+import org.apache.commons.math3.stat.descriptive.summary.Product;
+import org.apache.poi.common.usermodel.HyperlinkType;
+import org.apache.poi.xssf.usermodel.*;
 import org.springframework.stereotype.Service;
+import spaceweare.tracking4d.Exceptions.ExportFileException;
 import spaceweare.tracking4d.FileManagement.service.FileStorageService;
 import spaceweare.tracking4d.SQL.dao.CustomerDao;
 import spaceweare.tracking4d.SQL.dao.ImageDao;
 import spaceweare.tracking4d.SQL.models.Customer;
+import org.apache.poi.ss.usermodel.*;
+import spaceweare.tracking4d.SQL.models.Match;
+
+import java.awt.Color;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -109,5 +118,77 @@ public class CustomerService {
         customer.setFirstName(firstName);
         customer.setLastName(lastName);
         return customerDao.save(customer);
+    }
+    public XSSFWorkbook writeOutputFile(List<Match> customerList){
+        try {
+            XSSFWorkbook myWorkBook = new XSSFWorkbook();
+            myWorkBook.createSheet("Sheet1");
+            XSSFSheet mySheet = myWorkBook.getSheetAt(0);
+            // get the last row number to append new data
+            int rownum = mySheet.getLastRowNum();
+
+            FontUnderline fontUnderline = FontUnderline.SINGLE;
+            CreationHelper createHelper = myWorkBook.getCreationHelper();
+            XSSFCellStyle linkStyle = myWorkBook.createCellStyle();
+            XSSFFont linkFont = myWorkBook.createFont();
+            linkFont.setUnderline(XSSFFont.U_SINGLE);
+            linkFont.setColor(new XSSFColor(Color.BLUE.brighter()));
+            linkFont.setUnderline(fontUnderline);
+            linkStyle.setFont(linkFont);
+
+            String path = "";
+
+            Row headerRow = mySheet.createRow(rownum++);
+            String[] columns = {"Nombre", "Apellido", "Rut", "Género", "Usuario", "Correo", "Celular", "Zona de trabajo"};
+            for (int i = 0; i < columns.length; i++) {
+                Cell cell = headerRow.createCell(i);
+                cell.setCellValue(columns[i]);
+            }
+
+            for (Match match : customerList) {
+                if(!match.getCustomer().getUnknown()){
+                    Row row = mySheet.createRow(rownum++);
+                    Hyperlink link = (Hyperlink) createHelper.createHyperlink(HyperlinkType.URL);
+                    //path = URLEncoder.encode(path, "UTF-8");
+                    link.setAddress(match.getCustomer().getFirstName());
+                    row.createCell(0)
+                            .setCellValue(match.getCustomer().getLastName());
+                    row.createCell(1)
+                            .setCellValue(match.getCustomer().getRut());
+                    //INT VALUES
+                    row.createCell(2)
+                            .setCellValue(match.getCustomer().getGenre());
+                    row.createCell(3)
+                            .setCellValue( match.getCustomer().getUser().getUsername());
+                    row.createCell(4)
+                            .setCellValue(match.getCustomer().getMail());
+                    row.createCell(5)
+                            .setCellValue(match.getCustomer().getPhoneNumber());
+                    row.createCell(6)
+                            .setCellValue(match.getCustomer().getActivity().getName());
+
+                }
+            }
+            for (int i = 0; i < columns.length; i++) {
+                mySheet.autoSizeColumn(i);
+            }
+            return myWorkBook;
+        }catch (Exception e){
+            throw new ExportFileException("Cant create excel file with the data", e);
+        }
+    }
+
+    public  void writeXlsx(List<Match> matchList, String path) throws IOException {
+        try{
+            XSSFWorkbook myWorkBook = writeOutputFile(matchList);
+            System.out.println("Path: " + path);
+            FileOutputStream os = new FileOutputStream(path);
+            myWorkBook.write(os);
+            os.close();
+            myWorkBook.close();
+        }catch (Exception e){
+            throw new ExportFileException("An error happened when the file has been exporting", e);
+        }
+        System.out.println("Writing on XLSX file Finished ...");
     }
 }

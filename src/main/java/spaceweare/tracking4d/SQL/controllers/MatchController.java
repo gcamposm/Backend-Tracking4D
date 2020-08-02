@@ -1,15 +1,22 @@
 package spaceweare.tracking4d.SQL.controllers;
 
+import org.apache.commons.math3.stat.descriptive.summary.Product;
+import org.springframework.core.io.Resource;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import spaceweare.tracking4d.FileManagement.service.FileStorageService;
 import spaceweare.tracking4d.SQL.models.Match;
 import spaceweare.tracking4d.SQL.services.MatchService;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Date;
 import java.util.List;
 
