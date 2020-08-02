@@ -90,6 +90,17 @@ public class MatchController {
         }
     }
 
+    @GetMapping("/getAllByContact/{contactId}")
+    @ResponseBody
+    public ResponseEntity<List<Match>> getAllByContact(@PathVariable Integer contactId){
+        try{
+            return ResponseEntity.ok(matchService.getAllByContact(contactId));
+        }
+        catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
     @RequestMapping(value = "/create/withFilteredMatches", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity chargeData(@RequestParam("matches") List<String> matches,
                                      @RequestParam("cameraId") Integer cameraId){

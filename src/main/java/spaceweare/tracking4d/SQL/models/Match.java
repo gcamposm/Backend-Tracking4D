@@ -2,7 +2,6 @@ package spaceweare.tracking4d.SQL.models;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import spaceweare.tracking4d.SQL.dto.models.Contacts;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -31,7 +30,7 @@ public class Match {
 
     @ManyToOne
     @JoinColumn
-    private Contacts contact;
+    private Contact contact;
 
     //Other attributes
     private String name;

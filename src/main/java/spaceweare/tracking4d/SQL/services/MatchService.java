@@ -2,6 +2,7 @@ package spaceweare.tracking4d.SQL.services;
 
 import org.springframework.stereotype.Service;
 import spaceweare.tracking4d.SQL.dao.CameraDao;
+import spaceweare.tracking4d.SQL.dao.ContactDao;
 import spaceweare.tracking4d.SQL.dao.CustomerDao;
 import spaceweare.tracking4d.SQL.dao.MatchDao;
 import spaceweare.tracking4d.SQL.models.Camera;
@@ -20,10 +21,12 @@ public class MatchService {
     private final MatchDao matchDao;
     private final CustomerDao customerDao;
     private final CameraDao cameraDao;
-    public MatchService(MatchDao matchDao, CustomerDao customerDao, CameraDao cameraDao) {
+    private final ContactDao contactDao;
+    public MatchService(MatchDao matchDao, CustomerDao customerDao, CameraDao cameraDao, ContactDao contactDao) {
         this.matchDao = matchDao;
         this.customerDao = customerDao;
         this.cameraDao = cameraDao;
+        this.contactDao = contactDao;
     }
 
     public Match create(Match match){
@@ -161,5 +164,12 @@ public class MatchService {
             matchList.add(matchOut);
         }
         return matchList;
+    }
+
+    public List<Match> getAllByContact(Integer contactId) {
+        if(contactDao.findById(contactId).isPresent()) {
+            return matchDao.findAllByContact(contactDao.findById(contactId).get());
+        }
+        return new ArrayList<>();
     }
 }

@@ -5,9 +5,11 @@ import org.apache.poi.xssf.usermodel.*;
 import org.springframework.stereotype.Service;
 import spaceweare.tracking4d.Exceptions.ExportFileException;
 import spaceweare.tracking4d.FileManagement.service.FileStorageService;
+import spaceweare.tracking4d.SQL.dao.ContactDao;
 import spaceweare.tracking4d.SQL.dao.CustomerDao;
 import spaceweare.tracking4d.SQL.dao.ImageDao;
 import spaceweare.tracking4d.SQL.dao.MatchDao;
+import spaceweare.tracking4d.SQL.models.Contact;
 import spaceweare.tracking4d.SQL.models.Customer;
 import org.apache.poi.ss.usermodel.*;
 import spaceweare.tracking4d.SQL.models.Match;
@@ -29,13 +31,15 @@ public class CustomerService {
     private final ImageDao imageDao;
     private final CustomerDao customerDao;
     private final MatchDao matchDao;
+    private final ContactDao contactDao;
     private final MatchService matchService;
-    public CustomerService(CustomerDao customerDao, ImageDao imageDao, MatchDao matchDao, FileStorageService fileStorageService, MatchService matchService) {
+    public CustomerService(CustomerDao customerDao, ImageDao imageDao, MatchDao matchDao, ContactDao contactDao, FileStorageService fileStorageService, MatchService matchService) {
         this.customerDao = customerDao;
         this.imageDao = imageDao;
         this.fileStorageService = fileStorageService;
         this.matchService = matchService;
         this.matchDao = matchDao;
+        this.contactDao = contactDao;
     }
 
     public Customer create(Customer customer){
@@ -125,7 +129,7 @@ public class CustomerService {
         customer.setLastName(lastName);
         return customerDao.save(customer);
     }
-    public XSSFWorkbook writeOutputFile(List<Match> matchList, Date day, List<Map<Object, Object>> contacts){
+    public XSSFWorkbook writeOutputFile(List<Match> matchList, Date day, List<Contact> contacts){
         try {
             XSSFWorkbook myWorkBook = new XSSFWorkbook();
             myWorkBook.createSheet("Sheet1");
@@ -145,7 +149,7 @@ public class CustomerService {
             String path = "";
 
             Row headerRow = mySheet.createRow(rownum++);
-            String[] columns = {"Nombre", "Apellido", "Rut", "Género", "Usuario", "Correo", "Celular", "Zona de trabajo", "Ingreso", "Salida", "Estadía", "Cámara"};
+            String[] columns = {"Nombre", "Apellido", "Rut", "Género", "Usuario", "Correo", "Celular", "Zona de trabajo", "Ingreso", "Salida", "Estadía", "Cámara", "Contactos"};
             for (int i = 0; i < columns.length; i++) {
                 Cell cell = headerRow.createCell(i);
                 cell.setCellValue(columns[i]);
@@ -214,9 +218,24 @@ public class CustomerService {
                         row.createCell(11)
                                 .setCellValue("");
                     }
-                    for (Map<Object, Object> contact:contacts
+                    for (Contact contact:contacts
                          ) {
-
+                        if(contact.getMatches().size()>1)
+                        {
+                            List<Customer> ready = new ArrayList<>();
+                            Integer customerId = match.getCustomer().getId();
+                            int count = 0;
+                            for (Match matchContact:contact.getMatches()
+                            ) {
+                                if(!matchContact.getCustomer().getId().equals(customerId) && !ready.contains(matchContact.getCustomer()) )
+                                {
+                                    row.createCell(12 + count)
+                                            .setCellValue(matchContact.getCustomer().getFirstName());
+                                    count++;
+                                    ready.add(matchContact.getCustomer());
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -229,13 +248,35 @@ public class CustomerService {
         }
     }
 
-    public  List<Map<Object, Object>> contactsBetweenCustomers(Date hour) {
-        List<Map<Object, Object>> contacts = new ArrayList<>();
+    private boolean customerWrite(List<Customer> readies, Customer customer) {
+        for (Customer ready :readies
+                ) {
+            if(customer.getId().equals(ready.getId())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private List<Match> getListOfContacts(List<Match> matches, Customer customer) {
+        List<Match> matchListWithoutCustomer = new ArrayList<>();
+        for (Match match:matches
+             ) {
+            if(!match.getCustomer().getId().equals(customer.getId()))
+            {
+                matchListWithoutCustomer.add(match);
+            }
+        }
+        return  matchListWithoutCustomer;
+    }
+
+    public  List<Contact> contactsBetweenCustomers(Date hour) {
+        List<Contact> contacts = new ArrayList<>();
         Calendar calendar = new GregorianCalendar();
         calendar.setTime(hour);
         Date oneHourLater = hour;
         for (int i = 0; i < 23; i++) {
-            Map<Object, Object> contact = new HashMap<>();
+            Contact contact = new Contact();
             calendar.set(Calendar.HOUR_OF_DAY, i);
             calendar.set(Calendar.MINUTE, 0);
             calendar.set(Calendar.MILLISECOND, 0);
@@ -249,17 +290,17 @@ public class CustomerService {
                     ZoneId.systemDefault());
             LocalDateTime secondLocalDate = LocalDateTime.ofInstant(secondCurrent,
                     ZoneId.systemDefault());
-            contact.put("hour", firstLocalDate);
-            contact.put("oneHourLater", secondLocalDate);
-            contact.put("matchs", matchDao.findMatchByHourBetween(firstLocalDate, secondLocalDate));
-            contacts.add(contact);
+            contact.setHour(firstLocalDate);
+            contact.setOneHourLater(secondLocalDate);
+            contact.setMatches(matchDao.findMatchByHourBetween(firstLocalDate, secondLocalDate));
+            contacts.add(contactDao.save(contact));
         }
         return contacts;
     }
 
     public  void writeXlsx(List<Match> matchList, String path, Date day) throws IOException {
         try{
-            List<Map<Object, Object>> contacts = contactsBetweenCustomers(day);
+            List<Contact> contacts = contactsBetweenCustomers(day);
             List<Match> matchesFilteredByCostumers = new ArrayList<>();
             List<Customer> customers = new ArrayList<>();
             for (Match match : matchList) {
