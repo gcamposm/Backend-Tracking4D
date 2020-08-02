@@ -65,25 +65,21 @@ public class DetectionService {
         }
     }
 
-    public String saveUnknowns(List<List<String>> descriptorList) {
-        List<Customer> customersUnknowns = new ArrayList<>();
-        for (List<String> descriptors: descriptorList
+    public Image saveUnknown(List<String> unknown) {
+        Customer customer = new Customer();
+        customerDao.save(customer);
+        customer.setFirstName("unknown "+customer.getId().toString());
+        Image image = new Image();
+        image.setCustomer(customer);
+        imageDao.save(image);
+        for (String descriptorFor: unknown
         ) {
-            Customer customer = new Customer();
-            customerDao.save(customer);
-            customer.setFirstName("unknown "+customer.getId().toString());
-            Image image = new Image();
-            image.setCustomer(customer);
-            imageDao.save(image);
-            for (String descriptor: descriptors
-                 ) {
-                Detection detection = new Detection();
-                detection.setImage(image);
-                detection.setValue(descriptor);
-                detectionDao.save(detection);
-            }
+            Detection detection = new Detection();
+            detection.setImage(image);
+            detection.setValue(descriptorFor);
+            detectionDao.save(detection);
         }
-        return "Unknowns saved";
+        return imageDao.save(image);
     }
 
     public List<DetectionDayStat> getVisitsBetweenDates(Date firstDate, Date secondDate){

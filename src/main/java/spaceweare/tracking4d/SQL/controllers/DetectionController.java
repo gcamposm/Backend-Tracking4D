@@ -87,10 +87,10 @@ public class DetectionController {
         }
     }
 
-    @RequestMapping(value = "/saveUnknowns", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity saveUnknowns(@RequestParam("descriptor") List<List<String>> descriptorList){
+    @RequestMapping(value = "/saveUnknown", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity saveUnknown(@RequestParam("unknown") List<String> unknown){
         try{
-            return ResponseEntity.ok(detectionService.saveUnknowns(descriptorList));
+            return ResponseEntity.ok(detectionService.saveUnknown(unknown));
         }
         catch (Exception e){
             return ResponseEntity.badRequest().build();
