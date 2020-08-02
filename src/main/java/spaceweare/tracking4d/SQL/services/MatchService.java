@@ -5,6 +5,12 @@ import spaceweare.tracking4d.SQL.dao.CustomerDao;
 import spaceweare.tracking4d.SQL.dao.MatchDao;
 import spaceweare.tracking4d.SQL.models.Customer;
 import spaceweare.tracking4d.SQL.models.Match;
+
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -75,5 +81,74 @@ public class MatchService {
     public String registerDetection(String detection) {
         System.out.println(detection);
         return detection;
+    }
+
+    public List<Match> withFilteredMatches(List<String> rutList) {
+        List<Match> matches = new ArrayList<>();
+        for (String rut:rutList
+             ) {
+            if(customerDao.findCustomerByRut(rut).isPresent()){
+                Match match = new Match();
+                //match.setCompany();
+                match.setCustomer(customerDao.findCustomerByRut(rut).get());
+                match.setHour(LocalDateTime.now());
+                //match.setCamera();
+                matchDao.save(match);
+                matches.add(match);
+            }
+        }
+        return matches;
+    }
+
+    public List<Match> getMatchesByDate(Date firstDate, Date secondDate) {
+        Instant firstCurrent = firstDate.toInstant();
+        Instant secondCurrent = secondDate.toInstant();
+        LocalDateTime firstLocalDate = LocalDateTime.ofInstant(firstCurrent,
+                ZoneId.systemDefault());
+        LocalDateTime secondLocalDate = LocalDateTime.ofInstant(secondCurrent,
+                ZoneId.systemDefault()).plusDays(1);
+        return matchDao.findMatchByHourBetween(firstLocalDate, secondLocalDate);
+    }
+
+    public List<Match> getIncomeOutcome(Date day, Integer customerId) {
+        List<Match> matchListPerDay = getMatchesByDate(day, day);
+        Integer matchIdIn = 0;
+        Integer matchIdOut = 0;
+        for (Match match:matchListPerDay
+             ) {
+            if(match.getCustomer().getId().equals(customerId)) {
+                if (matchIdIn.equals(0)) {
+                    matchIdIn = match.getId();
+                }
+                if (matchIdOut.equals(0)) {
+                    matchIdOut = match.getId();
+                }
+                if (matchDao.findById(matchIdIn).get().getHour().compareTo(match.getHour()) > 0) {
+                    matchIdIn = match.getId();
+                }
+                if (matchDao.findById(matchIdOut).get().getHour().compareTo(match.getHour()) < 0) {
+                    matchIdOut = match.getId();
+                }
+            }
+        }
+        List<Match> matchList = new ArrayList<>();
+        Match matchIn = matchDao.findById(matchIdIn).get();
+        Match matchOut = matchDao.findById(matchIdOut).get();
+        matchList.add(matchIn);
+        matchList.add(matchOut);
+        return matchList;
+    }
+
+    public Object testHour(Date firstDate, Date secondDate) {
+        Instant firstCurrent = firstDate.toInstant();
+        Instant secondCurrent = secondDate.toInstant();
+        LocalDateTime firstLocalDate = LocalDateTime.ofInstant(firstCurrent,
+                ZoneId.systemDefault());
+        LocalDateTime secondLocalDate = LocalDateTime.ofInstant(secondCurrent,
+                ZoneId.systemDefault()).plusDays(1);
+        if (firstLocalDate.compareTo(secondLocalDate) > 0) {
+            return "El primero";
+        }
+        return "El segundo";
     }
 }

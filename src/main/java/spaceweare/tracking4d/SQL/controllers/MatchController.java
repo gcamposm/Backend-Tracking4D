@@ -1,6 +1,8 @@
 package spaceweare.tracking4d.SQL.controllers;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -8,6 +10,7 @@ import spaceweare.tracking4d.SQL.models.Match;
 import spaceweare.tracking4d.SQL.services.MatchService;
 
 import javax.servlet.http.HttpSession;
+import java.util.Date;
 import java.util.List;
 
 @CrossOrigin(origins = "*", allowedHeaders = "*")
@@ -80,6 +83,16 @@ public class MatchController {
         }
     }
 
+    @RequestMapping(value = "/create/withFilteredMatches", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity chargeData(@RequestParam("matches") List<String> matches){
+        try{
+            return ResponseEntity.ok(matchService.withFilteredMatches(matches));
+        }
+        catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PostMapping("/createByDetection")
     @ResponseStatus(HttpStatus.CREATED)
@@ -125,5 +138,26 @@ public class MatchController {
             System.out.println(detection);
         }
         return detections.toString();
+    }
+
+    @PostMapping("/getMatchesByDate")
+    public ResponseEntity getMatchesByDate(@RequestParam("firstDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date firstDate,
+                                           @RequestParam("secondDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date secondDate){
+
+        return ResponseEntity.ok(matchService.getMatchesByDate(firstDate, secondDate));
+    }
+
+    @PostMapping("/getIncomeOutcome")
+    public ResponseEntity getIncomeOutcome(@RequestParam("day") @DateTimeFormat(pattern = "yyyy-MM-dd") Date day,
+                                          @RequestParam("customerId") Integer customerId){
+
+        return ResponseEntity.ok(matchService.getIncomeOutcome(day, customerId));
+    }
+
+    @PostMapping("/testHour")
+    public ResponseEntity testHour(@RequestParam("firstDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date firstDate,
+                                   @RequestParam("secondDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date secondDate){
+
+        return ResponseEntity.ok(matchService.testHour(firstDate, secondDate));
     }
 }

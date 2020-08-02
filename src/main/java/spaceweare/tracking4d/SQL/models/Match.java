@@ -24,6 +24,10 @@ public class Match {
     @JoinColumn
     private Company company;
 
+    @ManyToOne
+    @JoinColumn
+    private Camera camera;
+
     //Other attributes
     private String name;
     private LocalDateTime hour;
