@@ -1,6 +1,5 @@
 package spaceweare.tracking4d.SQL.services;
 
-import org.apache.commons.math3.stat.descriptive.summary.Product;
 import org.apache.poi.common.usermodel.HyperlinkType;
 import org.apache.poi.xssf.usermodel.*;
 import org.springframework.stereotype.Service;
@@ -8,20 +7,20 @@ import spaceweare.tracking4d.Exceptions.ExportFileException;
 import spaceweare.tracking4d.FileManagement.service.FileStorageService;
 import spaceweare.tracking4d.SQL.dao.CustomerDao;
 import spaceweare.tracking4d.SQL.dao.ImageDao;
+import spaceweare.tracking4d.SQL.dao.MatchDao;
 import spaceweare.tracking4d.SQL.models.Customer;
 import org.apache.poi.ss.usermodel.*;
 import spaceweare.tracking4d.SQL.models.Match;
-
 import java.awt.Color;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.time.ZoneId;
+import java.util.*;
 
 @Service
 public class CustomerService {
@@ -29,12 +28,14 @@ public class CustomerService {
     private final FileStorageService fileStorageService;
     private final ImageDao imageDao;
     private final CustomerDao customerDao;
+    private final MatchDao matchDao;
     private final MatchService matchService;
-    public CustomerService(CustomerDao customerDao, ImageDao imageDao, FileStorageService fileStorageService, MatchService matchService) {
+    public CustomerService(CustomerDao customerDao, ImageDao imageDao, MatchDao matchDao, FileStorageService fileStorageService, MatchService matchService) {
         this.customerDao = customerDao;
         this.imageDao = imageDao;
         this.fileStorageService = fileStorageService;
         this.matchService = matchService;
+        this.matchDao = matchDao;
     }
 
     public Customer create(Customer customer){
@@ -124,7 +125,7 @@ public class CustomerService {
         customer.setLastName(lastName);
         return customerDao.save(customer);
     }
-    public XSSFWorkbook writeOutputFile(List<Match> customerList, Date day){
+    public XSSFWorkbook writeOutputFile(List<Match> matchList, Date day, List<Map<Object, Object>> contacts){
         try {
             XSSFWorkbook myWorkBook = new XSSFWorkbook();
             myWorkBook.createSheet("Sheet1");
@@ -151,7 +152,7 @@ public class CustomerService {
                 cell.setCellValue(columns[i]);
             }
 
-            for (Match match : customerList) {
+            for (Match match : matchList) {
                 if(!match.getCustomer().getUnknown()){
                     System.out.println("Creando");
                     List<Match> inOut = matchService.getIncomeOutcome(day, match.getCustomer().getId());
@@ -226,9 +227,46 @@ public class CustomerService {
         }
     }
 
+    public  List<Map<Object, Object>> contactsBetweenCustomers(Date hour) {
+        List<Map<Object, Object>> contacts = new ArrayList<>();
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTime(hour);
+        Date oneHourLater = hour;
+        for (int i = 0; i < 23; i++) {
+            Map<Object, Object> contact = new HashMap<>();
+            calendar.set(Calendar.HOUR_OF_DAY, i);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.MILLISECOND, 0);
+            hour = calendar.getTime();
+            calendar.set(Calendar.HOUR_OF_DAY, i+1);
+            oneHourLater = calendar.getTime();
+
+            Instant firstCurrent = hour.toInstant();
+            Instant secondCurrent = oneHourLater.toInstant();
+            LocalDateTime firstLocalDate = LocalDateTime.ofInstant(firstCurrent,
+                    ZoneId.systemDefault());
+            LocalDateTime secondLocalDate = LocalDateTime.ofInstant(secondCurrent,
+                    ZoneId.systemDefault());
+            contact.put("hour", firstLocalDate);
+            contact.put("oneHourLater", secondLocalDate);
+            contact.put("matchs", matchDao.findMatchByHourBetween(firstLocalDate, secondLocalDate));
+            contacts.add(contact);
+        }
+        return contacts;
+    }
+
     public  void writeXlsx(List<Match> matchList, String path, Date day) throws IOException {
         try{
-            XSSFWorkbook myWorkBook = writeOutputFile(matchList, day);
+            List<Map<Object, Object>> contacts = contactsBetweenCustomers(day);
+            List<Match> matchesFilteredByCostumers = new ArrayList<>();
+            List<Customer> customers = new ArrayList<>();
+            for (Match match : matchList) {
+                if(!customers.contains(match.getCustomer())) {
+                    customers.add(match.getCustomer());
+                    matchesFilteredByCostumers.add(match);
+                }
+            }
+            XSSFWorkbook myWorkBook = writeOutputFile(matchesFilteredByCostumers, day, contacts);
             System.out.println("Path: " + path);
             FileOutputStream os = new FileOutputStream(path);
             myWorkBook.write(os);

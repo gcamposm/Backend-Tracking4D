@@ -1,5 +1,6 @@
 package spaceweare.tracking4d.SQL.controllers;
 
+import org.apache.poi.ss.formula.functions.T;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -111,6 +112,19 @@ public class CustomerController {
     public ResponseEntity<String> delete (@PathVariable Integer id){
         try{
             return ResponseEntity.ok(customerService.delete(id));
+        }
+        catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @PostMapping("/contactsBetweenCustomers")
+    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseBody
+    public ResponseEntity contactsBetweenCustomers (@RequestParam("day") @DateTimeFormat(pattern = "yyyy-MM-dd") Date day){
+        try{
+            return ResponseEntity.ok(customerService.contactsBetweenCustomers(day));
         }
         catch (Exception e){
             return ResponseEntity.badRequest().build();
@@ -249,15 +263,9 @@ public class CustomerController {
                 ZoneId.systemDefault());
         LocalDateTime secondLocalDate = LocalDateTime.ofInstant(secondCurrent,
                 ZoneId.systemDefault()).plusDays(1);
-        //List<Match> matches = matchDao.findMatchByHourBetween(firstLocalDate, secondLocalDate);
-        List<Match>matches = matchDao.findAll();
-        /*List<Customer> customerList = new ArrayList<>();
-        for (Match match:matches
-             ) {
-            if(!customerList.contains(match.getCustomer())){
-                customerList.add(match.getCustomer());
-            }
-        }*/
+        List<Match> matches = matchDao.findMatchByHourBetween(firstLocalDate, secondLocalDate);
+
+
         if (matches.size() == 0) {
             return ResponseEntity
                     .status(HttpStatus.NO_CONTENT)
