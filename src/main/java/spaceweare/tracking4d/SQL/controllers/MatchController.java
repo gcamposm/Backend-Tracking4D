@@ -166,6 +166,13 @@ public class MatchController {
         return ResponseEntity.ok(matchService.getMatchesByDate(firstDate, secondDate));
     }
 
+    @PostMapping("/getMatchesByDateWithRandomLocation")
+    public ResponseEntity getMatchesByDateWithRandomLocation(@RequestParam("firstDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date firstDate,
+                                           @RequestParam("secondDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date secondDate){
+
+        return ResponseEntity.ok(matchService.getMatchesByDateWithRandomLocation(firstDate, secondDate));
+    }
+
     @PostMapping("/getIncomeOutcome")
     public ResponseEntity getIncomeOutcome(@RequestParam("day") @DateTimeFormat(pattern = "yyyy-MM-dd") Date day,
                                           @RequestParam("customerId") Integer customerId){

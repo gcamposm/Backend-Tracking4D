@@ -11,9 +11,7 @@ import spaceweare.tracking4d.SQL.models.Match;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class MatchService {
@@ -171,5 +169,23 @@ public class MatchService {
             return matchDao.findAllByContact(contactDao.findById(contactId).get());
         }
         return new ArrayList<>();
+    }
+
+    public int getRandomNumber(int min, int max) {
+        return (int) ((Math.random() * (max - min)) + min);
+    }
+
+    public List<Map<Object, Object>> getMatchesByDateWithRandomLocation(Date firstDate, Date secondDate) {
+        List<Match> matchList = getMatchesByDate(firstDate, secondDate);
+        List<Map<Object, Object>> matches = new ArrayList<>();
+        for (Match match:matchList
+             ){
+            Map<Object, Object> matchInHash = new HashMap<>();
+            matchInHash.put("match", match);
+            matchInHash.put("top", getRandomNumber(70, 85));
+            matchInHash.put("left", getRandomNumber(33, 50));
+            matches.add(matchInHash);
+        }
+        return matches;
     }
 }
