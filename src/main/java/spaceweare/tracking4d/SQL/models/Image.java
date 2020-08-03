@@ -22,6 +22,10 @@ public class Image {
     @JoinColumn
     private Customer customer;
 
+    @ManyToOne
+    @JoinColumn
+    private Camera camera;
+
     @OneToMany(mappedBy = "image", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Detection> detections = new ArrayList<>();

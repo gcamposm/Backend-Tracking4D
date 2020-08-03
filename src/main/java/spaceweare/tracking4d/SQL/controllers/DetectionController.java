@@ -1,12 +1,20 @@
 package spaceweare.tracking4d.SQL.controllers;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import spaceweare.tracking4d.Helpers.DateHelper;
+import spaceweare.tracking4d.SQL.dto.models.DetectionDayStat;
 import spaceweare.tracking4d.SQL.models.Detection;
 import spaceweare.tracking4d.SQL.services.DetectionService;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @CrossOrigin(origins = "*", allowedHeaders = "*")
@@ -77,5 +85,22 @@ public class DetectionController {
         catch (Exception e){
             return ResponseEntity.badRequest().build();
         }
+    }
+
+    @RequestMapping(value = "/saveUnknown", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity saveUnknown(@RequestParam("unknown") List<String> unknown,
+                                      @RequestParam("cameraId") Integer cameraId){
+        try{
+            return ResponseEntity.ok(detectionService.saveUnknown(unknown, cameraId));
+        }
+        catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PostMapping(value = "getVisitsBetweenDates")
+    public ResponseEntity getVisitsBetweenDates(@RequestParam("firstDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date firstDate,
+                                                @RequestParam("secondDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date secondDate){
+        return ResponseEntity.ok(detectionService.getVisitsBetweenDates(firstDate, secondDate));
     }
 }

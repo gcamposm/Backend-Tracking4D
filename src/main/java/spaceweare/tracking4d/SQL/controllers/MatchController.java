@@ -1,13 +1,23 @@
 package spaceweare.tracking4d.SQL.controllers;
 
+import org.apache.commons.math3.stat.descriptive.summary.Product;
+import org.springframework.core.io.Resource;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import spaceweare.tracking4d.FileManagement.service.FileStorageService;
 import spaceweare.tracking4d.SQL.models.Match;
 import spaceweare.tracking4d.SQL.services.MatchService;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.Date;
 import java.util.List;
 
 @CrossOrigin(origins = "*", allowedHeaders = "*")
@@ -80,6 +90,28 @@ public class MatchController {
         }
     }
 
+    @GetMapping("/getAllByContact/{contactId}")
+    @ResponseBody
+    public ResponseEntity<List<Match>> getAllByContact(@PathVariable Integer contactId){
+        try{
+            return ResponseEntity.ok(matchService.getAllByContact(contactId));
+        }
+        catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @RequestMapping(value = "/create/withFilteredMatches", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity chargeData(@RequestParam("matches") List<String> matches,
+                                     @RequestParam("cameraId") Integer cameraId){
+        try{
+            return ResponseEntity.ok(matchService.withFilteredMatches(matches, cameraId));
+        }
+        catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PostMapping("/createByDetection")
     @ResponseStatus(HttpStatus.CREATED)
@@ -125,5 +157,26 @@ public class MatchController {
             System.out.println(detection);
         }
         return detections.toString();
+    }
+
+    @PostMapping("/getMatchesByDate")
+    public ResponseEntity getMatchesByDate(@RequestParam("firstDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date firstDate,
+                                           @RequestParam("secondDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date secondDate){
+
+        return ResponseEntity.ok(matchService.getMatchesByDate(firstDate, secondDate));
+    }
+
+    @PostMapping("/getMatchesByDateWithRandomLocation")
+    public ResponseEntity getMatchesByDateWithRandomLocation(@RequestParam("firstDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date firstDate,
+                                           @RequestParam("secondDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date secondDate){
+
+        return ResponseEntity.ok(matchService.getMatchesByDateWithRandomLocation(firstDate, secondDate));
+    }
+
+    @PostMapping("/getIncomeOutcome")
+    public ResponseEntity getIncomeOutcome(@RequestParam("day") @DateTimeFormat(pattern = "yyyy-MM-dd") Date day,
+                                          @RequestParam("customerId") Integer customerId){
+
+        return ResponseEntity.ok(matchService.getIncomeOutcome(day, customerId));
     }
 }

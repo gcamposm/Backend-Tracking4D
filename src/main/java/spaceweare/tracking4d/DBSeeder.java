@@ -1,8 +1,10 @@
 package spaceweare.tracking4d;
 
 import spaceweare.tracking4d.FileManagement.service.FileStorageService;
+import spaceweare.tracking4d.SQL.dao.CameraDao;
 import spaceweare.tracking4d.SQL.dao.CommuneDao;
 import spaceweare.tracking4d.SQL.dao.RegionDao;
+import spaceweare.tracking4d.SQL.models.Camera;
 import spaceweare.tracking4d.SQL.models.Commune;
 import spaceweare.tracking4d.SQL.models.Region;
 import org.json.simple.JSONArray;
@@ -21,15 +23,15 @@ import java.time.LocalDateTime;
 public class DBSeeder implements CommandLineRunner {
 
     private final RegionDao regionDao;
-
     private final CommuneDao communeDao;
-
+    private final CameraDao cameraDao;
     private final FileStorageService fileStorageService;
 
-    public DBSeeder(RegionDao regionDao, CommuneDao communeDao, FileStorageService fileStorageService) {
+    public DBSeeder(RegionDao regionDao, CommuneDao communeDao, FileStorageService fileStorageService, CameraDao cameraDao) {
         this.regionDao = regionDao;
         this.communeDao = communeDao;
         this.fileStorageService = fileStorageService;
+        this.cameraDao = cameraDao;
     }
 
     public void seedRegions(){
@@ -59,11 +61,20 @@ public class DBSeeder implements CommandLineRunner {
         }
     }
 
+    public void seedCameras(){
+        Camera camera1 = new Camera();
+        camera1.setValue("1");
+        cameraDao.save(camera1);
+        Camera camera2 = new Camera();
+        camera2.setValue("2");
+        cameraDao.save(camera2);
+    }
 
     @Override
     public void run(String... args) throws Exception {
         if(regionDao.findAll().size() == 0){
             seedRegions();
         }
+        seedCameras();
     }
 }

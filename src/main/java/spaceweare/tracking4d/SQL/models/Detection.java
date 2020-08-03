@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -13,6 +14,7 @@ public class Detection {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String value;
+    private LocalDateTime clock;
 
     @ManyToOne
     @JoinColumn

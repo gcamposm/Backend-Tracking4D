@@ -68,6 +68,7 @@ public class ImageService {
             imageFound.setPrincipal(image.getPrincipal());
             imageFound.setPath(image.getPath());
             imageFound.setDetections(image.getDetections());
+            imageFound.setCamera(image.getCamera());
             return imageDao.save(imageFound);
         }
         return null;
@@ -420,7 +421,7 @@ public class ImageService {
 
     public Object pathsWithCustomer() {
         List<Map<Object, Object>> pathWithCustomerList = new ArrayList<>();
-        List<Customer> customers = customerDao.findAll();
+        List<Customer> customers = customerDao.findAllByUnknown(false);
         for (Customer customer:customers
              ) {
             Map<Object, Object> pathWithCustomer = new HashMap<>();

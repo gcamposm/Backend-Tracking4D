@@ -1,5 +1,11 @@
 package spaceweare.tracking4d.SQL.controllers;
 
+import org.apache.poi.ss.formula.functions.T;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.core.io.Resource;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -10,9 +16,12 @@ import spaceweare.tracking4d.Exceptions.RutNotFoundException;
 import spaceweare.tracking4d.FileManagement.service.FileStorageService;
 import spaceweare.tracking4d.SQL.dao.CustomerDao;
 import spaceweare.tracking4d.SQL.dao.ImageDao;
+import spaceweare.tracking4d.SQL.dao.MatchDao;
 import spaceweare.tracking4d.SQL.models.Customer;
 import spaceweare.tracking4d.SQL.models.Image;
+import spaceweare.tracking4d.SQL.models.Match;
 import spaceweare.tracking4d.SQL.services.CustomerService;
+import spaceweare.tracking4d.SQL.services.MatchService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
@@ -20,7 +29,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @CrossOrigin(origins = "*", allowedHeaders = "*")
@@ -28,16 +41,21 @@ import java.util.List;
 @RequestMapping("/customers")
 public class CustomerController {
 
+    private static final Logger logger = LoggerFactory.getLogger(CustomerController.class);
     private final ImageDao imageDao;
     private final CustomerDao customerDao;
+    private final MatchDao matchDao;
+    private final MatchService matchService;
     private final FileStorageService fileStorageService;
     private final CustomerService customerService;
 
-    public CustomerController(CustomerDao customerDao, CustomerService customerService, ImageDao imageDao, FileStorageService fileStorageService) {
+    public CustomerController(CustomerDao customerDao, CustomerService customerService, ImageDao imageDao, FileStorageService fileStorageService, MatchDao matchDao, MatchService matchService) {
         this.customerService = customerService;
         this.customerDao = customerDao;
         this.imageDao = imageDao;
         this.fileStorageService = fileStorageService;
+        this.matchDao = matchDao;
+        this.matchService = matchService;
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
@@ -46,6 +64,7 @@ public class CustomerController {
     @ResponseBody
     public ResponseEntity<Customer> create (@RequestBody Customer customer){
         try{
+            customer.setUnknown(false);
             return ResponseEntity.ok(customerService.create(customer));
         }
         catch (Exception e){
@@ -93,6 +112,30 @@ public class CustomerController {
     public ResponseEntity<String> delete (@PathVariable Integer id){
         try{
             return ResponseEntity.ok(customerService.delete(id));
+        }
+        catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping("/byRut/{customerRut}")
+    @ResponseBody
+    public ResponseEntity<Customer> byRut(@PathVariable String customerRut){
+        try{
+            return ResponseEntity.ok(customerService.byRut(customerRut));
+        }
+        catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @PostMapping("/contactsBetweenCustomers")
+    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseBody
+    public ResponseEntity contactsBetweenCustomers (@RequestParam("day") @DateTimeFormat(pattern = "yyyy-MM-dd") Date day){
+        try{
+            return ResponseEntity.ok(customerService.contactsBetweenCustomers(day));
         }
         catch (Exception e){
             return ResponseEntity.badRequest().build();
@@ -218,5 +261,55 @@ public class CustomerController {
             }
         }
         return ResponseEntity.badRequest().build();
+    }
+
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @RequestMapping(value = "/write", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Object> writeFile(@RequestParam("day") @DateTimeFormat(pattern = "yyyy-MM-dd") Date day) throws IOException
+    {
+        Instant firstCurrent = day.toInstant();
+        Instant secondCurrent = day.toInstant();
+        LocalDateTime firstLocalDate = LocalDateTime.ofInstant(firstCurrent,
+                ZoneId.systemDefault());
+        LocalDateTime secondLocalDate = LocalDateTime.ofInstant(secondCurrent,
+                ZoneId.systemDefault()).plusDays(1);
+        List<Match> matches = matchDao.findMatchByHourBetween(firstLocalDate, secondLocalDate);
+
+
+        if (matches.size() == 0) {
+            return ResponseEntity
+                    .status(HttpStatus.NO_CONTENT)
+                    .body("No existen clientes");
+        }
+        //Path path = fileStorageService.getFileStorageLocation();
+        Path filePath = fileStorageService.getFileStorageLocation().resolve("output.xlsx").normalize();
+        customerService.writeXlsx(matches, filePath.toString(), day);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body("Se creó el archivo de salida.");
+
+    }
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @GetMapping("/download")
+    public ResponseEntity<Resource> downloadProductExcel(HttpServletRequest request){
+        Resource resource = fileStorageService.loadFileAsResource("output.xlsx");
+        // Try to determine file's content type
+        String contentType = null;
+        try {
+            contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
+        } catch (IOException ex) {
+            logger.info("Could not determine file type.");
+        }
+
+        // Fallback to the default content type if type could not be determined
+        if(contentType == null) {
+            contentType = "application/octet-stream";
+        }
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                .body(resource);
     }
 }
