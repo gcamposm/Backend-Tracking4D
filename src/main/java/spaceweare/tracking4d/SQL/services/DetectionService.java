@@ -70,6 +70,7 @@ public class DetectionService {
     public Image saveUnknown(List<String> unknown, Integer cameraId) {
         Camera camera = cameraDao.findById(cameraId).get();
         Customer customer = new Customer();
+        customer.setUnknown(true);
         customerDao.save(customer);
         customer.setFirstName("unknown "+customer.getId().toString());
         Image image = new Image();
@@ -97,7 +98,6 @@ public class DetectionService {
         ) {
             DetectionDayStat detectionDayStat = getStat(localDateTime);
             detectionDayStatList.add(detectionDayStat);
-
         }
         return detectionDayStatList;
     }
@@ -110,7 +110,7 @@ public class DetectionService {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         String formatDateTime = date.format(formatter);
         System.out.println("---------------------------");
-        DetectionDayStat detectionDayStat = getTotalByDay(detectionList, matchDao.findMatchByHourBetween(date, datePlus1Day).size());
+        DetectionDayStat detectionDayStat = getTotalByDay(detectionList.size(), matchDao.findMatchByHourBetween(date, datePlus1Day).size());
         detectionDayStat.setDay(date);
         detectionDayStat.setFormattedDate(formatDateTime);
         System.out.println(detectionDayStat);
@@ -118,14 +118,7 @@ public class DetectionService {
         return detectionDayStat;
 
     }
-    private DetectionDayStat getTotalByDay(List<Detection> detections, Integer matches){
-        Integer unknowns = 0;
-        for (Detection detection: detections
-        ) {
-            if(detection.getImage().getCustomer().getUnknown()) {
-                unknowns = unknowns + 1;
-            }
-        };
+    private DetectionDayStat getTotalByDay(Integer unknowns, Integer matches){
         DetectionDayStat detectionDayStat = new DetectionDayStat();
         detectionDayStat.setUnknown(unknowns);
         detectionDayStat.setMatches(matches);
