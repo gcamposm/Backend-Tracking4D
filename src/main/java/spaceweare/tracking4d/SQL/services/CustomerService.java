@@ -62,7 +62,7 @@ public class CustomerService {
     }
 
     public List<Customer> readAll(){
-        return customerDao.findAll();
+        return customerDao.findAllByUnknownAndDeleted(false, false);
     }
 
     public Customer update(Customer customer, Integer id){
@@ -86,7 +86,20 @@ public class CustomerService {
 
     public String delete(Integer id){
         if(customerDao.findById(id).isPresent()){
-            customerDao.delete(customerDao.findById(id).get());
+            Customer customer = customerDao.findById(id).get();
+            customer.setDeleted(true);
+            customerDao.save(customer);
+            return "deleted";
+        }
+        else{
+            return  null;
+        }
+    }
+    public String deleteByRut(String customerRut) {
+        if(customerDao.findCustomerByRut(customerRut).isPresent()){
+            Customer customer = customerDao.findCustomerByRut(customerRut).get();
+            customer.setDeleted(true);
+            customerDao.save(customer);
             return "deleted";
         }
         else{
@@ -149,7 +162,7 @@ public class CustomerService {
             String path = "";
 
             Row headerRow = mySheet.createRow(rownum++);
-            String[] columns = {"Nombre", "Apellido", "Rut", "Género", "Usuario", "Correo", "Celular", "Zona de trabajo", "Ingreso", "Salida", "Estadía", "Cámara", "Contactos"};
+            String[] columns = {"Nombre", "Apellido", "Rut", "Género", "Usuario", "Correo", "Celular", "Zona de trabajo", "Cámara", "Ingreso", "Salida", "Estadía", "Contactos"};
             for (int i = 0; i < columns.length; i++) {
                 Cell cell = headerRow.createCell(i);
                 cell.setCellValue(columns[i]);

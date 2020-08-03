@@ -81,6 +81,7 @@ public class DetectionService {
             Detection detection = new Detection();
             detection.setImage(image);
             detection.setValue(descriptorFor);
+            detection.setClock(LocalDateTime.now());
             detectionDao.save(detection);
         }
         List<Image> cameraImages = camera.getImages();

@@ -14,4 +14,5 @@ public interface CustomerDao extends JpaRepository<Customer, Integer> {
     Optional<Customer> findCustomerByRut(String rut);
     Optional<Customer> findCustomerByFirstName(String firstName);
     List<Customer> findAllByUnknown(Boolean unknown);
+    List<Customer> findAllByUnknownAndDeleted(Boolean unknown, Boolean deleted);
 }
