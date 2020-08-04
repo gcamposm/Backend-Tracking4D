@@ -48,4 +48,5 @@ public class Customer {
     private String mail;
     private String genre;
     private Boolean unknown;
+    private Boolean deleted;
 }

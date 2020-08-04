@@ -88,8 +88,8 @@ public class MatchService {
     }
 
     public List<Match> withFilteredMatches(List<String> rutList, Integer cameraId) {
-        Camera camera = cameraDao.findById(cameraId).get();
         List<Match> matches = new ArrayList<>();
+        System.out.println("cameraID "+cameraId);
         for (String rut:rutList
              ) {
             if(customerDao.findCustomerByRut(rut).isPresent()){
@@ -97,15 +97,14 @@ public class MatchService {
                 //match.setCompany();
                 match.setCustomer(customerDao.findCustomerByRut(rut).get());
                 match.setHour(LocalDateTime.now());
-                //match.setCamera();
+                if(cameraDao.findCameraById(cameraId).isPresent())
+                {
+                    match.setCamera(cameraDao.findCameraById(cameraId).get());
+                }
                 matchDao.save(match);
                 matches.add(match);
             }
         }
-        List<Match> cameraMatches = camera.getMatchList();
-        cameraMatches.addAll(matches);
-        camera.setMatchList(cameraMatches);
-        cameraDao.save(camera);
         return matches;
     }
 

@@ -45,17 +45,15 @@ public class CustomerController {
     private final ImageDao imageDao;
     private final CustomerDao customerDao;
     private final MatchDao matchDao;
-    private final MatchService matchService;
     private final FileStorageService fileStorageService;
     private final CustomerService customerService;
 
-    public CustomerController(CustomerDao customerDao, CustomerService customerService, ImageDao imageDao, FileStorageService fileStorageService, MatchDao matchDao, MatchService matchService) {
+    public CustomerController(CustomerDao customerDao, CustomerService customerService, ImageDao imageDao, FileStorageService fileStorageService, MatchDao matchDao) {
         this.customerService = customerService;
         this.customerDao = customerDao;
         this.imageDao = imageDao;
         this.fileStorageService = fileStorageService;
         this.matchDao = matchDao;
-        this.matchService = matchService;
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
@@ -112,6 +110,17 @@ public class CustomerController {
     public ResponseEntity<String> delete (@PathVariable Integer id){
         try{
             return ResponseEntity.ok(customerService.delete(id));
+        }
+        catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @DeleteMapping("/delete/byRut/{customerRut}")
+    @ResponseBody
+    public ResponseEntity<String> deleteByRut(@PathVariable String customerRut){
+        try{
+            return ResponseEntity.ok(customerService.deleteByRut(customerRut));
         }
         catch (Exception e){
             return ResponseEntity.badRequest().build();
