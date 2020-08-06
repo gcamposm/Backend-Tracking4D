@@ -128,7 +128,7 @@ public class ImageService {
 
     public Object getAllFaces() {
         List<Map<Object, Object>> faces = new ArrayList<>();
-        List<Customer> customers = customerDao.findAll();
+        List<Customer> customers = customerDao.findAllByUnknownAndDeleted(false, false);
         for (Customer customer : customers
         ) {
             Map<Object, Object> face = new HashMap<>();
@@ -421,7 +421,7 @@ public class ImageService {
 
     public Object pathsWithCustomer() {
         List<Map<Object, Object>> pathWithCustomerList = new ArrayList<>();
-        List<Customer> customers = customerDao.findAllByUnknown(false);
+        List<Customer> customers = customerDao.findAllByUnknownAndDeleted(false, false);
         for (Customer customer:customers
              ) {
             Map<Object, Object> pathWithCustomer = new HashMap<>();
