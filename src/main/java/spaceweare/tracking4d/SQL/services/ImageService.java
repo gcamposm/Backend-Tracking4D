@@ -7,11 +7,11 @@ import spaceweare.tracking4d.Exceptions.GetObjectException;
 import spaceweare.tracking4d.Exceptions.IdNotFoundException;
 import spaceweare.tracking4d.Exceptions.RutNotFoundException;
 import spaceweare.tracking4d.FileManagement.service.FileStorageService;
-import spaceweare.tracking4d.SQL.dao.CustomerDao;
+import spaceweare.tracking4d.SQL.dao.PersonDao;
 import spaceweare.tracking4d.SQL.dao.DetectionDao;
 import spaceweare.tracking4d.SQL.dao.ImageDao;
 import spaceweare.tracking4d.SQL.dto.responses.ImageResponse;
-import spaceweare.tracking4d.SQL.models.Customer;
+import spaceweare.tracking4d.SQL.models.Person;
 import spaceweare.tracking4d.SQL.models.Detection;
 import spaceweare.tracking4d.SQL.models.Image;
 
@@ -31,14 +31,14 @@ import java.util.stream.Collectors;
 @Service
 public class ImageService {
 
-    private final CustomerDao customerDao;
+    private final PersonDao personDao;
     private final ImageDao imageDao;
     private final DetectionDao detectionDao;
     private final FileStorageService fileStorageService;
-    public ImageService(ImageDao imageDao, FileStorageService fileStorageService, CustomerDao customerDao, DetectionDao detectionDao) {
+    public ImageService(ImageDao imageDao, FileStorageService fileStorageService, PersonDao personDao, DetectionDao detectionDao) {
         this.imageDao = imageDao;
         this.fileStorageService = fileStorageService;
-        this.customerDao = customerDao;
+        this.personDao = personDao;
         this.detectionDao = detectionDao;
     }
 
@@ -64,7 +64,7 @@ public class ImageService {
             Image imageFound = imageDao.findById(id).get();
             imageFound.setName(image.getName());
             imageFound.setExtension(image.getExtension());
-            imageFound.setCustomer(image.getCustomer());
+            imageFound.setPerson(image.getPerson());
             imageFound.setPrincipal(image.getPrincipal());
             imageFound.setPath(image.getPath());
             imageFound.setDetections(image.getDetections());
@@ -85,31 +85,31 @@ public class ImageService {
     }
 
     public Image chargeData(List<String> descriptorList, String path, String customerRut) {
-        if(customerDao.findCustomerByRut(customerRut).isPresent())
+        if(personDao.findCustomerByRut(customerRut).isPresent())
         {
-            Customer customer = customerDao.findCustomerByRut(customerRut).get();
-            return createDescriptorWithCustomer(customer, descriptorList, path);
+            Person person = personDao.findCustomerByRut(customerRut).get();
+            return createDescriptorWithCustomer(person, descriptorList, path);
         }
-        Customer customer = new Customer();
-        customer.setRut(customerRut);
-        return createDescriptorWithCustomer(customerDao.save(customer), descriptorList, path);
+        Person person = new Person();
+        person.setRut(customerRut);
+        return createDescriptorWithCustomer(personDao.save(person), descriptorList, path);
     }
 
-    private Image createDescriptorWithCustomer(Customer customer, List<String> descriptorList, String path) {
+    private Image createDescriptorWithCustomer(Person person, List<String> descriptorList, String path) {
         if(imageDao.findImageByPath(path).isPresent())
         {
             Image image = imageDao.findImageByPath(path).get();
-            return createDescriptorWithImage(customer, descriptorList, image);
+            return createDescriptorWithImage(person, descriptorList, image);
         }
         else{
             Image image = new Image();
             image.setPath(path);
-            return createDescriptorWithImage(customer, descriptorList, image);
+            return createDescriptorWithImage(person, descriptorList, image);
         }
     }
 
-    private Image createDescriptorWithImage(Customer customer, List<String> descriptorList, Image image) {
-        image.setCustomer(customer);
+    private Image createDescriptorWithImage(Person person, List<String> descriptorList, Image image) {
+        image.setPerson(person);
         imageDao.save(image);
         for (String descriptorFor: descriptorList
         ) {
@@ -128,12 +128,12 @@ public class ImageService {
 
     public Object getAllFaces() {
         List<Map<Object, Object>> faces = new ArrayList<>();
-        List<Customer> customers = customerDao.findAllByUnknownAndDeleted(false, false);
-        for (Customer customer : customers
+        List<Person> people = personDao.findAllByUnknownAndDeleted(false, false);
+        for (Person person : people
         ) {
             Map<Object, Object> face = new HashMap<>();
             List<Map<Object, Object>> descriptors = new ArrayList<>();
-            List<Image> images = imageDao.findAllByCustomer(customer);
+            List<Image> images = imageDao.findAllByPerson(person);
             for (Image image:images
                  ) {
                 Map<Object, Object> descriptor = new HashMap<>();
@@ -148,7 +148,7 @@ public class ImageService {
                 descriptors.add(descriptor);
             }
             face.put("descriptors", descriptors);
-            face.put("user", customer.getFirstName());
+            face.put("user", person.getFirstName());
             faces.add(face);
         }
         return faces;
@@ -156,9 +156,9 @@ public class ImageService {
 
     public List<ImageResponse> getAllImagesFromCustomer(int customerId){
         List<ImageResponse> imageResponseList = new ArrayList<>();
-        Customer customer = customerDao.findById(customerId).get();
-        if(customer != null){
-            List<Image> imageList = customer.getImages();
+        Person person = personDao.findById(customerId).get();
+        if(person != null){
+            List<Image> imageList = person.getImages();
             for (Image image: imageList
             ) {
                 ImageResponse imageResponse = new ImageResponse();
@@ -166,39 +166,39 @@ public class ImageService {
                 imageResponse.setName(image.getName());
                 imageResponse.setExtension(image.getExtension());
                 imageResponse.setPrincipal(image.getPrincipal());
-                imageResponse.setUrl("/web/get/" + customer.getRut() + "/" + imageList.indexOf(image));
+                imageResponse.setUrl("/web/get/" + person.getRut() + "/" + imageList.indexOf(image));
                 imageResponseList.add(imageResponse);
             }
             return imageResponseList;
         }
         else{
-            throw new IdNotFoundException("The customer could not be found");
+            throw new IdNotFoundException("The person could not be found");
         }
     }
 
     public List<String> uploadMultipleImages(String customerRut, MultipartFile[] fileList) throws IOException {
         //List<ImageResponse> imageResponseList = new ArrayList<>();
-        if(customerDao.findCustomerByRut(customerRut).isPresent()) {
-            Customer customer = customerDao.findCustomerByRut(customerRut).get();
+        if(personDao.findCustomerByRut(customerRut).isPresent()) {
+            Person person = personDao.findCustomerByRut(customerRut).get();
             List<String> paths = new ArrayList<>();
             for (MultipartFile file : fileList
             ) {
                 System.out.println("OriginalFileName: " + file.getOriginalFilename());
-                paths.add(uploadImage(customer, file.getOriginalFilename(), file.getBytes()));
+                paths.add(uploadImage(person, file.getOriginalFilename(), file.getBytes()));
             }
             return paths;
         }else{
-            throw new RutNotFoundException("The customer with rut: " + customerRut + " could not be found");
+            throw new RutNotFoundException("The person with rut: " + customerRut + " could not be found");
         }
     }
 
-    //get the principal image with customer rut in bytes
+    //get the principal image with person rut in bytes
     public byte[] getPrincipalImageFromCustomer(String customerRut) {
         Path absoluteFilePath = fileStorageService.getFileStorageLocation();
-        Customer customer = customerDao.findByRut(customerRut);
-        if (customer != null) {
+        Person person = personDao.findByRut(customerRut);
+        if (person != null) {
             try {
-                Image principalImage = imageDao.findImageById(imageDao.findImageByPrincipalEquals(customer));
+                Image principalImage = imageDao.findImageById(imageDao.findImageByPrincipalEquals(person));
                 if(principalImage == null){
                     Path path = Paths.get(absoluteFilePath + "/nodisponible.png");
                     return Files.readAllBytes(path);
@@ -216,17 +216,17 @@ public class ImageService {
     }
     //GET THE IMAGE BYTE ARRAY FROM CUSTOMER RUT AND INDEX
     public byte[] getImageFromCustomerRutAndIndex(String customerRut, Integer index) {
-        Customer customer = customerDao.findByRut(customerRut);
+        Person person = personDao.findByRut(customerRut);
         Path absoluteFilePath = fileStorageService.getFileStorageLocation();
 
         List<Image> imageList;
-        if(customer != null){
-            imageList = customer.getImages();
+        if(person != null){
+            imageList = person.getImages();
         }else{
-            throw new RutNotFoundException("Could not found the customer with rut: " + customerRut);
+            throw new RutNotFoundException("Could not found the person with rut: " + customerRut);
         }
         if(index > imageList.size()){
-            throw new GetObjectException("The index is bigger than the actual number of images in the customer");
+            throw new GetObjectException("The index is bigger than the actual number of images in the person");
         }
         try {
             Image image = imageList.get(index);
@@ -234,7 +234,7 @@ public class ImageService {
                 Path path = Paths.get(absoluteFilePath + "/nodisponible.png");
                 return Files.readAllBytes(path);
             }
-            String rpath =  absoluteFilePath + "/" + customer.getFirstName() + " " + customer.getLastName() + "/" + image.getName() + image.getExtension(); // whatever path you used for storing the file
+            String rpath =  absoluteFilePath + "/" + person.getFirstName() + " " + person.getLastName() + "/" + image.getName() + image.getExtension(); // whatever path you used for storing the file
             Path path = Paths.get(rpath);
             return Files.readAllBytes(path);
         } catch (IOException x) {
@@ -251,17 +251,17 @@ public class ImageService {
         String firstName = data[0];
         String lastName = data[1];
         System.out.println(firstName + " " + lastName);
-        Customer customer = customerDao.findCustomerByFirstNameAndLastName(firstName, lastName).get();
+        Person person = personDao.findCustomerByFirstNameAndLastName(firstName, lastName).get();
         Path absoluteFilePath = fileStorageService.getFileStorageLocation();
 
         List<Image> imageList;
-        if(customer != null){
-            imageList = customer.getImages();
+        if(person != null){
+            imageList = person.getImages();
         }else{
-            throw new RutNotFoundException("Could not found the customer with name: " + customerName);
+            throw new RutNotFoundException("Could not found the person with name: " + customerName);
         }
         if(index > imageList.size()){
-            throw new GetObjectException("The index is bigger than the actual number of images in the customer");
+            throw new GetObjectException("The index is bigger than the actual number of images in the person");
         }
         try {
             Image image = imageList.get(index-1);
@@ -280,11 +280,11 @@ public class ImageService {
     }
     //SELECT THE PRINCIPAL IMAGE OF A CUSTOMER USING THE CUSTOMER RUT AND IMAGE ID
     public ImageResponse selectPrincipalImageFromCustomer(String customerRut, Integer imageId) {
-        Customer customer = customerDao.findByRut(customerRut);
-        if(customer != null){
-            List<Image> imageList = customer.getImages();
+        Person person = personDao.findByRut(customerRut);
+        if(person != null){
+            List<Image> imageList = person.getImages();
             imageList.forEach(image -> image.setPrincipal(false));
-            customerDao.save(customer);
+            personDao.save(person);
 
             Image returnedImage = imageList.stream().filter(
                     image -> image.getId().equals(imageId)).collect(toSingleton());
@@ -292,73 +292,73 @@ public class ImageService {
             return mapToImageResponse(imageDao.save(returnedImage));
         }
         else{
-            throw new RutNotFoundException("Could not found the customer with rut: " + customerRut);
+            throw new RutNotFoundException("Could not found the person with rut: " + customerRut);
         }
     }
 
     //HELPERS METHODS
     //_______________________________________________________
     //_______________________________________________________
-    private String getImageName(Customer customer){
-        if(customer.getImages() != null)
+    private String getImageName(Person person){
+        if(person.getImages() != null)
         {
-            Integer index = customer.getImages().size() + 1;
-            return customer.getRut() + "_" + index.toString();
+            Integer index = person.getImages().size() + 1;
+            return person.getRut() + "_" + index.toString();
         }
         return "1";
     }
 
-    //create image by customer and filename
-    static Image createImageWithCustomer(Customer customerToUpdate, String ext, String fileName) {
+    //create image by person and filename
+    static Image createImageWithCustomer(Person personToUpdate, String ext, String fileName) {
         Image image = new Image();
-        image.setCustomer(customerToUpdate);
+        image.setPerson(personToUpdate);
         image.setName(fileName);
         image.setExtension(ext);
         image.setPrincipal(false);
-        String path = "/data/users/"+customerToUpdate.getRut()+"/"+fileName+ext;
+        String path = "/data/users/"+ personToUpdate.getRut()+"/"+fileName+ext;
         image.setPath(path);
-        List<Image> imageList = customerToUpdate.getImages();
+        List<Image> imageList = personToUpdate.getImages();
         if (imageList.size() == 0) {
             image.setPrincipal(true);
         }
         imageList.add(image);
-        customerToUpdate.setImages(imageList);
+        personToUpdate.setImages(imageList);
         return image;
     }
 
-    //upload a single image for customer
-    public String uploadImage(Customer customerToUpdate, String imageName, byte[] fileBytes) throws IOException {
+    //upload a single image for person
+    public String uploadImage(Person personToUpdate, String imageName, byte[] fileBytes) throws IOException {
         String ext = imageName.substring(imageName.lastIndexOf("."));
         Path absoluteFilePath = fileStorageService.getFileStorageLocation();
-        String fileName = getImageName(customerToUpdate);
-        String directory = absoluteFilePath + "/" + customerToUpdate.getRut();
+        String fileName = getImageName(personToUpdate);
+        String directory = absoluteFilePath + "/" + personToUpdate.getRut();
         System.out.println(directory);
         File convertFile = new File(directory + "/" + fileName + ext);
         try(FileOutputStream fos = new FileOutputStream(convertFile)) {
             fos.write(fileBytes);
-            Image image = createImageWithCustomer(customerToUpdate, ext, fileName);
-            customerDao.save(customerToUpdate);
+            Image image = createImageWithCustomer(personToUpdate, ext, fileName);
+            personDao.save(personToUpdate);
             //return mapToImageResponse(image);
             return image.getPath();
-            //return customerDao.save(customerToUpdate);
+            //return personDao.save(personToUpdate);
         }catch(Exception e){
             throw new IOException("The image could not be uploaded" + e.getMessage());
         }
     }
 
-    //check if the customer have or no a principal image
-    private boolean havePrincipalImage(Customer customer){
-        Image principalImage = imageDao.findImageById(imageDao.findImageByPrincipalEquals(customer));
+    //check if the person have or no a principal image
+    private boolean havePrincipalImage(Person person){
+        Image principalImage = imageDao.findImageById(imageDao.findImageByPrincipalEquals(person));
         return principalImage != null;
     }
 
     //get the image url for display in a web browser
-    public String getImageUrl(Customer customer){
+    public String getImageUrl(Person person){
         String url = "http://104.131.15.22:8080/backend-tracking4d";
         String rut = "";
         String rutReplaced = "";
-        if(havePrincipalImage(customer)){
-            rut = customer.getRut();
+        if(havePrincipalImage(person)){
+            rut = person.getRut();
             rutReplaced = rut.replaceAll("[^a-zA-Z0-9]", "");
             System.out.println("Rut: " +  rut + " rutReplaced: " + rutReplaced);
             return url.concat("/customers/web/image/preview/" + rutReplaced);
@@ -409,8 +409,8 @@ public class ImageService {
         }
     }
 
-    public List<String> pathsByCustomer(Customer customer) {
-        List<Image> images = imageDao.findAllByCustomer(customer);
+    public List<String> pathsByCustomer(Person person) {
+        List<Image> images = imageDao.findAllByPerson(person);
         List<String> paths = new ArrayList<>();
         for (Image image:images
              ) {
@@ -421,12 +421,12 @@ public class ImageService {
 
     public Object pathsWithCustomer() {
         List<Map<Object, Object>> pathWithCustomerList = new ArrayList<>();
-        List<Customer> customers = customerDao.findAllByUnknownAndDeleted(false, false);
-        for (Customer customer:customers
+        List<Person> people = personDao.findAllByUnknownAndDeleted(false, false);
+        for (Person person : people
              ) {
             Map<Object, Object> pathWithCustomer = new HashMap<>();
 
-            List<Image> images = imageDao.findAllByCustomer(customer);
+            List<Image> images = imageDao.findAllByPerson(person);
 
             List<String> paths = new ArrayList<>();
             for (Image image:images
@@ -434,7 +434,7 @@ public class ImageService {
                 paths.add(image.getPath());
             }
             pathWithCustomer.put("paths", paths);
-            pathWithCustomer.put("customer", customer);
+            pathWithCustomer.put("customer", person);
             pathWithCustomerList.add(pathWithCustomer);
         }
         return pathWithCustomerList;

@@ -37,7 +37,7 @@ public class Address {
 
     @ManyToOne
     @JoinColumn
-    private Customer customer;
+    private Person person;
 
     //Other attributes
     private String streetName;

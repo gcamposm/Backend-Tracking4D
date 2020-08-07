@@ -53,7 +53,7 @@ public class AddressService {
             addressFound.setDirectionNumber(address.getDirectionNumber());
             addressFound.setStreetName(address.getStreetName());
             addressFound.setDeletedAt(address.getDeletedAt());
-            addressFound.setCustomer(address.getCustomer());
+            addressFound.setPerson(address.getPerson());
             addressFound.setUpdatedAt(LocalDateTime.now());
             return addressDao.save(addressFound);
         }

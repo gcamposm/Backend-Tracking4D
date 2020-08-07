@@ -3,10 +3,9 @@ package spaceweare.tracking4d.SQL.services;
 import org.springframework.stereotype.Service;
 import spaceweare.tracking4d.SQL.dao.CameraDao;
 import spaceweare.tracking4d.SQL.dao.ContactDao;
-import spaceweare.tracking4d.SQL.dao.CustomerDao;
+import spaceweare.tracking4d.SQL.dao.PersonDao;
 import spaceweare.tracking4d.SQL.dao.MatchDao;
-import spaceweare.tracking4d.SQL.models.Camera;
-import spaceweare.tracking4d.SQL.models.Customer;
+import spaceweare.tracking4d.SQL.models.Person;
 import spaceweare.tracking4d.SQL.models.Match;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -17,12 +16,12 @@ import java.util.*;
 public class MatchService {
 
     private final MatchDao matchDao;
-    private final CustomerDao customerDao;
+    private final PersonDao personDao;
     private final CameraDao cameraDao;
     private final ContactDao contactDao;
-    public MatchService(MatchDao matchDao, CustomerDao customerDao, CameraDao cameraDao, ContactDao contactDao) {
+    public MatchService(MatchDao matchDao, PersonDao personDao, CameraDao cameraDao, ContactDao contactDao) {
         this.matchDao = matchDao;
-        this.customerDao = customerDao;
+        this.personDao = personDao;
         this.cameraDao = cameraDao;
         this.contactDao = contactDao;
     }
@@ -50,7 +49,7 @@ public class MatchService {
             matchFound.setName(match.getName());
             matchFound.setCompany(match.getCompany());
             matchFound.setHour(match.getHour());
-            matchFound.setCustomer(match.getCustomer());
+            matchFound.setPerson(match.getPerson());
             return matchDao.save(matchFound);
         }
         return null;
@@ -74,10 +73,10 @@ public class MatchService {
         data = name.split(java.util.regex.Pattern.quote("+"));
         String firstName = data[0];
         String lastName = data[1];
-        Customer customer = customerDao.findCustomerByFirstNameAndLastName(firstName, lastName).get();
-        if(customer != null)
+        Person person = personDao.findCustomerByFirstNameAndLastName(firstName, lastName).get();
+        if(person != null)
         {
-            return customer.getFirstName();
+            return person.getFirstName();
         }
         return "No encontré al pinche wero, debe ser NN";
     }
@@ -92,10 +91,10 @@ public class MatchService {
         System.out.println("cameraID "+cameraId);
         for (String rut:rutList
              ) {
-            if(customerDao.findCustomerByRut(rut).isPresent()){
+            if(personDao.findCustomerByRut(rut).isPresent()){
                 Match match = new Match();
                 //match.setCompany();
-                match.setCustomer(customerDao.findCustomerByRut(rut).get());
+                match.setPerson(personDao.findCustomerByRut(rut).get());
                 match.setHour(LocalDateTime.now());
                 if(cameraDao.findCameraById(cameraId).isPresent())
                 {
@@ -122,7 +121,7 @@ public class MatchService {
         List<Match> matchListByCustomer = new ArrayList<>();
         for (Match match:matchListPerDay
              ) {
-            if(match.getCustomer().getId().equals(customerId)) {
+            if(match.getPerson().getId().equals(customerId)) {
                 matchListByCustomer.add(match);
             }
         }

@@ -1,6 +1,5 @@
 package spaceweare.tracking4d.SQL.controllers;
 
-import org.apache.poi.ss.formula.functions.T;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -14,14 +13,13 @@ import org.springframework.web.bind.annotation.*;
 import spaceweare.tracking4d.Exceptions.IdNotFoundException;
 import spaceweare.tracking4d.Exceptions.RutNotFoundException;
 import spaceweare.tracking4d.FileManagement.service.FileStorageService;
-import spaceweare.tracking4d.SQL.dao.CustomerDao;
+import spaceweare.tracking4d.SQL.dao.PersonDao;
 import spaceweare.tracking4d.SQL.dao.ImageDao;
 import spaceweare.tracking4d.SQL.dao.MatchDao;
-import spaceweare.tracking4d.SQL.models.Customer;
+import spaceweare.tracking4d.SQL.models.Person;
 import spaceweare.tracking4d.SQL.models.Image;
 import spaceweare.tracking4d.SQL.models.Match;
-import spaceweare.tracking4d.SQL.services.CustomerService;
-import spaceweare.tracking4d.SQL.services.MatchService;
+import spaceweare.tracking4d.SQL.services.PersonService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
@@ -39,18 +37,18 @@ import java.util.List;
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 @RequestMapping("/customers")
-public class CustomerController {
+public class PersonController {
 
-    private static final Logger logger = LoggerFactory.getLogger(CustomerController.class);
+    private static final Logger logger = LoggerFactory.getLogger(PersonController.class);
     private final ImageDao imageDao;
-    private final CustomerDao customerDao;
+    private final PersonDao personDao;
     private final MatchDao matchDao;
     private final FileStorageService fileStorageService;
-    private final CustomerService customerService;
+    private final PersonService personService;
 
-    public CustomerController(CustomerDao customerDao, CustomerService customerService, ImageDao imageDao, FileStorageService fileStorageService, MatchDao matchDao) {
-        this.customerService = customerService;
-        this.customerDao = customerDao;
+    public PersonController(PersonDao personDao, PersonService personService, ImageDao imageDao, FileStorageService fileStorageService, MatchDao matchDao) {
+        this.personService = personService;
+        this.personDao = personDao;
         this.imageDao = imageDao;
         this.fileStorageService = fileStorageService;
         this.matchDao = matchDao;
@@ -60,10 +58,10 @@ public class CustomerController {
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
-    public ResponseEntity<Customer> create (@RequestBody Customer customer){
+    public ResponseEntity<Person> create (@RequestBody Person person){
         try{
-            customer.setUnknown(false);
-            return ResponseEntity.ok(customerService.create(customer));
+            person.setUnknown(false);
+            return ResponseEntity.ok(personService.create(person));
         }
         catch (Exception e){
             return ResponseEntity.badRequest().build();
@@ -72,9 +70,9 @@ public class CustomerController {
 
     @GetMapping("/")
     @ResponseBody
-    public ResponseEntity<List<Customer>> readAll(){
+    public ResponseEntity<List<Person>> readAll(){
         try{
-            return ResponseEntity.ok(customerService.readAll());
+            return ResponseEntity.ok(personService.readAll());
         }
         catch (Exception e){
             return ResponseEntity.badRequest().build();
@@ -83,9 +81,9 @@ public class CustomerController {
 
     @GetMapping("/{id}")
     @ResponseBody
-    public ResponseEntity<Customer> readById (@PathVariable("id") Integer id){
+    public ResponseEntity<Person> readById (@PathVariable("id") Integer id){
         try{
-            return ResponseEntity.ok(customerService.readById(id));
+            return ResponseEntity.ok(personService.readById(id));
         }
         catch(Exception e){
             return ResponseEntity.badRequest().build();
@@ -95,9 +93,9 @@ public class CustomerController {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PutMapping("/edit/{id}")
     @ResponseBody
-    public ResponseEntity<Customer> update (@PathVariable("id") Integer id, @RequestBody Customer customer){
+    public ResponseEntity<Person> update (@PathVariable("id") Integer id, @RequestBody Person person){
         try{
-            return ResponseEntity.ok(customerService.update(customer, id));
+            return ResponseEntity.ok(personService.update(person, id));
         }
         catch (Exception e){
             return ResponseEntity.badRequest().build();
@@ -109,7 +107,7 @@ public class CustomerController {
     @ResponseBody
     public ResponseEntity<String> delete (@PathVariable Integer id){
         try{
-            return ResponseEntity.ok(customerService.delete(id));
+            return ResponseEntity.ok(personService.delete(id));
         }
         catch (Exception e){
             return ResponseEntity.badRequest().build();
@@ -120,7 +118,7 @@ public class CustomerController {
     @ResponseBody
     public ResponseEntity<String> deleteByRut(@PathVariable String customerRut){
         try{
-            return ResponseEntity.ok(customerService.deleteByRut(customerRut));
+            return ResponseEntity.ok(personService.deleteByRut(customerRut));
         }
         catch (Exception e){
             return ResponseEntity.badRequest().build();
@@ -129,9 +127,9 @@ public class CustomerController {
 
     @GetMapping("/byRut/{customerRut}")
     @ResponseBody
-    public ResponseEntity<Customer> byRut(@PathVariable String customerRut){
+    public ResponseEntity<Person> byRut(@PathVariable String customerRut){
         try{
-            return ResponseEntity.ok(customerService.byRut(customerRut));
+            return ResponseEntity.ok(personService.byRut(customerRut));
         }
         catch (Exception e){
             return ResponseEntity.badRequest().build();
@@ -144,7 +142,7 @@ public class CustomerController {
     @ResponseBody
     public ResponseEntity contactsBetweenCustomers (@RequestParam("day") @DateTimeFormat(pattern = "yyyy-MM-dd") Date day){
         try{
-            return ResponseEntity.ok(customerService.contactsBetweenCustomers(day));
+            return ResponseEntity.ok(personService.contactsBetweenCustomers(day));
         }
         catch (Exception e){
             return ResponseEntity.badRequest().build();
@@ -155,10 +153,10 @@ public class CustomerController {
     @RequestMapping(value = "{id}/getprincipalimage", method = RequestMethod.GET)
     public byte[] getPrincipalImage(@PathVariable Integer id, HttpServletRequest request) {
         Path absoluteFilePath = fileStorageService.getFileStorageLocation();
-        Customer customerToUpdate = customerDao.findById(id).get();
-        if (customerToUpdate != null) {
+        Person personToUpdate = personDao.findById(id).get();
+        if (personToUpdate != null) {
             try {
-                Image principalImage = imageDao.findImageById(imageDao.findImageByPrincipalEquals(customerToUpdate));
+                Image principalImage = imageDao.findImageById(imageDao.findImageByPrincipalEquals(personToUpdate));
                 if(principalImage == null){
                     Path path = Paths.get(absoluteFilePath + "/nodisponible.png");
                     byte[] data = Files.readAllBytes(path);
@@ -182,10 +180,10 @@ public class CustomerController {
     @RequestMapping(value = "web/{id}/getprincipalimage", method = RequestMethod.GET)
     public byte[] getPrincipalImageForWeb(@PathVariable Integer id) {
         Path absoluteFilePath = fileStorageService.getFileStorageLocation();
-        Customer customerToUpdate = customerDao.findById(id).get();
-        if (customerToUpdate != null) {
+        Person personToUpdate = personDao.findById(id).get();
+        if (personToUpdate != null) {
             try {
-                Image principalImage = imageDao.findImageById(imageDao.findImageByPrincipalEquals(customerToUpdate));
+                Image principalImage = imageDao.findImageById(imageDao.findImageByPrincipalEquals(personToUpdate));
                 if(principalImage == null){
                     Path path = Paths.get(absoluteFilePath + "/nodisponible.png");
                     byte[] data = Files.readAllBytes(path);
@@ -211,15 +209,15 @@ public class CustomerController {
     )
     @ResponseBody
     public byte[] previewPrincipalImage(@PathVariable String customerRut){
-        Customer customer = customerDao.findByRut(customerRut);
-        if(customer != null) {
+        Person person = personDao.findByRut(customerRut);
+        if(person != null) {
             try {
-                return getPrincipalImageForWeb(customer.getId());
+                return getPrincipalImageForWeb(person.getId());
             }catch (Exception e){
-                throw new IdNotFoundException("Could not found the customer images", e);
+                throw new IdNotFoundException("Could not found the person images", e);
             }
         }else{
-            throw new RutNotFoundException("The customer with rut: " + customerRut + " could not be found");
+            throw new RutNotFoundException("The person with rut: " + customerRut + " could not be found");
         }
     }
 
@@ -227,12 +225,12 @@ public class CustomerController {
     @RequestMapping(value = "{id}/allImages", method = RequestMethod.GET)
     public List<byte[]> allImageByCustomer(@PathVariable Integer id, HttpServletRequest request) {
 
-        Customer customer = customerDao.findById(id).get();
+        Person person = personDao.findById(id).get();
         List<byte[]> images = new ArrayList<>();
         Path absoluteFilePath = fileStorageService.getFileStorageLocation();
-        if (customer != null) {
+        if (person != null) {
             try {
-                for (Image image: customer.getImages()
+                for (Image image: person.getImages()
                 ) {
                     String rpath =  absoluteFilePath+ "/" + image.getName() + image.getExtension(); // whatever path you used for storing the file
                     Path path = Paths.get(rpath);
@@ -259,9 +257,9 @@ public class CustomerController {
     @ResponseBody
     public ResponseEntity deleteImage (@RequestParam("customerId") Integer customerId , @RequestParam("position") Integer position){
         Path absoluteFilePath = fileStorageService.getFileStorageLocation();
-        Customer customerToUpdate = customerDao.findById(customerId).get();
-        if (customerToUpdate != null) {
-            Image principalImage = customerToUpdate.getImages().get(position);
+        Person personToUpdate = personDao.findById(customerId).get();
+        if (personToUpdate != null) {
+            Image principalImage = personToUpdate.getImages().get(position);
             if (principalImage != null) {
                 String rpath = absoluteFilePath + "/" + principalImage.getName() + principalImage.getExtension();
                 File file = new File(rpath);
@@ -293,7 +291,7 @@ public class CustomerController {
         }
         //Path path = fileStorageService.getFileStorageLocation();
         Path filePath = fileStorageService.getFileStorageLocation().resolve("output.xlsx").normalize();
-        customerService.writeXlsx(matches, filePath.toString(), day);
+        personService.writeXlsx(matches, filePath.toString(), day);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body("Se creó el archivo de salida.");

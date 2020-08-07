@@ -21,7 +21,7 @@ public class Company {
 
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, fetch= FetchType.EAGER)
     @JsonIgnore
-    private List<Customer> customerList = new ArrayList<>();
+    private List<Person> personList = new ArrayList<>();
 
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, fetch= FetchType.EAGER)
     @JsonIgnore

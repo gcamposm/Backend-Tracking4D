@@ -3,7 +3,7 @@ package spaceweare.tracking4d.SQL.dao;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import spaceweare.tracking4d.SQL.models.Customer;
+import spaceweare.tracking4d.SQL.models.Person;
 import spaceweare.tracking4d.SQL.models.Image;
 
 import javax.transaction.Transactional;
@@ -13,18 +13,14 @@ import java.util.Optional;
 public interface ImageDao extends JpaRepository<Image, Integer> {
     Image findImageById(Integer id);
 
-    List<Image> findAllByCustomer(Customer customer);
-
-    Image findImageByName(String name);
+    List<Image> findAllByPerson(Person person);
 
     Optional<Image> findImageByPath(String path);
 
     Image findTopByOrderByIdDesc();
 
-    @Query("select i.id from Image i where i.principal = true and i.customer =?1")
-    Integer findImageByPrincipalEquals(Customer customer);
-
-    Image findImageByCustomerAndPrincipal(Customer customer, Boolean principal);
+    @Query("select i.id from Image i where i.principal = true and i.person =?1")
+    Integer findImageByPrincipalEquals(Person person);
 
     @Transactional
     @Modifying

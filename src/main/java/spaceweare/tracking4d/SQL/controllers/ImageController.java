@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import spaceweare.tracking4d.SQL.dao.CustomerDao;
+import spaceweare.tracking4d.SQL.dao.PersonDao;
 import spaceweare.tracking4d.SQL.dao.ImageDao;
 import spaceweare.tracking4d.SQL.models.Image;
 import spaceweare.tracking4d.SQL.services.ImageService;
@@ -24,12 +24,12 @@ public class ImageController {
 
     private final ImageService imageService;
     private final ImageDao imageDao;
-    private final CustomerDao customerDao;
+    private final PersonDao personDao;
 
-    public ImageController(ImageService imageService, ImageDao imageDao, CustomerDao customerDao) {
+    public ImageController(ImageService imageService, ImageDao imageDao, PersonDao personDao) {
         this.imageService = imageService;
         this.imageDao = imageDao;
-        this.customerDao = customerDao;
+        this.personDao = personDao;
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
@@ -128,12 +128,12 @@ public class ImageController {
     @ResponseBody
     public ResponseEntity pathsByCustomer(@PathVariable Integer customerId){
         try{
-            if(customerDao.findById(customerId).isPresent())
+            if(personDao.findById(customerId).isPresent())
             {
-                return ResponseEntity.ok(imageService.pathsByCustomer(customerDao.findById(customerId).get()));
+                return ResponseEntity.ok(imageService.pathsByCustomer(personDao.findById(customerId).get()));
             }
         else{
-            return ResponseEntity.status(500).body("The customer with id: " + customerId + " could not be found");
+            return ResponseEntity.status(500).body("The person with id: " + customerId + " could not be found");
         }
         }
         catch (Exception e){
@@ -244,10 +244,10 @@ public class ImageController {
     public ResponseEntity uploadImages(@PathVariable String customerRut ,
                                        @RequestParam("file") MultipartFile[] files){
         try{
-            if(customerDao.findCustomerByRut(customerRut).isPresent()) {
+            if(personDao.findCustomerByRut(customerRut).isPresent()) {
                 return ResponseEntity.status(200).body(imageService.uploadMultipleImages(customerRut, files));
             }else{
-                return ResponseEntity.status(500).body("The customer with rut: " + customerRut + " could not be found");
+                return ResponseEntity.status(500).body("The person with rut: " + customerRut + " could not be found");
             }
         }catch (Exception e){
             return ResponseEntity.status(500).body("Could not upload the images: " + e.getMessage());
@@ -260,10 +260,10 @@ public class ImageController {
     public ResponseEntity uploadImage(@PathVariable String customerRut ,
                                       @RequestParam("file") MultipartFile file){
         try{
-            if(customerDao.findCustomerByRut(customerRut).isPresent()) {
-                return ResponseEntity.status(200).body(imageService.uploadImage(customerDao.findCustomerByRut(customerRut).get(), file.getOriginalFilename(), file.getBytes()));
+            if(personDao.findCustomerByRut(customerRut).isPresent()) {
+                return ResponseEntity.status(200).body(imageService.uploadImage(personDao.findCustomerByRut(customerRut).get(), file.getOriginalFilename(), file.getBytes()));
             }else{
-                return ResponseEntity.status(500).body("The customer with rut: " + customerRut + " could not be found");
+                return ResponseEntity.status(500).body("The person with rut: " + customerRut + " could not be found");
             }
         }catch (Exception e){
             return ResponseEntity.status(500).body("Could not upload the images: " + e.getMessage());
