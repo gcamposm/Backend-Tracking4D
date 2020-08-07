@@ -34,6 +34,7 @@ public class CameraService {
         if(cameraDao.findById(id).isPresent()){
             Camera cameraFound = cameraDao.findById(id).get();
             cameraFound.setValue(camera.getValue());
+            cameraFound.setArea(camera.getArea());
             cameraFound.setMatchList(camera.getMatchList());
             return cameraDao.save(cameraFound);
         }

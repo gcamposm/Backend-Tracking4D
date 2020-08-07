@@ -11,20 +11,17 @@ import java.util.List;
 @Entity
 @Data
 @NoArgsConstructor
-public class Camera {
+public class Local {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     //Relations
     @ManyToOne
     @JoinColumn
-    private Area area;
-    @OneToMany(mappedBy = "camera", cascade = CascadeType.ALL, fetch= FetchType.EAGER)
+    private Company company;
+    @OneToMany(mappedBy = "local", cascade = CascadeType.ALL, fetch= FetchType.EAGER)
     @JsonIgnore
-    private List<Match> matchList = new ArrayList<>();
-    @OneToMany(mappedBy = "camera", cascade = CascadeType.ALL, fetch= FetchType.EAGER)
-    @JsonIgnore
-    private List<Image> images = new ArrayList<>();
+    private List<Area> areaList = new ArrayList<>();
     //Attributes
-    private String value;
+    private String name;
 }

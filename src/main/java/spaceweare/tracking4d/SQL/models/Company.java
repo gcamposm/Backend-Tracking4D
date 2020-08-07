@@ -17,7 +17,14 @@ public class Company {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    // Relations
+    //Relations
+    @ManyToOne
+    @JoinColumn
+    private Holding holding;
+
+    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, fetch= FetchType.EAGER)
+    @JsonIgnore
+    private List<Local> localList = new ArrayList<>();
 
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, fetch= FetchType.EAGER)
     @JsonIgnore
