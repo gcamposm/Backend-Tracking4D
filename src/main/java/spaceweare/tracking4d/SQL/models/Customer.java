@@ -22,7 +22,9 @@ public class Customer {
     @JoinColumn
     private Company company;
 
-    private String activity;
+    @ManyToOne
+    @JoinColumn
+    private CustomerType type;
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch= FetchType.EAGER)
     @JsonIgnore
@@ -49,4 +51,5 @@ public class Customer {
     private String genre;
     private Boolean unknown;
     private Boolean deleted;
+    private String activity;
 }
