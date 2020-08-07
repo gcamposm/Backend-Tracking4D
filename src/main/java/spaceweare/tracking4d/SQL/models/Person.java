@@ -26,6 +26,10 @@ public class Person {
     @JoinColumn
     private PersonType type;
 
+    @ManyToOne
+    @JoinColumn
+    private PersonPosition position;
+
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, fetch= FetchType.EAGER)
     @JsonIgnore
     private List<Image> images = new ArrayList<>();
