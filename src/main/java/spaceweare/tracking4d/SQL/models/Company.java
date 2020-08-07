@@ -22,6 +22,10 @@ public class Company {
     @JoinColumn
     private Holding holding;
 
+    @ManyToOne
+    @JoinColumn
+    private Item item;
+
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, fetch= FetchType.EAGER)
     @JsonIgnore
     private List<Local> localList = new ArrayList<>();
