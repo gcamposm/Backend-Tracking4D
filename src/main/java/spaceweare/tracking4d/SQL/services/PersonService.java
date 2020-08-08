@@ -2,6 +2,7 @@ package spaceweare.tracking4d.SQL.services;
 
 import org.apache.poi.common.usermodel.HyperlinkType;
 import org.apache.poi.xssf.usermodel.*;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import spaceweare.tracking4d.Exceptions.ExportFileException;
 import spaceweare.tracking4d.FileManagement.service.FileStorageService;
@@ -51,7 +52,14 @@ public class PersonService {
         if (! directoryFile.exists()){
             directoryFile.mkdir();
         }
-        return personDao.save(person);
+        if(personDao.findPersonByRut(person.getRut()).isPresent()){
+            Person personFound = personDao.findPersonByRut(person.getRut()).get();
+            personFound.setUnknown(false);
+            personFound.setDeleted(false);
+            return personDao.save(personFound);
+        }
+        person.setUnknown(false);
+        return personDao.save(personDao.save(person));
     }
 
     public Person readById(Integer id){

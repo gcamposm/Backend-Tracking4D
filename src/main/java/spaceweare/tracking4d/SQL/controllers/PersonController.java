@@ -60,7 +60,6 @@ public class PersonController {
     @ResponseBody
     public ResponseEntity<Person> create (@RequestBody Person person){
         try{
-            person.setUnknown(false);
             return ResponseEntity.ok(personService.create(person));
         }
         catch (Exception e){
