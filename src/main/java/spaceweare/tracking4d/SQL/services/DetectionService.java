@@ -67,7 +67,7 @@ public class DetectionService {
         }
     }
 
-    public Image saveUnknown(List<String> unknown, Integer cameraId) {
+    public Image saveUnknown(List<Float> unknown, Integer cameraId) {
         Camera camera = cameraDao.findById(cameraId).get();
         Person person = new Person();
         person.setUnknown(true);
@@ -76,7 +76,7 @@ public class DetectionService {
         Image image = new Image();
         image.setPerson(person);
         imageDao.save(image);
-        for (String descriptorFor: unknown
+        for (Float descriptorFor: unknown
         ) {
             Detection detection = new Detection();
             detection.setImage(image);

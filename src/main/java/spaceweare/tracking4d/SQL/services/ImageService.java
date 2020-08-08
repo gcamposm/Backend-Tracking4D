@@ -84,7 +84,7 @@ public class ImageService {
         }
     }
 
-    public Image chargeData(List<String> descriptorList, String path, String customerRut) {
+    public Image chargeData(List<Float> descriptorList, String path, String customerRut) {
         if(personDao.findPersonByRut(customerRut).isPresent())
         {
             Person person = personDao.findPersonByRut(customerRut).get();
@@ -95,7 +95,7 @@ public class ImageService {
         return createDescriptorWithCustomer(personDao.save(person), descriptorList, path);
     }
 
-    private Image createDescriptorWithCustomer(Person person, List<String> descriptorList, String path) {
+    private Image createDescriptorWithCustomer(Person person, List<Float> descriptorList, String path) {
         if(imageDao.findImageByPath(path).isPresent())
         {
             Image image = imageDao.findImageByPath(path).get();
@@ -108,10 +108,10 @@ public class ImageService {
         }
     }
 
-    private Image createDescriptorWithImage(Person person, List<String> descriptorList, Image image) {
+    private Image createDescriptorWithImage(Person person, List<Float> descriptorList, Image image) {
         image.setPerson(person);
         imageDao.save(image);
-        for (String descriptorFor: descriptorList
+        for (Float descriptorFor: descriptorList
         ) {
             Detection detection = new Detection();
             detection.setImage(image);
@@ -137,7 +137,7 @@ public class ImageService {
             for (Image image:images
                  ) {
                 Map<Object, Object> descriptor = new HashMap<>();
-                List<String> floats = new ArrayList<>();
+                List<Float> floats = new ArrayList<>();
                 List<Detection> detections = image.getDetections();
                 for (Detection detection : detections
                 ) {
@@ -455,9 +455,9 @@ public class ImageService {
         return pathWithCustomer;
     }
 
-    public List<String> detectionsByPath(Image image) {
+    public List<Float> detectionsByPath(Image image) {
         List<Detection> detections = detectionDao.findAllByImage(image);
-        List<String> descriptors = new ArrayList<>();
+        List<Float> descriptors = new ArrayList<>();
         for (Detection detection:detections
              ) {
             descriptors.add(detection.getValue());

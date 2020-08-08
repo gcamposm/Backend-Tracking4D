@@ -13,7 +13,7 @@ public class Detection {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private String value;
+    private Float value;
     private LocalDateTime clock;
 
     @ManyToOne

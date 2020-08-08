@@ -92,7 +92,7 @@ public class ImageController {
     }
 
     @RequestMapping(value = "/create/withData", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity chargeData(@RequestParam("descriptor") List<String> descriptorList,
+    public ResponseEntity chargeData(@RequestParam("descriptor") List<Float> descriptorList,
                                      @RequestParam("path") String path,
                                      @RequestParam("user") String customerRut){
         try{
