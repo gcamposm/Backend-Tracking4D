@@ -84,11 +84,11 @@ public class PersonService {
             personFound.setActivity(person.getActivity());
             personFound.setCompany(person.getCompany());
             personFound.setGenre(person.getGenre());
-            personFound.setImages(person.getImages());
             personFound.setMail(person.getMail());
             personFound.setPhoneNumber(person.getPhoneNumber());
             personFound.setUser(person.getUser());
             personFound.setUnknown(person.getUnknown());
+            personFound.setEmotion(person.getEmotion());
             return personDao.save(personFound);
         }
         return null;
