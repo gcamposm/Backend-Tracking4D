@@ -440,6 +440,21 @@ public class ImageService {
         return pathWithCustomerList;
     }
 
+    public Object pathsWithOnePerson(Person person) {
+            Map<Object, Object> pathWithCustomer = new HashMap<>();
+
+            List<Image> images = imageDao.findAllByPerson(person);
+
+            List<String> paths = new ArrayList<>();
+            for (Image image:images
+            ) {
+                paths.add(image.getPath());
+            }
+            pathWithCustomer.put("paths", paths);
+            pathWithCustomer.put("customer", person);
+        return pathWithCustomer;
+    }
+
     public List<String> detectionsByPath(Image image) {
         List<Detection> detections = detectionDao.findAllByImage(image);
         List<String> descriptors = new ArrayList<>();

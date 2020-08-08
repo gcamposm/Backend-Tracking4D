@@ -45,7 +45,7 @@ public class PersonService {
         this.imageService = imageService;
     }
 
-    public Person create(Person person){
+    public Object create(Person person){
         Path absoluteFilePath = fileStorageService.getFileStorageLocation();
         String directory = absoluteFilePath + "/" + person.getRut();
         File directoryFile = new File(directory);
@@ -56,10 +56,10 @@ public class PersonService {
             Person personFound = personDao.findPersonByRut(person.getRut()).get();
             personFound.setUnknown(false);
             personFound.setDeleted(false);
-            return personDao.save(personFound);
+            return imageService.pathsWithOnePerson(personDao.save(personFound));
         }
         person.setUnknown(false);
-        return personDao.save(personDao.save(person));
+        return imageService.pathsWithOnePerson(personDao.save(person));
     }
 
     public Person readById(Integer id){
@@ -344,7 +344,7 @@ public class PersonService {
         System.out.println("Writing on XLSX file Finished ...");
     }
 
-    public Person byRut(String customerRut) {
-        return personDao.findPersonByRut(customerRut).get();
+    public Object byRut(String customerRut) {
+        return imageService.pathsWithOnePerson(personDao.findPersonByRut(customerRut).get());
     }
 }

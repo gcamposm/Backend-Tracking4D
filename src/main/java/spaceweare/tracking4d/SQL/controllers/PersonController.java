@@ -58,7 +58,7 @@ public class PersonController {
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
-    public ResponseEntity<Person> create (@RequestBody Person person){
+    public ResponseEntity create (@RequestBody Person person){
         try{
             return ResponseEntity.ok(personService.create(person));
         }
@@ -126,7 +126,7 @@ public class PersonController {
 
     @GetMapping("/byRut/{customerRut}")
     @ResponseBody
-    public ResponseEntity<Person> byRut(@PathVariable String customerRut){
+    public ResponseEntity byRut(@PathVariable String customerRut){
         try{
             return ResponseEntity.ok(personService.byRut(customerRut));
         }
