@@ -13,7 +13,6 @@ import spaceweare.tracking4d.SQL.models.Contact;
 import spaceweare.tracking4d.SQL.models.Person;
 import org.apache.poi.ss.usermodel.*;
 import spaceweare.tracking4d.SQL.models.Match;
-
 import java.awt.Color;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -28,19 +27,21 @@ import java.util.*;
 @Service
 public class PersonService {
 
-    private final FileStorageService fileStorageService;
     private final ImageDao imageDao;
     private final PersonDao personDao;
     private final MatchDao matchDao;
     private final ContactDao contactDao;
     private final MatchService matchService;
-    public PersonService(PersonDao personDao, ImageDao imageDao, MatchDao matchDao, ContactDao contactDao, FileStorageService fileStorageService, MatchService matchService) {
+    private final ImageService imageService;
+    private final FileStorageService fileStorageService;
+    public PersonService(PersonDao personDao, ImageDao imageDao, MatchDao matchDao, ContactDao contactDao, FileStorageService fileStorageService, MatchService matchService, ImageService imageService) {
         this.personDao = personDao;
         this.imageDao = imageDao;
         this.fileStorageService = fileStorageService;
         this.matchService = matchService;
         this.matchDao = matchDao;
         this.contactDao = contactDao;
+        this.imageService = imageService;
     }
 
     public Person create(Person person){
@@ -96,12 +97,12 @@ public class PersonService {
             return  null;
         }
     }
-    public String deleteByRut(String customerRut) {
-        if(personDao.findCustomerByRut(customerRut).isPresent()){
-            Person person = personDao.findCustomerByRut(customerRut).get();
+    public Object deleteByRut(String personRut) {
+        if(personDao.findPersonByRut(personRut).isPresent()){
+            Person person = personDao.findPersonByRut(personRut).get();
             person.setDeleted(true);
             personDao.save(person);
-            return "deleted";
+            return imageService.pathsWithCustomer();
         }
         else{
             return  null;
@@ -336,6 +337,6 @@ public class PersonService {
     }
 
     public Person byRut(String customerRut) {
-        return personDao.findCustomerByRut(customerRut).get();
+        return personDao.findPersonByRut(customerRut).get();
     }
 }

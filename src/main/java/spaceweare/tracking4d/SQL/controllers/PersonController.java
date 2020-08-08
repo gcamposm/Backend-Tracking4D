@@ -114,11 +114,11 @@ public class PersonController {
         }
     }
 
-    @DeleteMapping("/delete/byRut/{customerRut}")
+    @DeleteMapping("/delete/byRut/{personRut}")
     @ResponseBody
-    public ResponseEntity<String> deleteByRut(@PathVariable String customerRut){
+    public ResponseEntity deleteByRut(@PathVariable String personRut){
         try{
-            return ResponseEntity.ok(personService.deleteByRut(customerRut));
+            return ResponseEntity.ok(personService.deleteByRut(personRut));
         }
         catch (Exception e){
             return ResponseEntity.badRequest().build();

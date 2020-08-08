@@ -73,7 +73,7 @@ public class MatchService {
         data = name.split(java.util.regex.Pattern.quote("+"));
         String firstName = data[0];
         String lastName = data[1];
-        Person person = personDao.findCustomerByFirstNameAndLastName(firstName, lastName).get();
+        Person person = personDao.findPersonByFirstNameAndLastName(firstName, lastName).get();
         if(person != null)
         {
             return person.getFirstName();
@@ -91,10 +91,10 @@ public class MatchService {
         System.out.println("cameraID "+cameraId);
         for (String rut:rutList
              ) {
-            if(personDao.findCustomerByRut(rut).isPresent()){
+            if(personDao.findPersonByRut(rut).isPresent()){
                 Match match = new Match();
                 //match.setCompany();
-                match.setPerson(personDao.findCustomerByRut(rut).get());
+                match.setPerson(personDao.findPersonByRut(rut).get());
                 match.setHour(LocalDateTime.now());
                 if(cameraDao.findCameraById(cameraId).isPresent())
                 {

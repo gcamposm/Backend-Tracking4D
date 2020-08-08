@@ -244,7 +244,7 @@ public class ImageController {
     public ResponseEntity uploadImages(@PathVariable String customerRut ,
                                        @RequestParam("file") MultipartFile[] files){
         try{
-            if(personDao.findCustomerByRut(customerRut).isPresent()) {
+            if(personDao.findPersonByRut(customerRut).isPresent()) {
                 return ResponseEntity.status(200).body(imageService.uploadMultipleImages(customerRut, files));
             }else{
                 return ResponseEntity.status(500).body("The person with rut: " + customerRut + " could not be found");
@@ -260,8 +260,8 @@ public class ImageController {
     public ResponseEntity uploadImage(@PathVariable String customerRut ,
                                       @RequestParam("file") MultipartFile file){
         try{
-            if(personDao.findCustomerByRut(customerRut).isPresent()) {
-                return ResponseEntity.status(200).body(imageService.uploadImage(personDao.findCustomerByRut(customerRut).get(), file.getOriginalFilename(), file.getBytes()));
+            if(personDao.findPersonByRut(customerRut).isPresent()) {
+                return ResponseEntity.status(200).body(imageService.uploadImage(personDao.findPersonByRut(customerRut).get(), file.getOriginalFilename(), file.getBytes()));
             }else{
                 return ResponseEntity.status(500).body("The person with rut: " + customerRut + " could not be found");
             }

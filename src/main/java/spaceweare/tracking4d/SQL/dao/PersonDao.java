@@ -8,9 +8,9 @@ import java.util.Optional;
 
 public interface PersonDao extends JpaRepository<Person, Integer> {
     Person findByRut(String rut);
-    Optional<Person> findCustomerByFirstNameAndLastName(String firstName, String lastName);
-    Optional<Person> findCustomerByRut(String rut);
-    Optional<Person> findCustomerByFirstName(String firstName);
+    Optional<Person> findPersonByFirstNameAndLastName(String firstName, String lastName);
+    Optional<Person> findPersonByRut(String rut);
+    Optional<Person> findPersonByFirstName(String firstName);
     List<Person> findAllByUnknown(Boolean unknown);
     List<Person> findAllByUnknownAndDeleted(Boolean unknown, Boolean deleted);
 }

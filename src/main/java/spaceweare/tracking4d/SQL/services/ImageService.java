@@ -85,9 +85,9 @@ public class ImageService {
     }
 
     public Image chargeData(List<String> descriptorList, String path, String customerRut) {
-        if(personDao.findCustomerByRut(customerRut).isPresent())
+        if(personDao.findPersonByRut(customerRut).isPresent())
         {
-            Person person = personDao.findCustomerByRut(customerRut).get();
+            Person person = personDao.findPersonByRut(customerRut).get();
             return createDescriptorWithCustomer(person, descriptorList, path);
         }
         Person person = new Person();
@@ -178,8 +178,8 @@ public class ImageService {
 
     public List<String> uploadMultipleImages(String customerRut, MultipartFile[] fileList) throws IOException {
         //List<ImageResponse> imageResponseList = new ArrayList<>();
-        if(personDao.findCustomerByRut(customerRut).isPresent()) {
-            Person person = personDao.findCustomerByRut(customerRut).get();
+        if(personDao.findPersonByRut(customerRut).isPresent()) {
+            Person person = personDao.findPersonByRut(customerRut).get();
             List<String> paths = new ArrayList<>();
             for (MultipartFile file : fileList
             ) {
@@ -251,7 +251,7 @@ public class ImageService {
         String firstName = data[0];
         String lastName = data[1];
         System.out.println(firstName + " " + lastName);
-        Person person = personDao.findCustomerByFirstNameAndLastName(firstName, lastName).get();
+        Person person = personDao.findPersonByFirstNameAndLastName(firstName, lastName).get();
         Path absoluteFilePath = fileStorageService.getFileStorageLocation();
 
         List<Image> imageList;
