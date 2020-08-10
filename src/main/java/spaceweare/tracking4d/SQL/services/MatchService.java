@@ -117,23 +117,23 @@ public class MatchService {
         return matchDao.findMatchByHourBetween(firstLocalDate, secondLocalDate);
     }
 
-    public List<Match> filterByCustomer(List<Match> matchListPerDay, Integer customerId) {
-        List<Match> matchListByCustomer = new ArrayList<>();
+    public List<Match> filterByPerson(List<Match> matchListPerDay, Integer personId) {
+        List<Match> matchListByPerson = new ArrayList<>();
         for (Match match:matchListPerDay
              ) {
-            if(match.getPerson().getId().equals(customerId)) {
-                matchListByCustomer.add(match);
+            if(match.getPerson().getId().equals(personId)) {
+                matchListByPerson.add(match);
             }
         }
-        return matchListByCustomer;
+        return matchListByPerson;
     }
 
-    public List<Match> getIncomeOutcome(Date day, Integer customerId) {
+    public List<Match> getIncomeOutcome(Date day, Integer personId) {
         List<Match> matchListPerDay = getMatchesByDate(day, day);
-        List<Match> matchListByCustomer = filterByCustomer(matchListPerDay, customerId);
+        List<Match> matchListByPerson = filterByPerson(matchListPerDay, personId);
         Integer matchIdIn = 0;
         Integer matchIdOut = 0;
-        for (Match match:matchListByCustomer
+        for (Match match:matchListByPerson
              ) {
                 if (matchIdIn.equals(0)) {
                     matchIdIn = match.getId();

@@ -110,7 +110,7 @@ public class PersonService {
             Person person = personDao.findPersonByRut(personRut).get();
             person.setDeleted(true);
             personDao.save(person);
-            return imageService.pathsWithCustomer();
+            return imageService.pathsWithPerson();
         }
         else{
             return  null;
@@ -130,7 +130,7 @@ public class PersonService {
         try(FileOutputStream fos = new FileOutputStream(convertFile)) {
             byte[] bytes = fileBytes;
             fos.write(bytes);
-            ImageService.createImageWithCustomer(personToUpdate, ext, fileName);
+            ImageService.createImageWithPerson(personToUpdate, ext, fileName);
             return personToUpdate;
         }catch(IOException IEX){
             return null;
@@ -246,11 +246,11 @@ public class PersonService {
                         if(contact.getMatches().size()>1)
                         {
                             List<Person> ready = new ArrayList<>();
-                            Integer customerId = match.getPerson().getId();
+                            Integer personId = match.getPerson().getId();
                             int count = 0;
                             for (Match matchContact:contact.getMatches()
                             ) {
-                                if(!matchContact.getPerson().getId().equals(customerId) && !ready.contains(matchContact.getPerson()) )
+                                if(!matchContact.getPerson().getId().equals(personId) && !ready.contains(matchContact.getPerson()) )
                                 {
                                     row.createCell(12 + count)
                                             .setCellValue(matchContact.getPerson().getFirstName());
@@ -271,7 +271,7 @@ public class PersonService {
         }
     }
 
-    private boolean customerWrite(List<Person> readies, Person person) {
+    private boolean personWrite(List<Person> readies, Person person) {
         for (Person ready :readies
                 ) {
             if(person.getId().equals(ready.getId())) {
@@ -282,18 +282,18 @@ public class PersonService {
     }
 
     private List<Match> getListOfContacts(List<Match> matches, Person person) {
-        List<Match> matchListWithoutCustomer = new ArrayList<>();
+        List<Match> matchListWithoutPerson = new ArrayList<>();
         for (Match match:matches
              ) {
             if(!match.getPerson().getId().equals(person.getId()))
             {
-                matchListWithoutCustomer.add(match);
+                matchListWithoutPerson.add(match);
             }
         }
-        return  matchListWithoutCustomer;
+        return  matchListWithoutPerson;
     }
 
-    public  List<Contact> contactsBetweenCustomers(Date hour) {
+    public  List<Contact> contactsBetweenPersons(Date hour) {
         List<Contact> contacts = new ArrayList<>();
         Calendar calendar = new GregorianCalendar();
         calendar.setTime(hour);
@@ -323,7 +323,7 @@ public class PersonService {
 
     public  void writeXlsx(List<Match> matchList, String path, Date day) throws IOException {
         try{
-            List<Contact> contacts = contactsBetweenCustomers(day);
+            List<Contact> contacts = contactsBetweenPersons(day);
             List<Match> matchesFilteredByCostumers = new ArrayList<>();
             List<Person> people = new ArrayList<>();
             for (Match match : matchList) {
@@ -344,7 +344,7 @@ public class PersonService {
         System.out.println("Writing on XLSX file Finished ...");
     }
 
-    public Object byRut(String customerRut) {
-        return imageService.pathsWithOnePerson(personDao.findPersonByRut(customerRut).get());
+    public Object byRut(String personRut) {
+        return imageService.pathsWithOnePerson(personDao.findPersonByRut(personRut).get());
     }
 }

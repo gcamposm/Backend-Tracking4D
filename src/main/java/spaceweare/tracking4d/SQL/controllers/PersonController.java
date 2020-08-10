@@ -36,7 +36,7 @@ import java.util.List;
 
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
-@RequestMapping("/customers")
+@RequestMapping("/persons")
 public class PersonController {
 
     private static final Logger logger = LoggerFactory.getLogger(PersonController.class);
@@ -124,11 +124,11 @@ public class PersonController {
         }
     }
 
-    @GetMapping("/byRut/{customerRut}")
+    @GetMapping("/byRut/{personRut}")
     @ResponseBody
-    public ResponseEntity byRut(@PathVariable String customerRut){
+    public ResponseEntity byRut(@PathVariable String personRut){
         try{
-            return ResponseEntity.ok(personService.byRut(customerRut));
+            return ResponseEntity.ok(personService.byRut(personRut));
         }
         catch (Exception e){
             return ResponseEntity.badRequest().build();
@@ -136,12 +136,12 @@ public class PersonController {
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @PostMapping("/contactsBetweenCustomers")
+    @PostMapping("/contactsBetweenPersons")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
-    public ResponseEntity contactsBetweenCustomers (@RequestParam("day") @DateTimeFormat(pattern = "yyyy-MM-dd") Date day){
+    public ResponseEntity contactsBetweenPersons (@RequestParam("day") @DateTimeFormat(pattern = "yyyy-MM-dd") Date day){
         try{
-            return ResponseEntity.ok(personService.contactsBetweenCustomers(day));
+            return ResponseEntity.ok(personService.contactsBetweenPersons(day));
         }
         catch (Exception e){
             return ResponseEntity.badRequest().build();
@@ -203,12 +203,12 @@ public class PersonController {
         }
     }
     @GetMapping(
-            value = "/web/image/preview/{customerRut}",
+            value = "/web/image/preview/{personRut}",
             produces = MediaType.IMAGE_JPEG_VALUE
     )
     @ResponseBody
-    public byte[] previewPrincipalImage(@PathVariable String customerRut){
-        Person person = personDao.findByRut(customerRut);
+    public byte[] previewPrincipalImage(@PathVariable String personRut){
+        Person person = personDao.findByRut(personRut);
         if(person != null) {
             try {
                 return getPrincipalImageForWeb(person.getId());
@@ -216,13 +216,13 @@ public class PersonController {
                 throw new IdNotFoundException("Could not found the person images", e);
             }
         }else{
-            throw new RutNotFoundException("The person with rut: " + customerRut + " could not be found");
+            throw new RutNotFoundException("The person with rut: " + personRut + " could not be found");
         }
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
     @RequestMapping(value = "{id}/allImages", method = RequestMethod.GET)
-    public List<byte[]> allImageByCustomer(@PathVariable Integer id, HttpServletRequest request) {
+    public List<byte[]> allImageByPerson(@PathVariable Integer id, HttpServletRequest request) {
 
         Person person = personDao.findById(id).get();
         List<byte[]> images = new ArrayList<>();
@@ -254,9 +254,9 @@ public class PersonController {
     @RequestMapping(value = "/deleteImage", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
-    public ResponseEntity deleteImage (@RequestParam("customerId") Integer customerId , @RequestParam("position") Integer position){
+    public ResponseEntity deleteImage (@RequestParam("personId") Integer personId , @RequestParam("position") Integer position){
         Path absoluteFilePath = fileStorageService.getFileStorageLocation();
-        Person personToUpdate = personDao.findById(customerId).get();
+        Person personToUpdate = personDao.findById(personId).get();
         if (personToUpdate != null) {
             Image principalImage = personToUpdate.getImages().get(position);
             if (principalImage != null) {
