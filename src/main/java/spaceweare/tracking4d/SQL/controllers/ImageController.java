@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import spaceweare.tracking4d.SQL.dao.CustomerDao;
+import spaceweare.tracking4d.SQL.dao.PersonDao;
 import spaceweare.tracking4d.SQL.dao.ImageDao;
 import spaceweare.tracking4d.SQL.models.Image;
 import spaceweare.tracking4d.SQL.services.ImageService;
@@ -24,12 +24,12 @@ public class ImageController {
 
     private final ImageService imageService;
     private final ImageDao imageDao;
-    private final CustomerDao customerDao;
+    private final PersonDao personDao;
 
-    public ImageController(ImageService imageService, ImageDao imageDao, CustomerDao customerDao) {
+    public ImageController(ImageService imageService, ImageDao imageDao, PersonDao personDao) {
         this.imageService = imageService;
         this.imageDao = imageDao;
-        this.customerDao = customerDao;
+        this.personDao = personDao;
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
@@ -92,11 +92,11 @@ public class ImageController {
     }
 
     @RequestMapping(value = "/create/withData", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity chargeData(@RequestParam("descriptor") List<String> descriptorList,
+    public ResponseEntity chargeData(@RequestParam("descriptor") List<Float> descriptorList,
                                      @RequestParam("path") String path,
-                                     @RequestParam("user") String customerRut){
+                                     @RequestParam("user") String personRut){
         try{
-            return ResponseEntity.ok(imageService.chargeData(descriptorList, path, customerRut));
+            return ResponseEntity.ok(imageService.chargeData(descriptorList, path, personRut));
         }
         catch (Exception e){
             return ResponseEntity.badRequest().build();
@@ -124,16 +124,16 @@ public class ImageController {
         }
     }
 
-    @GetMapping("/pathsByCustomer/{customerId}")
+    @GetMapping("/pathsByPerson/{personId}")
     @ResponseBody
-    public ResponseEntity pathsByCustomer(@PathVariable Integer customerId){
+    public ResponseEntity pathsByPerson(@PathVariable Integer personId){
         try{
-            if(customerDao.findById(customerId).isPresent())
+            if(personDao.findById(personId).isPresent())
             {
-                return ResponseEntity.ok(imageService.pathsByCustomer(customerDao.findById(customerId).get()));
+                return ResponseEntity.ok(imageService.pathsByPerson(personDao.findById(personId).get()));
             }
         else{
-            return ResponseEntity.status(500).body("The customer with id: " + customerId + " could not be found");
+            return ResponseEntity.status(500).body("The person with id: " + personId + " could not be found");
         }
         }
         catch (Exception e){
@@ -157,69 +157,69 @@ public class ImageController {
         }
     }
 
-    @GetMapping("/pathsWithCustomer")
+    @GetMapping("/pathsWithPerson")
     @ResponseBody
-    public ResponseEntity pathsWithCustomer(){
+    public ResponseEntity pathsWithPerson(){
         try{
-            return ResponseEntity.ok(imageService.pathsWithCustomer());
+            return ResponseEntity.ok(imageService.pathsWithPerson());
         }
         catch (Exception e){
             return ResponseEntity.badRequest().build();
         }
     }
     //RETURN A LIST OF IMAGE RESPONSE THAT CONTAINS THE PATH
-    @GetMapping("/web/allImageFromCustomer/{customerId}")
+    @GetMapping("/web/allImageFromPerson/{personId}")
     @ResponseBody
-    public ResponseEntity getAllImageFromCustomer(@PathVariable("customerId") int customerId){
+    public ResponseEntity getAllImageFromPerson(@PathVariable("personId") int personId){
         try{
-            return ResponseEntity.status(200).body(imageService.getAllImagesFromCustomer(customerId));
+            return ResponseEntity.status(200).body(imageService.getAllImagesFromPerson(personId));
         }catch (Exception e){
             return ResponseEntity.status(500).body("Could not get the images " + e.getMessage());
         }
     }
 
-    //RETURN THE IMAGE IN BYTE FORMAT USING THE PATH IN THE "getAllImageFromCustomer" RESPONSE
-    @GetMapping("/web/get/{customerRut}/{index}")
+    //RETURN THE IMAGE IN BYTE FORMAT USING THE PATH IN THE "getAllImageFromPerson" RESPONSE
+    @GetMapping("/web/get/{personRut}/{index}")
     @ResponseBody
-    public ResponseEntity getImageFromCustomerRutAndIndex(@PathVariable("customerRut") String customerRut,
+    public ResponseEntity getImageFromPersonRutAndIndex(@PathVariable("personRut") String personRut,
                                                           @PathVariable("index") Integer index){
         try{
-            return ResponseEntity.status(200).body(imageService.getImageFromCustomerRutAndIndex(customerRut, index));
+            return ResponseEntity.status(200).body(imageService.getImageFromPersonRutAndIndex(personRut, index));
         }catch (Exception e){
             return ResponseEntity.status(500).body("Could not get the principal image");
         }
     }
 
-    //RETURN THE IMAGE IN BYTE FORMAT USING THE PATH IN THE "getAllImageFromCustomer" RESPONSE
-    @GetMapping("/web/get/labels/{customerName}/{index}")
+    //RETURN THE IMAGE IN BYTE FORMAT USING THE PATH IN THE "getAllImageFromPerson" RESPONSE
+    @GetMapping("/web/get/labels/{personName}/{index}")
     @ResponseBody
-    public ResponseEntity getImageFromCustomerNameAndIndex(@PathVariable("customerName") String customerName,
+    public ResponseEntity getImageFromPersonNameAndIndex(@PathVariable("personName") String personName,
                                                           @PathVariable("index") Integer index){
         try{
-            return ResponseEntity.status(200).body(imageService.getImageFromCustomerNameAndIndex(customerName, index));
+            return ResponseEntity.status(200).body(imageService.getImageFromPersonNameAndIndex(personName, index));
         }catch (Exception e){
             return ResponseEntity.status(500).body("Could not get the principal image");
         }
     }
 
     //RETURN THE BYTE ARRAY OF THE PRINCIPAL IMAGE
-    @GetMapping("/web/getPrincipalImageFromCustomer/{customerRut}")
+    @GetMapping("/web/getPrincipalImageFromPerson/{personRut}")
     @ResponseBody
-    public ResponseEntity getPrincipalImageFromCustomer(@PathVariable("customerRut") String customerRut){
+    public ResponseEntity getPrincipalImageFromPerson(@PathVariable("personRut") String personRut){
         try{
-            return ResponseEntity.status(200).body(imageService.getPrincipalImageFromCustomer(customerRut));
+            return ResponseEntity.status(200).body(imageService.getPrincipalImageFromPerson(personRut));
         }catch (Exception e){
             return ResponseEntity.status(500).body("Could not get the principal image");
         }
     }
 
-    //SELECT THE PRINCIPAL IMAGE OF A CUSTOMER
-    @PostMapping("/selectPrincipalImageFromCustomer")
+    //SELECT THE PRINCIPAL IMAGE OF A PERSON
+    @PostMapping("/selectPrincipalImageFromPerson")
     @ResponseBody
-    public ResponseEntity selectPrincipalImageFromCustomer(@RequestParam("customerRut") String customerRut,
+    public ResponseEntity selectPrincipalImageFromPerson(@RequestParam("personRut") String personRut,
                                                           @RequestParam("imageId") Integer imageId){
         try{
-            return ResponseEntity.status(200).body(imageService.selectPrincipalImageFromCustomer(customerRut, imageId));
+            return ResponseEntity.status(200).body(imageService.selectPrincipalImageFromPerson(personRut, imageId));
         }catch (Exception e){
             return ResponseEntity.status(500).body("Could not select the principal image: " + e.getMessage());
         }
@@ -228,7 +228,7 @@ public class ImageController {
     //DELETE A IMAGE USING THE ID
     @DeleteMapping("/delete/{imageId}")
     @ResponseBody
-    public ResponseEntity selectPrincipalImageFromCustomer(@PathVariable("imageId") Integer imageId){
+    public ResponseEntity selectPrincipalImageFromPerson(@PathVariable("imageId") Integer imageId){
         try{
             imageService.deleteImage(imageId);
             return ResponseEntity.status(200).body("The image has been deleted successfully");
@@ -237,33 +237,33 @@ public class ImageController {
         }
     }
 
-    //UPLOAD MULTIPLE IMAGES USING THE CUSTOMER RUT AND THE ARRAY OF FILES
+    //UPLOAD MULTIPLE IMAGES USING THE PERSON RUT AND THE ARRAY OF FILES
     //RETURN A LIST OF IMAGES RESPONSE THAT'S CONTAINS THE URL AND OTHER PARAMETERS
-    @PostMapping("/uploadImages/{customerRut}")
+    @PostMapping("/uploadImages/{personRut}")
     @ResponseBody
-    public ResponseEntity uploadImages(@PathVariable String customerRut ,
+    public ResponseEntity uploadImages(@PathVariable String personRut ,
                                        @RequestParam("file") MultipartFile[] files){
         try{
-            if(customerDao.findCustomerByRut(customerRut).isPresent()) {
-                return ResponseEntity.status(200).body(imageService.uploadMultipleImages(customerRut, files));
+            if(personDao.findPersonByRut(personRut).isPresent()) {
+                return ResponseEntity.status(200).body(imageService.uploadMultipleImages(personRut, files));
             }else{
-                return ResponseEntity.status(500).body("The customer with rut: " + customerRut + " could not be found");
+                return ResponseEntity.status(500).body("The person with rut: " + personRut + " could not be found");
             }
         }catch (Exception e){
             return ResponseEntity.status(500).body("Could not upload the images: " + e.getMessage());
         }
     }
-    //UPLOAD ONE IMAGE USING THE CUSTOMER RUT AND THE ARRAY OF FILES
+    //UPLOAD ONE IMAGE USING THE PERSON RUT AND THE ARRAY OF FILES
     //RETURN A IMAGES RESPONSE THAT'S CONTAINS THE URL AND OTHER PARAMETERS
-    @PostMapping("/uploadImage/{customerRut}")
+    @PostMapping("/uploadImage/{personRut}")
     @ResponseBody
-    public ResponseEntity uploadImage(@PathVariable String customerRut ,
+    public ResponseEntity uploadImage(@PathVariable String personRut ,
                                       @RequestParam("file") MultipartFile file){
         try{
-            if(customerDao.findCustomerByRut(customerRut).isPresent()) {
-                return ResponseEntity.status(200).body(imageService.uploadImage(customerDao.findCustomerByRut(customerRut).get(), file.getOriginalFilename(), file.getBytes()));
+            if(personDao.findPersonByRut(personRut).isPresent()) {
+                return ResponseEntity.status(200).body(imageService.uploadImage(personDao.findPersonByRut(personRut).get(), file.getOriginalFilename(), file.getBytes()));
             }else{
-                return ResponseEntity.status(500).body("The customer with rut: " + customerRut + " could not be found");
+                return ResponseEntity.status(500).body("The person with rut: " + personRut + " could not be found");
             }
         }catch (Exception e){
             return ResponseEntity.status(500).body("Could not upload the images: " + e.getMessage());
@@ -271,25 +271,25 @@ public class ImageController {
     }
 
     //METHODS EXTRA
-    @GetMapping("/web/get/preview/{customerRut}/{index}")
+    @GetMapping("/web/get/preview/{personRut}/{index}")
     @ResponseBody
-    public void getImageForPreview(@PathVariable("customerRut") String customerRut,
+    public void getImageForPreview(@PathVariable("personRut") String personRut,
                                    @PathVariable("index") Integer index,
                                    HttpServletResponse response){
         try{
-            String url = "https://localhost:8080/images/web/get/"+ customerRut + "/" + index;
+            String url = "https://localhost:8080/images/web/get/"+ personRut + "/" + index;
             printHtml(url, response);
         }catch (Exception e){
             System.out.println("Ha ocurrido un problemon");
         }
     }
     //METHODS EXTRA
-    @GetMapping("/web/get/previewPrincipal/{customerRut}")
+    @GetMapping("/web/get/previewPrincipal/{personRut}")
     @ResponseBody
-    public void previewPrincipal(@PathVariable("customerRut") String customerRut,
+    public void previewPrincipal(@PathVariable("personRut") String personRut,
                                  HttpServletResponse response){
         try{
-            String url = "https://localhost:9443/images/web/getPrincipalImageFromCustomer/"+ customerRut;
+            String url = "https://localhost:9443/images/web/getPrincipalImageFromPerson/"+ personRut;
             printHtml(url, response);
         }catch (Exception e){
             System.out.println("Ha ocurrido un problemon");

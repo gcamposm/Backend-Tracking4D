@@ -2,15 +2,16 @@ package spaceweare.tracking4d.SQL.services;
 
 import org.apache.poi.common.usermodel.HyperlinkType;
 import org.apache.poi.xssf.usermodel.*;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import spaceweare.tracking4d.Exceptions.ExportFileException;
 import spaceweare.tracking4d.FileManagement.service.FileStorageService;
 import spaceweare.tracking4d.SQL.dao.ContactDao;
-import spaceweare.tracking4d.SQL.dao.CustomerDao;
+import spaceweare.tracking4d.SQL.dao.PersonDao;
 import spaceweare.tracking4d.SQL.dao.ImageDao;
 import spaceweare.tracking4d.SQL.dao.MatchDao;
 import spaceweare.tracking4d.SQL.models.Contact;
-import spaceweare.tracking4d.SQL.models.Customer;
+import spaceweare.tracking4d.SQL.models.Person;
 import org.apache.poi.ss.usermodel.*;
 import spaceweare.tracking4d.SQL.models.Match;
 import java.awt.Color;
@@ -25,89 +26,98 @@ import java.time.ZoneId;
 import java.util.*;
 
 @Service
-public class CustomerService {
+public class PersonService {
 
-    private final FileStorageService fileStorageService;
     private final ImageDao imageDao;
-    private final CustomerDao customerDao;
+    private final PersonDao personDao;
     private final MatchDao matchDao;
     private final ContactDao contactDao;
     private final MatchService matchService;
-    public CustomerService(CustomerDao customerDao, ImageDao imageDao, MatchDao matchDao, ContactDao contactDao, FileStorageService fileStorageService, MatchService matchService) {
-        this.customerDao = customerDao;
+    private final ImageService imageService;
+    private final FileStorageService fileStorageService;
+    public PersonService(PersonDao personDao, ImageDao imageDao, MatchDao matchDao, ContactDao contactDao, FileStorageService fileStorageService, MatchService matchService, ImageService imageService) {
+        this.personDao = personDao;
         this.imageDao = imageDao;
         this.fileStorageService = fileStorageService;
         this.matchService = matchService;
         this.matchDao = matchDao;
         this.contactDao = contactDao;
+        this.imageService = imageService;
     }
 
-    public Customer create(Customer customer){
+    public Object create(Person person){
         Path absoluteFilePath = fileStorageService.getFileStorageLocation();
-        String directory = absoluteFilePath + "/" + customer.getRut();
+        String directory = absoluteFilePath + "/" + person.getRut();
         File directoryFile = new File(directory);
         if (! directoryFile.exists()){
             directoryFile.mkdir();
         }
-        return customerDao.save(customer);
+        if(personDao.findPersonByRut(person.getRut()).isPresent()){
+            Person personFound = personDao.findPersonByRut(person.getRut()).get();
+            personFound.setUnknown(false);
+            personFound.setDeleted(false);
+            return imageService.pathsWithOnePerson(personDao.save(personFound));
+        }
+        person.setUnknown(false);
+        return imageService.pathsWithOnePerson(personDao.save(person));
     }
 
-    public Customer readById(Integer id){
-        if(customerDao.findById(id).isPresent()){
-            return customerDao.findById(id).get();
+    public Person readById(Integer id){
+        if(personDao.findById(id).isPresent()){
+            return personDao.findById(id).get();
         }
         else{
             return  null;
         }
     }
 
-    public List<Customer> readAll(){
-        return customerDao.findAllByUnknownAndDeleted(false, false);
+    public List<Person> readAll(){
+        return personDao.findAllByUnknownAndDeleted(false, false);
     }
 
-    public Customer update(Customer customer, Integer id){
-        if(customerDao.findById(id).isPresent()){
-            Customer customerFound = customerDao.findById(id).get();
-            customerFound.setFirstName(customer.getFirstName());
-            customerFound.setLastName(customer.getLastName());
-            customerFound.setRut(customer.getRut());
-            customerFound.setActivity(customer.getActivity());
-            customerFound.setCompany(customer.getCompany());
-            customerFound.setGenre(customer.getGenre());
-            customerFound.setImages(customer.getImages());
-            customerFound.setMail(customer.getMail());
-            customerFound.setPhoneNumber(customer.getPhoneNumber());
-            customerFound.setUser(customer.getUser());
-            customerFound.setUnknown(customer.getUnknown());
-            return customerDao.save(customerFound);
+    public Person update(Person person, Integer id){
+        if(personDao.findById(id).isPresent()){
+            Person personFound = personDao.findById(id).get();
+            personFound.setFirstName(person.getFirstName());
+            personFound.setLastName(person.getLastName());
+            personFound.setRut(person.getRut());
+            personFound.setActivity(person.getActivity());
+            personFound.setCompany(person.getCompany());
+            personFound.setGenre(person.getGenre());
+            personFound.setMail(person.getMail());
+            personFound.setPhoneNumber(person.getPhoneNumber());
+            personFound.setUser(person.getUser());
+            personFound.setUnknown(person.getUnknown());
+            personFound.setEmotion(person.getEmotion());
+            return personDao.save(personFound);
         }
         return null;
     }
 
     public String delete(Integer id){
-        if(customerDao.findById(id).isPresent()){
-            Customer customer = customerDao.findById(id).get();
-            customer.setDeleted(true);
-            customerDao.save(customer);
+        if(personDao.findById(id).isPresent()){
+            Person person = personDao.findById(id).get();
+            person.setDeleted(true);
+            personDao.save(person);
             return "deleted";
         }
         else{
             return  null;
         }
     }
-    public String deleteByRut(String customerRut) {
-        if(customerDao.findCustomerByRut(customerRut).isPresent()){
-            Customer customer = customerDao.findCustomerByRut(customerRut).get();
-            customer.setDeleted(true);
-            customerDao.save(customer);
-            return "deleted";
+    public Object deleteByRut(String personRut) {
+        if(personDao.findPersonByRut(personRut).isPresent()){
+            Person person = personDao.findPersonByRut(personRut).get();
+            person.setDeleted(true);
+            personDao.save(person);
+            return imageService.pathsWithPerson();
         }
         else{
             return  null;
         }
     }
 
-    public Customer uploadImage(Customer customerToUpdate, String name, byte[] fileBytes) throws IOException {
+    public Person uploadImage(Person personToUpdate, String name, byte[] fileBytes) throws IOException {
         String ext = name.substring(name.lastIndexOf("."));
         Path absoluteFilePath = fileStorageService.getFileStorageLocation();
         Integer index = 0;
@@ -115,19 +125,19 @@ public class CustomerService {
         {
             index = imageDao.findTopByOrderByIdDesc().getId()+1;
         }
-        String fileName = customerToUpdate.getRut() + "_" + index.toString();
+        String fileName = personToUpdate.getRut() + "_" + index.toString();
         File convertFile = new File(absoluteFilePath + "/" + fileName + ext);
         try(FileOutputStream fos = new FileOutputStream(convertFile)) {
             byte[] bytes = fileBytes;
             fos.write(bytes);
-            ImageService.createImageWithCustomer(customerToUpdate, ext, fileName);
-            return customerToUpdate;
+            ImageService.createImageWithPerson(personToUpdate, ext, fileName);
+            return personToUpdate;
         }catch(IOException IEX){
             return null;
         }
     }
 
-    public Customer register(String name) {
+    public Person register(String name) {
         String[] data = name.split(" ");
         String firstName = data[0];
         String lastName = data[1];
@@ -137,10 +147,10 @@ public class CustomerService {
         if (! directoryFile.exists()){
             directoryFile.mkdir();
         }
-        Customer customer = new Customer();
-        customer.setFirstName(firstName);
-        customer.setLastName(lastName);
-        return customerDao.save(customer);
+        Person person = new Person();
+        person.setFirstName(firstName);
+        person.setLastName(lastName);
+        return personDao.save(person);
     }
     public XSSFWorkbook writeOutputFile(List<Match> matchList, Date day, List<Contact> contacts){
         try {
@@ -169,37 +179,37 @@ public class CustomerService {
             }
 
             for (Match match : matchList) {
-                if(!match.getCustomer().getUnknown()){
+                if(!match.getPerson().getUnknown()){
                     System.out.println("Creando");
-                    List<Match> inOut = matchService.getIncomeOutcome(day, match.getCustomer().getId());
+                    List<Match> inOut = matchService.getIncomeOutcome(day, match.getPerson().getId());
                     Row row = mySheet.createRow(rownum++);
                     Hyperlink link = (Hyperlink) createHelper.createHyperlink(HyperlinkType.URL);
                     //path = URLEncoder.encode(path, "UTF-8");
-                    //link.setAddress(match.getCustomer().getFirstName());
+                    //link.setAddress(match.getPerson().getFirstName());
                     row.createCell(0)
-                            .setCellValue(match.getCustomer().getFirstName());
+                            .setCellValue(match.getPerson().getFirstName());
                     row.createCell(1)
-                            .setCellValue(match.getCustomer().getLastName());
+                            .setCellValue(match.getPerson().getLastName());
                     row.createCell(2)
-                            .setCellValue(match.getCustomer().getRut());
+                            .setCellValue(match.getPerson().getRut());
                     //INT VALUES
                     row.createCell(3)
-                            .setCellValue(match.getCustomer().getGenre());
-                    if(match.getCustomer().getUser() != null)
+                            .setCellValue(match.getPerson().getGenre());
+                    if(match.getPerson().getUser() != null)
                     {
                         row.createCell(4)
-                                .setCellValue( match.getCustomer().getUser().getUsername());
+                                .setCellValue( match.getPerson().getUser().getUsername());
                     }
                     else{
                         row.createCell(4)
                                 .setCellValue("");
                     }
                     row.createCell(5)
-                            .setCellValue(match.getCustomer().getMail());
+                            .setCellValue(match.getPerson().getMail());
                     row.createCell(6)
-                            .setCellValue(match.getCustomer().getPhoneNumber());
+                            .setCellValue(match.getPerson().getPhoneNumber());
                     row.createCell(7)
-                            .setCellValue(match.getCustomer().getActivity());
+                            .setCellValue(match.getPerson().getActivity());
                     if(match.getCamera()!= null)
                     {
                         row.createCell(8)
@@ -235,17 +245,17 @@ public class CustomerService {
                          ) {
                         if(contact.getMatches().size()>1)
                         {
-                            List<Customer> ready = new ArrayList<>();
-                            Integer customerId = match.getCustomer().getId();
+                            List<Person> ready = new ArrayList<>();
+                            Integer personId = match.getPerson().getId();
                             int count = 0;
                             for (Match matchContact:contact.getMatches()
                             ) {
-                                if(!matchContact.getCustomer().getId().equals(customerId) && !ready.contains(matchContact.getCustomer()) )
+                                if(!matchContact.getPerson().getId().equals(personId) && !ready.contains(matchContact.getPerson()) )
                                 {
                                     row.createCell(12 + count)
-                                            .setCellValue(matchContact.getCustomer().getFirstName());
+                                            .setCellValue(matchContact.getPerson().getFirstName());
                                     count++;
-                                    ready.add(matchContact.getCustomer());
+                                    ready.add(matchContact.getPerson());
                                 }
                             }
                         }
@@ -261,29 +271,29 @@ public class CustomerService {
         }
     }
 
-    private boolean customerWrite(List<Customer> readies, Customer customer) {
-        for (Customer ready :readies
+    private boolean personWrite(List<Person> readies, Person person) {
+        for (Person ready :readies
                 ) {
-            if(customer.getId().equals(ready.getId())) {
+            if(person.getId().equals(ready.getId())) {
                 return true;
             }
         }
         return false;
     }
 
-    private List<Match> getListOfContacts(List<Match> matches, Customer customer) {
-        List<Match> matchListWithoutCustomer = new ArrayList<>();
+    private List<Match> getListOfContacts(List<Match> matches, Person person) {
+        List<Match> matchListWithoutPerson = new ArrayList<>();
         for (Match match:matches
              ) {
-            if(!match.getCustomer().getId().equals(customer.getId()))
+            if(!match.getPerson().getId().equals(person.getId()))
             {
-                matchListWithoutCustomer.add(match);
+                matchListWithoutPerson.add(match);
             }
         }
-        return  matchListWithoutCustomer;
+        return  matchListWithoutPerson;
     }
 
-    public  List<Contact> contactsBetweenCustomers(Date hour) {
+    public  List<Contact> contactsBetweenPersons(Date hour) {
         List<Contact> contacts = new ArrayList<>();
         Calendar calendar = new GregorianCalendar();
         calendar.setTime(hour);
@@ -313,12 +323,12 @@ public class CustomerService {
 
     public  void writeXlsx(List<Match> matchList, String path, Date day) throws IOException {
         try{
-            List<Contact> contacts = contactsBetweenCustomers(day);
+            List<Contact> contacts = contactsBetweenPersons(day);
             List<Match> matchesFilteredByCostumers = new ArrayList<>();
-            List<Customer> customers = new ArrayList<>();
+            List<Person> people = new ArrayList<>();
             for (Match match : matchList) {
-                if(!customers.contains(match.getCustomer())) {
-                    customers.add(match.getCustomer());
+                if(!people.contains(match.getPerson())) {
+                    people.add(match.getPerson());
                     matchesFilteredByCostumers.add(match);
                 }
             }
@@ -334,7 +344,7 @@ public class CustomerService {
         System.out.println("Writing on XLSX file Finished ...");
     }
 
-    public Customer byRut(String customerRut) {
-        return customerDao.findCustomerByRut(customerRut).get();
+    public Object byRut(String personRut) {
+        return imageService.pathsWithOnePerson(personDao.findPersonByRut(personRut).get());
     }
 }

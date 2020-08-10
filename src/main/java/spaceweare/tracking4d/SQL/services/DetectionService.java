@@ -16,14 +16,14 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class DetectionService {
 
-    private final CustomerDao customerDao;
+    private final PersonDao personDao;
     private final ImageDao imageDao;
     private final DetectionDao detectionDao;
     private final CameraDao cameraDao;
     private final MatchDao matchDao;
-    public DetectionService(DetectionDao detectionDao, CustomerDao customerDao, ImageDao imageDao, CameraDao cameraDao, MatchDao matchDao) {
+    public DetectionService(DetectionDao detectionDao, PersonDao personDao, ImageDao imageDao, CameraDao cameraDao, MatchDao matchDao) {
         this.detectionDao = detectionDao;
-        this.customerDao = customerDao;
+        this.personDao = personDao;
         this.imageDao = imageDao;
         this.cameraDao = cameraDao;
         this.matchDao = matchDao;
@@ -67,16 +67,16 @@ public class DetectionService {
         }
     }
 
-    public Image saveUnknown(List<String> unknown, Integer cameraId) {
+    public Image saveUnknown(List<Float> unknown, Integer cameraId) {
         Camera camera = cameraDao.findById(cameraId).get();
-        Customer customer = new Customer();
-        customer.setUnknown(true);
-        customerDao.save(customer);
-        customer.setFirstName("unknown "+customer.getId().toString());
+        Person person = new Person();
+        person.setUnknown(true);
+        personDao.save(person);
+        person.setFirstName("unknown "+ person.getId().toString());
         Image image = new Image();
-        image.setCustomer(customer);
+        image.setPerson(person);
         imageDao.save(image);
-        for (String descriptorFor: unknown
+        for (Float descriptorFor: unknown
         ) {
             Detection detection = new Detection();
             detection.setImage(image);

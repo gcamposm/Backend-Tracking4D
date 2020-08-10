@@ -11,27 +11,15 @@ import java.util.List;
 @Entity
 @Data
 @NoArgsConstructor
-public class Image {
+public class PersonType {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
     // Relations
-    @ManyToOne
-    @JoinColumn
-    private Person person;
-
-    @ManyToOne
-    @JoinColumn
-    private Camera camera;
-
-    @OneToMany(mappedBy = "image", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "type", cascade = CascadeType.ALL, fetch= FetchType.EAGER)
     @JsonIgnore
-    private List<Detection> detections = new ArrayList<>();
+    private List<Person> personList = new ArrayList<>();
     //Other attributes
-    private Boolean principal;
     private String name;
-    private String extension;
-    private String path;
 }

@@ -37,7 +37,7 @@ public class User implements UserDetails {
 
   @OneToOne
   @JsonIgnore
-  private Customer customer;
+  private Person person;
 
   //Other attributes
   @NotEmpty

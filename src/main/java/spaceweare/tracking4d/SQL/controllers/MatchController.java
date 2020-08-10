@@ -175,8 +175,8 @@ public class MatchController {
 
     @PostMapping("/getIncomeOutcome")
     public ResponseEntity getIncomeOutcome(@RequestParam("day") @DateTimeFormat(pattern = "yyyy-MM-dd") Date day,
-                                          @RequestParam("customerId") Integer customerId){
+                                          @RequestParam("personId") Integer personId){
 
-        return ResponseEntity.ok(matchService.getIncomeOutcome(day, customerId));
+        return ResponseEntity.ok(matchService.getIncomeOutcome(day, personId));
     }
 }

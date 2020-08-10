@@ -88,7 +88,7 @@ public class DetectionController {
     }
 
     @RequestMapping(value = "/saveUnknown", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity saveUnknown(@RequestParam("unknown") List<String> unknown,
+    public ResponseEntity saveUnknown(@RequestParam("unknown") List<Float> unknown,
                                       @RequestParam("cameraId") Integer cameraId){
         try{
             return ResponseEntity.ok(detectionService.saveUnknown(unknown, cameraId));

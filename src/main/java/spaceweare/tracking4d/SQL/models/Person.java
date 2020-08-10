@@ -11,7 +11,7 @@ import java.util.List;
 @Entity
 @Data
 @NoArgsConstructor
-public class Customer {
+public class Person {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,17 +22,27 @@ public class Customer {
     @JoinColumn
     private Company company;
 
-    private String activity;
+    @ManyToOne
+    @JoinColumn
+    private PersonType type;
 
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch= FetchType.EAGER)
+    @ManyToOne
+    @JoinColumn
+    private PersonPosition position;
+
+    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, fetch= FetchType.EAGER)
+    @JsonIgnore
+    private List<Location> locationList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, fetch= FetchType.EAGER)
     @JsonIgnore
     private List<Image> images = new ArrayList<>();
 
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch= FetchType.EAGER)
+    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, fetch= FetchType.EAGER)
     @JsonIgnore
     private List<Match> matches = new ArrayList<>();
 
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch= FetchType.EAGER)
+    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, fetch= FetchType.EAGER)
     @JsonIgnore
     private List<Address> addresses = new ArrayList<>();
 
@@ -49,4 +59,6 @@ public class Customer {
     private String genre;
     private Boolean unknown;
     private Boolean deleted;
+    private String activity;
+    private String emotion;
 }

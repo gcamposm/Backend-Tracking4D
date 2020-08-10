@@ -2,21 +2,20 @@ package spaceweare.tracking4d.SQL.models;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
 @Data
 @NoArgsConstructor
-public class Detection {
+public class Location {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private Float value;
-    private LocalDateTime clock;
-
+    //Relations
     @ManyToOne
     @JoinColumn
-    private Image image;
+    private Person person;
+    //Attributes
+    private Float longitude;
+    private Float latitude;
 }

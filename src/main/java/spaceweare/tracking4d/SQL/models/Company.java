@@ -17,11 +17,22 @@ public class Company {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    // Relations
+    //Relations
+    @ManyToOne
+    @JoinColumn
+    private Holding holding;
+
+    @ManyToOne
+    @JoinColumn
+    private Item item;
 
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, fetch= FetchType.EAGER)
     @JsonIgnore
-    private List<Customer> customerList = new ArrayList<>();
+    private List<Local> localList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, fetch= FetchType.EAGER)
+    @JsonIgnore
+    private List<Person> personList = new ArrayList<>();
 
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, fetch= FetchType.EAGER)
     @JsonIgnore

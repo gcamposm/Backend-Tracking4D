@@ -11,27 +11,14 @@ import java.util.List;
 @Entity
 @Data
 @NoArgsConstructor
-public class Image {
-
+public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
-    // Relations
-    @ManyToOne
-    @JoinColumn
-    private Person person;
-
-    @ManyToOne
-    @JoinColumn
-    private Camera camera;
-
-    @OneToMany(mappedBy = "image", cascade = CascadeType.ALL)
+    //Relations
+    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, fetch= FetchType.EAGER)
     @JsonIgnore
-    private List<Detection> detections = new ArrayList<>();
-    //Other attributes
-    private Boolean principal;
+    private List<Company> companyList = new ArrayList<>();
+    //Attributes
     private String name;
-    private String extension;
-    private String path;
 }

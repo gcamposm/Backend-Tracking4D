@@ -1,12 +1,8 @@
 package spaceweare.tracking4d;
 
 import spaceweare.tracking4d.FileManagement.service.FileStorageService;
-import spaceweare.tracking4d.SQL.dao.CameraDao;
-import spaceweare.tracking4d.SQL.dao.CommuneDao;
-import spaceweare.tracking4d.SQL.dao.RegionDao;
-import spaceweare.tracking4d.SQL.models.Camera;
-import spaceweare.tracking4d.SQL.models.Commune;
-import spaceweare.tracking4d.SQL.models.Region;
+import spaceweare.tracking4d.SQL.dao.*;
+import spaceweare.tracking4d.SQL.models.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -25,13 +21,17 @@ public class DBSeeder implements CommandLineRunner {
     private final RegionDao regionDao;
     private final CommuneDao communeDao;
     private final CameraDao cameraDao;
+    private final PersonTypeDao personTypeDao;
+    private final PersonPositionDao personPositionDao;
     private final FileStorageService fileStorageService;
 
-    public DBSeeder(RegionDao regionDao, CommuneDao communeDao, FileStorageService fileStorageService, CameraDao cameraDao) {
+    public DBSeeder(RegionDao regionDao, PersonPositionDao personPositionDao, PersonTypeDao personTypeDao, CommuneDao communeDao, FileStorageService fileStorageService, CameraDao cameraDao) {
         this.regionDao = regionDao;
         this.communeDao = communeDao;
         this.fileStorageService = fileStorageService;
         this.cameraDao = cameraDao;
+        this.personTypeDao = personTypeDao;
+        this.personPositionDao = personPositionDao;
     }
 
     public void seedRegions(){
@@ -70,11 +70,55 @@ public class DBSeeder implements CommandLineRunner {
         cameraDao.save(camera2);
     }
 
+    public void seedPersonTypes(){
+        PersonType seller = new PersonType();
+        seller.setName("Vendedor");
+        personTypeDao.save(seller);
+        PersonType customer = new PersonType();
+        customer.setName("Cliente");
+        personTypeDao.save(customer);
+        PersonType provider = new PersonType();
+        provider.setName("Proveedor");
+        personTypeDao.save(provider);
+        PersonType student = new PersonType();
+        student.setName("Alumno");
+        personTypeDao.save(student);
+        PersonType attorney = new PersonType();
+        attorney.setName("Apoderado");
+        personTypeDao.save(attorney);
+        PersonType teacher = new PersonType();
+        teacher.setName("Docente");
+        personTypeDao.save(teacher);
+        PersonType inspector = new PersonType();
+        inspector.setName("Inspector");
+        personTypeDao.save(inspector);
+        PersonType unknown = new PersonType();
+        unknown.setName("Desconocido");
+        personTypeDao.save(unknown);
+    }
+
+    public void seedPersonPositions(){
+        PersonPosition grocer = new PersonPosition();
+        grocer.setName("Bodeguero");
+        personPositionDao.save(grocer);
+        PersonPosition administrative = new PersonPosition();
+        administrative.setName("Administrativo");
+        personPositionDao.save(administrative);
+        PersonPosition craneOperator = new PersonPosition();
+        craneOperator.setName("Yalero");
+        personPositionDao.save(craneOperator);
+        PersonPosition unknown = new PersonPosition();
+        unknown.setName("Desconocido");
+        personPositionDao.save(unknown);
+    }
+
     @Override
     public void run(String... args) throws Exception {
         if(regionDao.findAll().size() == 0){
             seedRegions();
         }
         seedCameras();
+        seedPersonTypes();
+        seedPersonPositions();
     }
 }
