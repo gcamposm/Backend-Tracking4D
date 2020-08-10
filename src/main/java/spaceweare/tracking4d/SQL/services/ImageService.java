@@ -148,7 +148,7 @@ public class ImageService {
                 descriptors.add(descriptor);
             }
             face.put("descriptors", descriptors);
-            face.put("user", person.getFirstName());
+            face.put("user", person.getRut());
             faces.add(face);
         }
         return faces;
