@@ -31,6 +31,7 @@ public class Image {
     private List<Detection> detections = new ArrayList<>();
     //Other attributes
     private Boolean principal;
+    private Boolean deleted;
     private String name;
     private String extension;
     private String path;
