@@ -84,6 +84,20 @@ public class ImageService {
         }
     }
 
+    public String deleteWithPath(String path){
+        if(imageDao.findImageByPath(path).isPresent()){
+            Image image = imageDao.findImageByPath(path).get();
+            Path absoluteFilePath = fileStorageService.getFileStorageLocation();
+            //String fileName = getImageName(personToUpdate);
+            String directory = absoluteFilePath + "/" + image.getPerson().getRut() + "/" + image.getName() + image.getExtension();
+            System.out.println(directory);
+            File fileToDelete = new File(directory);
+            imageDao.delete(image);
+            return "deleted";
+        }
+        return  null;
+    }
+
     public Image chargeData(List<Float> descriptorList, String path, String personRut) {
         if(personDao.findPersonByRut(personRut).isPresent())
         {

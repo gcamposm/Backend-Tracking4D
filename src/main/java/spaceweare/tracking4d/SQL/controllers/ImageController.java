@@ -91,6 +91,16 @@ public class ImageController {
         }
     }
 
+    @RequestMapping(value = "/deleteWithPath", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> deleteWithPath (@RequestParam("path") String path){
+        try{
+            return ResponseEntity.ok(imageService.deleteWithPath(path));
+        }
+        catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
     @RequestMapping(value = "/create/withData", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity chargeData(@RequestParam("descriptor") List<Float> descriptorList,
                                      @RequestParam("path") String path,
