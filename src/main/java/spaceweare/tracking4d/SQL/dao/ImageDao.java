@@ -13,7 +13,7 @@ import java.util.Optional;
 public interface ImageDao extends JpaRepository<Image, Integer> {
     Image findImageById(Integer id);
 
-    List<Image> findAllByPerson(Person person);
+    List<Image> findAllByPersonAndDeleted(Person person, Boolean deleted);
 
     Optional<Image> findImageByPath(String path);
 

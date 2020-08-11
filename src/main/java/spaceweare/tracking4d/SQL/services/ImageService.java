@@ -69,6 +69,7 @@ public class ImageService {
             imageFound.setPath(image.getPath());
             imageFound.setDetections(image.getDetections());
             imageFound.setCamera(image.getCamera());
+            imageFound.setDeleted(image.getDeleted());
             return imageDao.save(imageFound);
         }
         return null;
@@ -82,6 +83,22 @@ public class ImageService {
         else{
             return  null;
         }
+    }
+
+    public List<String> deleteWithPath(String path){
+        if(imageDao.findImageByPath(path).isPresent()){
+            Image image = imageDao.findImageByPath(path).get();
+            image.setDeleted(true);
+            imageDao.save(image);
+            Path absoluteFilePath = fileStorageService.getFileStorageLocation();
+            //String fileName = getImageName(personToUpdate);
+            String directory = absoluteFilePath + "/" + image.getPerson().getRut() + "/" + image.getName() + image.getExtension();
+            System.out.println(directory);
+            File fileToDelete = new File(directory);
+            fileToDelete.delete();
+            return pathsOnePerson(image.getPerson());
+        }
+        return  null;
     }
 
     public Image chargeData(List<Float> descriptorList, String path, String personRut) {
@@ -133,7 +150,7 @@ public class ImageService {
         ) {
             Map<Object, Object> face = new HashMap<>();
             List<Map<Object, Object>> descriptors = new ArrayList<>();
-            List<Image> images = imageDao.findAllByPerson(person);
+            List<Image> images = imageDao.findAllByPersonAndDeleted(person, false);
             for (Image image:images
                  ) {
                 Map<Object, Object> descriptor = new HashMap<>();
@@ -315,6 +332,7 @@ public class ImageService {
         image.setName(fileName);
         image.setExtension(ext);
         image.setPrincipal(false);
+        image.setDeleted(false);
         String path = "/data/users/"+ personToUpdate.getRut()+"/"+fileName+ext;
         image.setPath(path);
         List<Image> imageList = personToUpdate.getImages();
@@ -410,7 +428,7 @@ public class ImageService {
     }
 
     public List<String> pathsByPerson(Person person) {
-        List<Image> images = imageDao.findAllByPerson(person);
+        List<Image> images = imageDao.findAllByPersonAndDeleted(person, false);
         List<String> paths = new ArrayList<>();
         for (Image image:images
              ) {
@@ -426,7 +444,7 @@ public class ImageService {
              ) {
             Map<Object, Object> pathWithPerson = new HashMap<>();
 
-            List<Image> images = imageDao.findAllByPerson(person);
+            List<Image> images = imageDao.findAllByPersonAndDeleted(person, false);
 
             List<String> paths = new ArrayList<>();
             for (Image image:images
@@ -443,7 +461,7 @@ public class ImageService {
     public Object pathsWithOnePerson(Person person) {
             Map<Object, Object> pathWithPerson = new HashMap<>();
 
-            List<Image> images = imageDao.findAllByPerson(person);
+            List<Image> images = imageDao.findAllByPersonAndDeleted(person, false);
 
             List<String> paths = new ArrayList<>();
             for (Image image:images
@@ -453,6 +471,16 @@ public class ImageService {
             pathWithPerson.put("paths", paths);
             pathWithPerson.put("person", person);
         return pathWithPerson;
+    }
+
+    public List<String> pathsOnePerson(Person person) {
+        List<Image> images = imageDao.findAllByPersonAndDeleted(person, false);
+        List<String> paths = new ArrayList<>();
+        for (Image image:images
+        ) {
+            paths.add(image.getPath());
+        }
+        return paths;
     }
 
     public List<Float> detectionsByPath(Image image) {
