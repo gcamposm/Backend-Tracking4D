@@ -88,7 +88,6 @@ public class PersonService {
             personFound.setPhoneNumber(person.getPhoneNumber());
             personFound.setUser(person.getUser());
             personFound.setUnknown(person.getUnknown());
-            personFound.setEmotion(person.getEmotion());
             return personDao.save(personFound);
         }
         return null;

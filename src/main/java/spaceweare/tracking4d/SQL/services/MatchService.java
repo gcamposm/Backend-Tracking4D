@@ -7,6 +7,8 @@ import spaceweare.tracking4d.SQL.dao.PersonDao;
 import spaceweare.tracking4d.SQL.dao.MatchDao;
 import spaceweare.tracking4d.SQL.models.Person;
 import spaceweare.tracking4d.SQL.models.Match;
+import spaceweare.tracking4d.SQL.models.Temperature;
+
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -50,6 +52,7 @@ public class MatchService {
             matchFound.setCompany(match.getCompany());
             matchFound.setHour(match.getHour());
             matchFound.setPerson(match.getPerson());
+            matchFound.setTemperature(match.getTemperature());
             return matchDao.save(matchFound);
         }
         return null;
@@ -115,6 +118,22 @@ public class MatchService {
         LocalDateTime secondLocalDate = LocalDateTime.ofInstant(secondCurrent,
                 ZoneId.systemDefault()).plusDays(1);
         return matchDao.findMatchByHourBetween(firstLocalDate, secondLocalDate);
+    }
+
+    public List<Match> findMatchByInterval(Integer interval){
+        Calendar currentCalendar = Calendar.getInstance();
+        Date secondCurrentDate = currentCalendar.getTime();
+        Integer minute = currentCalendar.get(Calendar.MINUTE);
+        currentCalendar.set(Calendar.MINUTE, minute - interval);
+        Date firstCurrentDate = currentCalendar.getTime();
+
+        Instant firstCurrentInstant = firstCurrentDate.toInstant();
+        Instant secondCurrentInstant = secondCurrentDate.toInstant();
+        LocalDateTime firstCurrentLocal = LocalDateTime.ofInstant(firstCurrentInstant,
+                ZoneId.systemDefault());
+        LocalDateTime secondCurrentLocal = LocalDateTime.ofInstant(secondCurrentInstant,
+                ZoneId.systemDefault());
+        return matchDao.findMatchByHourBetween(firstCurrentLocal, secondCurrentLocal);
     }
 
     public List<Match> filterByPerson(List<Match> matchListPerDay, Integer personId) {
