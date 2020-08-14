@@ -1,5 +1,6 @@
 package spaceweare.tracking4d.SQL.services;
 
+import org.apache.commons.codec.binary.Base64;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import spaceweare.tracking4d.Exceptions.FileDeleteException;
@@ -354,6 +355,27 @@ public class ImageService {
         File convertFile = new File(directory + "/" + fileName + ext);
         try(FileOutputStream fos = new FileOutputStream(convertFile)) {
             fos.write(fileBytes);
+            Image image = createImageWithPerson(personToUpdate, ext, fileName);
+            personDao.save(personToUpdate);
+            //return mapToImageResponse(image);
+            return image.getPath();
+            //return personDao.save(personToUpdate);
+        }catch(Exception e){
+            throw new IOException("The image could not be uploaded" + e.getMessage());
+        }
+    }
+
+    public String uploadPhotos(Person personToUpdate, String imageValue) throws IOException {
+        System.out.println(imageValue);
+        byte[] imageByte= Base64.decodeBase64(imageValue);
+        String ext = ".jpg";
+        Path absoluteFilePath = fileStorageService.getFileStorageLocation();
+        String fileName = getImageName(personToUpdate);
+        String directory = absoluteFilePath + "/" + personToUpdate.getRut();
+        System.out.println(directory);
+        File convertFile = new File(directory + "/" + fileName + ext);
+        try(FileOutputStream fos = new FileOutputStream(convertFile)) {
+            fos.write(imageByte);
             Image image = createImageWithPerson(personToUpdate, ext, fileName);
             personDao.save(personToUpdate);
             //return mapToImageResponse(image);
