@@ -55,5 +55,6 @@ public class Person {
     private String genre;
     private Boolean unknown;
     private Boolean deleted;
+    private Boolean actual;
     private String activity;
 }

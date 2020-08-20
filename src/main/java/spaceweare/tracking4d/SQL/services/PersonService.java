@@ -88,6 +88,7 @@ public class PersonService {
             personFound.setPhoneNumber(person.getPhoneNumber());
             personFound.setUser(person.getUser());
             personFound.setUnknown(person.getUnknown());
+            personFound.setActual(person.getActual());
             return personDao.save(personFound);
         }
         return null;
@@ -116,41 +117,6 @@ public class PersonService {
         }
     }
 
-    public Person uploadImage(Person personToUpdate, String name, byte[] fileBytes) throws IOException {
-        String ext = name.substring(name.lastIndexOf("."));
-        Path absoluteFilePath = fileStorageService.getFileStorageLocation();
-        Integer index = 0;
-        if (imageDao.findTopByOrderByIdDesc() != null)
-        {
-            index = imageDao.findTopByOrderByIdDesc().getId()+1;
-        }
-        String fileName = personToUpdate.getRut() + "_" + index.toString();
-        File convertFile = new File(absoluteFilePath + "/" + fileName + ext);
-        try(FileOutputStream fos = new FileOutputStream(convertFile)) {
-            byte[] bytes = fileBytes;
-            fos.write(bytes);
-            ImageService.createImageWithPerson(personToUpdate, ext, fileName);
-            return personToUpdate;
-        }catch(IOException IEX){
-            return null;
-        }
-    }
-
-    public Person register(String name) {
-        String[] data = name.split(" ");
-        String firstName = data[0];
-        String lastName = data[1];
-        Path absoluteFilePath = fileStorageService.getFileStorageLocation();
-        String directory = absoluteFilePath + "/" + firstName + " " + lastName;
-        File directoryFile = new File(directory);
-        if (! directoryFile.exists()){
-            directoryFile.mkdir();
-        }
-        Person person = new Person();
-        person.setFirstName(firstName);
-        person.setLastName(lastName);
-        return personDao.save(person);
-    }
     public XSSFWorkbook writeOutputFile(List<Match> matchList, Date day, List<Contact> contacts){
         try {
             XSSFWorkbook myWorkBook = new XSSFWorkbook();
@@ -345,5 +311,27 @@ public class PersonService {
 
     public Object byRut(String personRut) {
         return imageService.pathsWithOnePerson(personDao.findPersonByRut(personRut).get());
+    }
+
+    public Object setActual(String rut) {
+        if(personDao.findPersonByActual(true).isPresent()){
+            Person actual = personDao.findPersonByActual(true).get();
+            actual.setActual(false);
+            personDao.save(actual);
+        }
+        if(personDao.findPersonByRut(rut).isPresent())
+        {
+            Person person = personDao.findPersonByRut(rut).get();
+            person.setActual(true);
+            return imageService.pathsWithOnePerson(personDao.save(person));
+        }
+        return null;
+    }
+
+    public Object getActual() {
+        if(personDao.findPersonByActual(true).isPresent()){
+            return imageService.pathsWithOnePerson(personDao.findPersonByActual(true).get());
+        }
+        return null;
     }
 }
