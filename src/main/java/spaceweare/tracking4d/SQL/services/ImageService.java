@@ -93,7 +93,7 @@ public class ImageService {
             imageDao.save(image);
             Path absoluteFilePath = fileStorageService.getFileStorageLocation();
             //String fileName = getImageName(personToUpdate);
-            String directory = absoluteFilePath + "/" + image.getPerson().getRut() + "/" + image.getName() + image.getExtension();
+            String directory = absoluteFilePath + "/users/" + image.getPerson().getRut() + "/" + image.getName() + image.getExtension();
             System.out.println(directory);
             File fileToDelete = new File(directory);
             fileToDelete.delete();
@@ -350,7 +350,7 @@ public class ImageService {
         String ext = imageName.substring(imageName.lastIndexOf("."));
         Path absoluteFilePath = fileStorageService.getFileStorageLocation();
         String fileName = getImageName(personToUpdate);
-        String directory = absoluteFilePath + "/" + personToUpdate.getRut();
+        String directory = absoluteFilePath + "/users/" + personToUpdate.getRut();
         System.out.println(directory);
         File convertFile = new File(directory + "/" + fileName + ext);
         try(FileOutputStream fos = new FileOutputStream(convertFile)) {
@@ -371,7 +371,7 @@ public class ImageService {
         String ext = ".jpg";
         Path absoluteFilePath = fileStorageService.getFileStorageLocation();
         String fileName = getImageName(personToUpdate);
-        String directory = absoluteFilePath + "/" + personToUpdate.getRut();
+        String directory = absoluteFilePath + "/users/" + personToUpdate.getRut();
         System.out.println(directory);
         File convertFile = new File(directory + "/" + fileName + ext);
         try(FileOutputStream fos = new FileOutputStream(convertFile)) {

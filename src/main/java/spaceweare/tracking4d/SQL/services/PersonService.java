@@ -47,7 +47,7 @@ public class PersonService {
 
     public Object create(Person person){
         Path absoluteFilePath = fileStorageService.getFileStorageLocation();
-        String directory = absoluteFilePath + "/" + person.getRut();
+        String directory = absoluteFilePath + "/users/" + person.getRut();
         File directoryFile = new File(directory);
         if (! directoryFile.exists()){
             directoryFile.mkdir();
