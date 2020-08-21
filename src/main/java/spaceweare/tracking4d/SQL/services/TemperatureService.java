@@ -92,11 +92,11 @@ public class TemperatureService {
         return null;
     }
 
-    public Object python(Integer int1, Integer int2, String string) {
+    public Object python(List<Integer> pixels, Integer temperature, String date) {
         Map<Object, Object> json = new HashMap<>();
-        json.put("int1", int1);
-        json.put("int2", int2);
-        json.put("string", string);
+        json.put("pixels", pixels);
+        json.put("temperature", temperature);
+        json.put("date", date);
         return json;
     }
 }
