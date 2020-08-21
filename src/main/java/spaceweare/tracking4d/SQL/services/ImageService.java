@@ -106,10 +106,14 @@ public class ImageService {
         if(personDao.findPersonByRut(personRut).isPresent())
         {
             Person person = personDao.findPersonByRut(personRut).get();
+            person.setToTrain(false);
+            personDao.save(person);
             return createDescriptorWithPerson(person, descriptorList, path);
         }
         Person person = new Person();
         person.setRut(personRut);
+        person.setToTrain(false);
+        personDao.save(person);
         return createDescriptorWithPerson(personDao.save(person), descriptorList, path);
     }
 
@@ -379,10 +383,9 @@ public class ImageService {
         try(FileOutputStream fos = new FileOutputStream(convertFile)) {
             fos.write(imageByte);
             Image image = createImageWithPerson(personToUpdate, ext, fileName);
+            personToUpdate.setToTrain(true);
             personDao.save(personToUpdate);
-            //return mapToImageResponse(image);
             return image.getPath();
-            //return personDao.save(personToUpdate);
         }catch(Exception e){
             throw new IOException("The image could not be uploaded" + e.getMessage());
         }
