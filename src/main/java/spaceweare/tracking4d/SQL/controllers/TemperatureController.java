@@ -90,4 +90,16 @@ public class TemperatureController {
             return ResponseEntity.badRequest().build();
         }
     }
+
+    @PostMapping("/python")
+    @ResponseBody
+    public ResponseEntity python(@RequestParam("int1") Integer int1,
+                                 @RequestParam("int2") Integer int2,
+                                 @RequestParam("string") String string) {
+        try {
+            return ResponseEntity.ok(temperatureService.python(int1, int2, string));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
 }

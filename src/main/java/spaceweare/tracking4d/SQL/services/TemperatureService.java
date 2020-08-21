@@ -91,4 +91,12 @@ public class TemperatureService {
         }
         return null;
     }
+
+    public Object python(Integer int1, Integer int2, String string) {
+        Map<Object, Object> json = new HashMap<>();
+        json.put("int1", int1);
+        json.put("int2", int2);
+        json.put("string", string);
+        return json;
+    }
 }
