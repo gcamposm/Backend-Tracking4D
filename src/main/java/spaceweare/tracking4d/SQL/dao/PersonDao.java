@@ -11,6 +11,7 @@ public interface PersonDao extends JpaRepository<Person, Integer> {
     Optional<Person> findPersonByFirstNameAndLastName(String firstName, String lastName);
     Optional<Person> findPersonByRut(String rut);
     Optional<Person> findPersonByFirstName(String firstName);
+    Optional<Person> findPersonByActual(Boolean actual);
     List<Person> findAllByUnknown(Boolean unknown);
     List<Person> findAllByUnknownAndDeleted(Boolean unknown, Boolean deleted);
 }

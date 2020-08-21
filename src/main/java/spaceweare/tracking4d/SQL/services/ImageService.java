@@ -1,5 +1,6 @@
 package spaceweare.tracking4d.SQL.services;
 
+import org.apache.commons.codec.binary.Base64;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import spaceweare.tracking4d.Exceptions.FileDeleteException;
@@ -92,7 +93,7 @@ public class ImageService {
             imageDao.save(image);
             Path absoluteFilePath = fileStorageService.getFileStorageLocation();
             //String fileName = getImageName(personToUpdate);
-            String directory = absoluteFilePath + "/" + image.getPerson().getRut() + "/" + image.getName() + image.getExtension();
+            String directory = absoluteFilePath + "/users/" + image.getPerson().getRut() + "/" + image.getName() + image.getExtension();
             System.out.println(directory);
             File fileToDelete = new File(directory);
             fileToDelete.delete();
@@ -105,10 +106,14 @@ public class ImageService {
         if(personDao.findPersonByRut(personRut).isPresent())
         {
             Person person = personDao.findPersonByRut(personRut).get();
+            person.setToTrain(false);
+            personDao.save(person);
             return createDescriptorWithPerson(person, descriptorList, path);
         }
         Person person = new Person();
         person.setRut(personRut);
+        person.setToTrain(false);
+        personDao.save(person);
         return createDescriptorWithPerson(personDao.save(person), descriptorList, path);
     }
 
@@ -197,6 +202,8 @@ public class ImageService {
         //List<ImageResponse> imageResponseList = new ArrayList<>();
         if(personDao.findPersonByRut(personRut).isPresent()) {
             Person person = personDao.findPersonByRut(personRut).get();
+            person.setToTrain(true);
+            personDao.save(person);
             List<String> paths = new ArrayList<>();
             for (MultipartFile file : fileList
             ) {
@@ -349,7 +356,7 @@ public class ImageService {
         String ext = imageName.substring(imageName.lastIndexOf("."));
         Path absoluteFilePath = fileStorageService.getFileStorageLocation();
         String fileName = getImageName(personToUpdate);
-        String directory = absoluteFilePath + "/" + personToUpdate.getRut();
+        String directory = absoluteFilePath + "/users/" + personToUpdate.getRut();
         System.out.println(directory);
         File convertFile = new File(directory + "/" + fileName + ext);
         try(FileOutputStream fos = new FileOutputStream(convertFile)) {
@@ -359,6 +366,26 @@ public class ImageService {
             //return mapToImageResponse(image);
             return image.getPath();
             //return personDao.save(personToUpdate);
+        }catch(Exception e){
+            throw new IOException("The image could not be uploaded" + e.getMessage());
+        }
+    }
+
+    public String uploadPhotos(Person personToUpdate, String imageValue) throws IOException {
+        System.out.println(imageValue);
+        byte[] imageByte= Base64.decodeBase64(imageValue);
+        String ext = ".jpg";
+        Path absoluteFilePath = fileStorageService.getFileStorageLocation();
+        String fileName = getImageName(personToUpdate);
+        String directory = absoluteFilePath + "/users/" + personToUpdate.getRut();
+        System.out.println(directory);
+        File convertFile = new File(directory + "/" + fileName + ext);
+        try(FileOutputStream fos = new FileOutputStream(convertFile)) {
+            fos.write(imageByte);
+            Image image = createImageWithPerson(personToUpdate, ext, fileName);
+            personToUpdate.setToTrain(true);
+            personDao.save(personToUpdate);
+            return image.getPath();
         }catch(Exception e){
             throw new IOException("The image could not be uploaded" + e.getMessage());
         }

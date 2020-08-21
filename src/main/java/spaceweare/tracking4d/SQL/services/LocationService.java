@@ -35,7 +35,7 @@ public class LocationService {
             Location locationFound = locationDaoDao.findById(id).get();
             locationFound.setLatitude(location.getLatitude());
             locationFound.setLongitude(location.getLongitude());
-            locationFound.setPerson(location.getPerson());
+            locationFound.setMatchList(location.getMatchList());
             return locationDaoDao.save(locationFound);
         }
         return null;

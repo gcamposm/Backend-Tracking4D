@@ -1,5 +1,6 @@
 package spaceweare.tracking4d.SQL.controllers;
 
+import org.apache.commons.codec.binary.Base64;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +12,9 @@ import spaceweare.tracking4d.SQL.dao.ImageDao;
 import spaceweare.tracking4d.SQL.models.Image;
 import spaceweare.tracking4d.SQL.services.ImageService;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
@@ -104,7 +107,7 @@ public class ImageController {
     @RequestMapping(value = "/create/withData", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity chargeData(@RequestParam("descriptor") List<Float> descriptorList,
                                      @RequestParam("path") String path,
-                                     @RequestParam("user") String personRut){
+                                     @RequestParam("rut") String personRut){
         try{
             return ResponseEntity.ok(imageService.chargeData(descriptorList, path, personRut));
         }
@@ -272,6 +275,22 @@ public class ImageController {
         try{
             if(personDao.findPersonByRut(personRut).isPresent()) {
                 return ResponseEntity.status(200).body(imageService.uploadImage(personDao.findPersonByRut(personRut).get(), file.getOriginalFilename(), file.getBytes()));
+            }else{
+                return ResponseEntity.status(500).body("The person with rut: " + personRut + " could not be found");
+            }
+        }catch (Exception e){
+            return ResponseEntity.status(500).body("Could not upload the images: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/uploadPhotos/{personRut}")
+    @ResponseBody
+    public ResponseEntity uploadPhotos(@PathVariable String personRut ,
+                                      @RequestParam("imageValue") String imageValue){
+        try{
+            if(personDao.findPersonByRut(personRut).isPresent()) {
+                System.out.println("Persona encontrada");
+                return ResponseEntity.status(200).body(imageService.uploadPhotos(personDao.findPersonByRut(personRut).get(), imageValue));
             }else{
                 return ResponseEntity.status(500).body("The person with rut: " + personRut + " could not be found");
             }

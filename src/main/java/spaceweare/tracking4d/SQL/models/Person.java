@@ -32,10 +32,6 @@ public class Person {
 
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, fetch= FetchType.EAGER)
     @JsonIgnore
-    private List<Location> locationList = new ArrayList<>();
-
-    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, fetch= FetchType.EAGER)
-    @JsonIgnore
     private List<Image> images = new ArrayList<>();
 
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, fetch= FetchType.EAGER)
@@ -59,6 +55,7 @@ public class Person {
     private String genre;
     private Boolean unknown;
     private Boolean deleted;
+    private Boolean actual;
+    private Boolean toTrain;
     private String activity;
-    private String emotion;
 }

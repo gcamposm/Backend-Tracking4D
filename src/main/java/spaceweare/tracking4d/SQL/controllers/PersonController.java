@@ -135,6 +135,29 @@ public class PersonController {
         }
     }
 
+    @PostMapping("/setActual/{rut}")
+    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseBody
+    public ResponseEntity setActual (@PathVariable String rut){
+        try{
+            return ResponseEntity.ok(personService.setActual(rut));
+        }
+        catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping("/getActual")
+    @ResponseBody
+    public ResponseEntity getActual(){
+        try{
+            return ResponseEntity.ok(personService.getActual());
+        }
+        catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PostMapping("/contactsBetweenPersons")
     @ResponseStatus(HttpStatus.CREATED)
