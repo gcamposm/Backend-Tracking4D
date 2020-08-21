@@ -56,5 +56,6 @@ public class Person {
     private Boolean unknown;
     private Boolean deleted;
     private Boolean actual;
+    private Boolean toTrain;
     private String activity;
 }

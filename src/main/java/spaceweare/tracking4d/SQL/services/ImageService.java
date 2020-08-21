@@ -198,6 +198,8 @@ public class ImageService {
         //List<ImageResponse> imageResponseList = new ArrayList<>();
         if(personDao.findPersonByRut(personRut).isPresent()) {
             Person person = personDao.findPersonByRut(personRut).get();
+            person.setToTrain(true);
+            personDao.save(person);
             List<String> paths = new ArrayList<>();
             for (MultipartFile file : fileList
             ) {
