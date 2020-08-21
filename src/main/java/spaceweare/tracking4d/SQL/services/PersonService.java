@@ -47,7 +47,7 @@ public class PersonService {
 
     public Object create(Person person){
         Path absoluteFilePath = fileStorageService.getFileStorageLocation();
-        String directory = absoluteFilePath + "/" + person.getRut();
+        String directory = absoluteFilePath + "/users/" + person.getRut();
         File directoryFile = new File(directory);
         if (! directoryFile.exists()){
             directoryFile.mkdir();
@@ -56,6 +56,7 @@ public class PersonService {
             Person personFound = personDao.findPersonByRut(person.getRut()).get();
             personFound.setUnknown(false);
             personFound.setDeleted(false);
+            personFound.setToTrain(false);
             return imageService.pathsWithOnePerson(personDao.save(personFound));
         }
         person.setUnknown(false);
@@ -88,6 +89,7 @@ public class PersonService {
             personFound.setPhoneNumber(person.getPhoneNumber());
             personFound.setUser(person.getUser());
             personFound.setUnknown(person.getUnknown());
+            personFound.setToTrain(person.getToTrain());
             personFound.setActual(person.getActual());
             return personDao.save(personFound);
         }
