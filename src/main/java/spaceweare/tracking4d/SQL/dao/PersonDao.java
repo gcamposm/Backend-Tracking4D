@@ -12,4 +12,5 @@ public interface PersonDao extends JpaRepository<Person, Integer> {
     Optional<Person> findPersonByRut(String rut);
     Optional<Person> findPersonByActual(Boolean actual);
     List<Person> findAllByUnknownAndDeleted(Boolean unknown, Boolean deleted);
+    List<Person> findAllByDeleted(Boolean deleted);
 }

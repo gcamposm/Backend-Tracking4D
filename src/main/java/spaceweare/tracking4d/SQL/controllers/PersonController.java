@@ -347,7 +347,7 @@ public class PersonController {
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
     public ResponseEntity createUnknown (@RequestParam("photoUnknown") String photoUnknown,
-                                         @RequestParam("unknownList") List<Float> descriptors){
+                                         @RequestParam("descriptors") List<Float> descriptors){
         try{
             return ResponseEntity.ok(personService.createUnknown(photoUnknown, descriptors));
         }

@@ -337,6 +337,12 @@ public class PersonService {
         unknown.setFirstName(unknownID);
         unknown.setRut(unknownID);
         personDao.save(unknown);
+        Path absoluteFilePath = fileStorageService.getFileStorageLocation();
+        String directory = absoluteFilePath + "/users/" + unknown.getRut();
+        File directoryFile = new File(directory);
+        if (! directoryFile.exists()){
+            directoryFile.mkdir();
+        }
         return imageService.chargeData(descriptors, imageService.uploadPhotos(unknown, photoUnknown), unknown.getRut());
     }
 }
