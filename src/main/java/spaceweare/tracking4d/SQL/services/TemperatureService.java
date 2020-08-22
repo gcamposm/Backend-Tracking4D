@@ -92,10 +92,19 @@ public class TemperatureService {
         return null;
     }
 
-    public Object python(List<Integer> pixels, Integer temperature, String date) {
+    public Object python(List<Float> pixels, String date) {
         Map<Object, Object> json = new HashMap<>();
+       /* Float total;
+        for (Float temperature: pixels
+             ) {
+            total += temperature;
+        }
+        Float mean = total / pixels.size();*/
+        //System.out.println(mean);
+        Float last = pixels.get(pixels.size()-1);
+        System.out.println(last);
+        json.put("last", last);
         json.put("pixels", pixels);
-        json.put("temperature", temperature);
         json.put("date", date);
         return json;
     }
