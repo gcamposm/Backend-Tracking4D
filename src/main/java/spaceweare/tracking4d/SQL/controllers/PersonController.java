@@ -341,4 +341,18 @@ public class PersonController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
     }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @PostMapping("/createUnknown")
+    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseBody
+    public ResponseEntity createUnknown (@RequestParam("photoUnknown") String photoUnknown,
+                                         @RequestParam("unknownList") List<Float> descriptors){
+        try{
+            return ResponseEntity.ok(personService.createUnknown(photoUnknown, descriptors));
+        }
+        catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
 }

@@ -326,4 +326,17 @@ public class PersonService {
         }
         return  matchListWithoutPerson;
     }
+
+    public Object createUnknown(String photoUnknown, List<Float> descriptors) throws IOException {
+        Person unknown = new Person();
+        unknown.setDeleted(false);
+        unknown.setToTrain(false);
+        unknown.setUnknown(true);
+        personDao.save(unknown);
+        String unknownID = "unknown"+unknown.getId();
+        unknown.setFirstName(unknownID);
+        unknown.setRut(unknownID);
+        personDao.save(unknown);
+        return imageService.chargeData(descriptors, imageService.uploadPhotos(unknown, photoUnknown), unknown.getRut());
+    }
 }
