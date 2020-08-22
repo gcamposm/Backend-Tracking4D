@@ -238,28 +238,6 @@ public class PersonService {
         }
     }
 
-    private boolean personWrite(List<Person> readies, Person person) {
-        for (Person ready :readies
-                ) {
-            if(person.getId().equals(ready.getId())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private List<Match> getListOfContacts(List<Match> matches, Person person) {
-        List<Match> matchListWithoutPerson = new ArrayList<>();
-        for (Match match:matches
-             ) {
-            if(!match.getPerson().getId().equals(person.getId()))
-            {
-                matchListWithoutPerson.add(match);
-            }
-        }
-        return  matchListWithoutPerson;
-    }
-
     public  List<Contact> contactsBetweenPersons(Date hour) {
         List<Contact> contacts = new ArrayList<>();
         Calendar calendar = new GregorianCalendar();
@@ -335,5 +313,17 @@ public class PersonService {
             return imageService.pathsWithOnePerson(personDao.findPersonByActual(true).get());
         }
         return null;
+    }
+
+    private List<Match> getListOfContacts(List<Match> matches, Person person) {
+        List<Match> matchListWithoutPerson = new ArrayList<>();
+        for (Match match:matches
+        ) {
+            if(!match.getPerson().getId().equals(person.getId()))
+            {
+                matchListWithoutPerson.add(match);
+            }
+        }
+        return  matchListWithoutPerson;
     }
 }

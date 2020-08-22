@@ -85,8 +85,4 @@ public class AddressService {
             throw new EntityNotFoundException("Could not found the commune with name: " + name + " Error: " + e.getMessage());
         }
     }
-
-    public List<Region> getRegionList(){
-        return regionDao.findAll();
-    }
 }

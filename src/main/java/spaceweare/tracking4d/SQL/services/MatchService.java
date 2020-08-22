@@ -7,8 +7,6 @@ import spaceweare.tracking4d.SQL.dao.PersonDao;
 import spaceweare.tracking4d.SQL.dao.MatchDao;
 import spaceweare.tracking4d.SQL.models.Person;
 import spaceweare.tracking4d.SQL.models.Match;
-import spaceweare.tracking4d.SQL.models.Temperature;
-
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;

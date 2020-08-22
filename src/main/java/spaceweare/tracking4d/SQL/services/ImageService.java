@@ -397,22 +397,6 @@ public class ImageService {
         return principalImage != null;
     }
 
-    //get the image url for display in a web browser
-    public String getImageUrl(Person person){
-        String url = "http://104.131.15.22:8080/backend-tracking4d";
-        String rut = "";
-        String rutReplaced = "";
-        if(havePrincipalImage(person)){
-            rut = person.getRut();
-            rutReplaced = rut.replaceAll("[^a-zA-Z0-9]", "");
-            System.out.println("Rut: " +  rut + " rutReplaced: " + rutReplaced);
-            return url.concat("/persons/web/image/preview/" + rutReplaced);
-        }
-        else{
-            return "";
-        }
-    }
-
     private ImageResponse mapToImageResponse(Image image){
         ImageResponse imageResponse = new ImageResponse();
         imageResponse.setId(image.getId());

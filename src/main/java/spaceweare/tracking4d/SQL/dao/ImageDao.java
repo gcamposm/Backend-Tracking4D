@@ -17,8 +17,6 @@ public interface ImageDao extends JpaRepository<Image, Integer> {
 
     Optional<Image> findImageByPath(String path);
 
-    Image findTopByOrderByIdDesc();
-
     @Query("select i.id from Image i where i.principal = true and i.person =?1")
     Integer findImageByPrincipalEquals(Person person);
 
