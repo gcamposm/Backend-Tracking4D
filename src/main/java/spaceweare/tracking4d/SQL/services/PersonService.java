@@ -139,7 +139,7 @@ public class PersonService {
             String path = "";
 
             Row headerRow = mySheet.createRow(rownum++);
-            String[] columns = {"Nombre", "Apellido", "Rut", "Género", "Usuario", "Correo", "Celular", "Zona de trabajo", "Cámara", "Ingreso", "Salida", "Estadía", "Contactos"};
+            String[] columns = {"Nombre", "Apellido", "Rut", "Género", "Usuario", "Correo", "Celular", "Zona de trabajo", "Cámara", "Ingreso", "Salida", "Estadía", "Nº contactos", "Contactos"};
             for (int i = 0; i < columns.length; i++) {
                 Cell cell = headerRow.createCell(i);
                 cell.setCellValue(columns[i]);
@@ -147,12 +147,9 @@ public class PersonService {
 
             for (Match match : matchList) {
                 if(!match.getPerson().getUnknown()){
-                    System.out.println("Creando");
                     List<Match> inOut = matchService.getIncomeOutcome(day, match.getPerson().getId());
                     Row row = mySheet.createRow(rownum++);
                     Hyperlink link = (Hyperlink) createHelper.createHyperlink(HyperlinkType.URL);
-                    //path = URLEncoder.encode(path, "UTF-8");
-                    //link.setAddress(match.getPerson().getFirstName());
                     row.createCell(0)
                             .setCellValue(match.getPerson().getFirstName());
                     row.createCell(1)
@@ -219,12 +216,14 @@ public class PersonService {
                             ) {
                                 if(!matchContact.getPerson().getId().equals(personId) && !ready.contains(matchContact.getPerson()) )
                                 {
-                                    row.createCell(12 + count)
+                                    row.createCell(13 + count)
                                             .setCellValue(matchContact.getPerson().getFirstName());
                                     count++;
                                     ready.add(matchContact.getPerson());
                                 }
                             }
+                            row.createCell(12)
+                                    .setCellValue(count+"");
                         }
                     }
                 }
