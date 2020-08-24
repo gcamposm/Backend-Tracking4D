@@ -19,6 +19,10 @@ public class Temperature {
     @OneToMany(mappedBy = "temperature", cascade = CascadeType.ALL, fetch= FetchType.EAGER)
     @JsonIgnore
     private List<Match> matchList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "temperature", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Pixel> pixels = new ArrayList<>();
     //Attributes
     private Float value;
     private LocalDateTime detectedHour;
