@@ -340,7 +340,7 @@ public class ImageService {
         image.setExtension(ext);
         image.setPrincipal(false);
         image.setDeleted(false);
-        String path = "/data/users/"+ personToUpdate.getRut()+"/"+fileName+ext;
+        String path = "../../assets/data/users/"+ personToUpdate.getRut()+"/"+fileName+ext;
         image.setPath(path);
         List<Image> imageList = personToUpdate.getImages();
         if (imageList.size() == 0) {
