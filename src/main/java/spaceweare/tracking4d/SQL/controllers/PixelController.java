@@ -1,31 +1,32 @@
 package spaceweare.tracking4d.SQL.controllers;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import spaceweare.tracking4d.SQL.models.Temperature;
-import spaceweare.tracking4d.SQL.services.TemperatureService;
+import spaceweare.tracking4d.SQL.models.Pixel;
+import spaceweare.tracking4d.SQL.services.PixelService;
 import java.util.List;
 
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
-@RequestMapping("/temperatures")
-public class TemperatureController {
+@RequestMapping("/pixels")
+public class PixelController {
 
-    private final TemperatureService temperatureService;
+    private final PixelService pixelService;
 
-    public TemperatureController(TemperatureService temperatureService) {
-        this.temperatureService = temperatureService;
+    public PixelController(PixelService pixelService) {
+        this.pixelService = pixelService;
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
-    public ResponseEntity<Temperature> create (@RequestBody Temperature temperature){
+    public ResponseEntity<Pixel> create (@RequestBody Pixel pixel){
         try{
-            return ResponseEntity.ok(temperatureService.create(temperature));
+            return ResponseEntity.ok(pixelService.create(pixel));
         }
         catch (Exception e){
             return ResponseEntity.badRequest().build();
@@ -34,9 +35,9 @@ public class TemperatureController {
 
     @GetMapping("/")
     @ResponseBody
-    public ResponseEntity<List<Temperature>> readAll(){
+    public ResponseEntity<List<Pixel>> readAll(){
         try{
-            return ResponseEntity.ok(temperatureService.readAll());
+            return ResponseEntity.ok(pixelService.readAll());
         }
         catch (Exception e){
             return ResponseEntity.badRequest().build();
@@ -45,9 +46,9 @@ public class TemperatureController {
 
     @GetMapping("/{id}")
     @ResponseBody
-    public ResponseEntity<Temperature> readById (@PathVariable("id") Integer id){
+    public ResponseEntity<Pixel> readById (@PathVariable("id") Integer id){
         try{
-            return ResponseEntity.ok(temperatureService.readById(id));
+            return ResponseEntity.ok(pixelService.readById(id));
         }
         catch(Exception e){
             return ResponseEntity.badRequest().build();
@@ -57,9 +58,9 @@ public class TemperatureController {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PutMapping("/edit/{id}")
     @ResponseBody
-    public ResponseEntity<Temperature> update (@PathVariable("id") Integer id, @RequestBody Temperature temperature){
+    public ResponseEntity<Pixel> update (@PathVariable("id") Integer id, @RequestBody Pixel pixel){
         try{
-            return ResponseEntity.ok(temperatureService.update(temperature, id));
+            return ResponseEntity.ok(pixelService.update(pixel, id));
         }
         catch (Exception e){
             return ResponseEntity.badRequest().build();
@@ -71,22 +72,20 @@ public class TemperatureController {
     @ResponseBody
     public ResponseEntity<String> delete (@PathVariable Integer id){
         try{
-            return ResponseEntity.ok(temperatureService.delete(id));
+            return ResponseEntity.ok(pixelService.delete(id));
         }
         catch (Exception e){
             return ResponseEntity.badRequest().build();
         }
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @PostMapping("/highTemperature")
-    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping("/saveTemperature")
     @ResponseBody
-    public ResponseEntity highTemperature (){
-        try{
-            return ResponseEntity.ok(temperatureService.highTemperature());
-        }
-        catch (Exception e){
+    public ResponseEntity python(@RequestParam("pixels") List<Float> pixels,
+                                 @RequestParam("date") String date) {
+        try {
+            return ResponseEntity.ok(pixelService.saveTemperature(pixels, date));
+        } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
     }

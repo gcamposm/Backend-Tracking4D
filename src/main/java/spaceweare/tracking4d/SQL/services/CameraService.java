@@ -1,8 +1,23 @@
 package spaceweare.tracking4d.SQL.services;
 
+import org.apache.poi.common.usermodel.HyperlinkType;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.*;
 import org.springframework.stereotype.Service;
+import spaceweare.tracking4d.Exceptions.ExportFileException;
 import spaceweare.tracking4d.SQL.dao.CameraDao;
 import spaceweare.tracking4d.SQL.models.Camera;
+import spaceweare.tracking4d.SQL.models.Contact;
+import spaceweare.tracking4d.SQL.models.Match;
+import spaceweare.tracking4d.SQL.models.Person;
+
+import java.awt.*;
+import java.awt.Color;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -48,6 +63,89 @@ public class CameraService {
         }
         else {
             return null;
+        }
+    }
+
+    public  void writeXlsx(List<Match> matchList, String path, Date day) throws IOException {
+        try{
+            // Se inicializa el archivo a para escribir
+            XSSFWorkbook myWorkBook = new XSSFWorkbook();
+            myWorkBook.createSheet("Sheet1");
+            XSSFSheet mySheet = myWorkBook.getSheetAt(0);
+            FontUnderline fontUnderline = FontUnderline.SINGLE;
+            CreationHelper createHelper = myWorkBook.getCreationHelper();
+            XSSFCellStyle linkStyle = myWorkBook.createCellStyle();
+            XSSFFont linkFont = myWorkBook.createFont();
+            linkFont.setUnderline(XSSFFont.U_SINGLE);
+            linkFont.setColor(new XSSFColor(Color.BLUE.brighter()));
+            linkFont.setUnderline(fontUnderline);
+            linkStyle.setFont(linkFont);
+
+            // Se realiza un filtrado para obtener a las personas
+            // captadas en un lugar
+            List<Match> matchesFilteredByCostumers = new ArrayList<>();
+            List<Person> people = new ArrayList<>();
+            for (Camera camera: cameraDao.findAll()
+                 ) {
+                for (Match match:camera.getMatchList()
+                     ) {
+                    if(!people.contains(match.getPerson())) {
+                        people.add(match.getPerson());
+                        matchesFilteredByCostumers.add(match);
+                    }
+                }
+                mySheet = writeOutputFile(matchesFilteredByCostumers, day, mySheet);
+                matchesFilteredByCostumers.clear();
+                people.clear();
+            }
+
+            FileOutputStream os = new FileOutputStream(path);
+            myWorkBook.write(os);
+            os.close();
+            myWorkBook.close();
+        }catch (Exception e){
+            throw new ExportFileException("An error happened when the file has been exporting", e);
+        }
+        System.out.println("Writing on XLSX file Finished ...");
+    }
+
+    public XSSFSheet writeOutputFile(List<Match> matchList, Date day, XSSFSheet mySheet){
+        try {
+            // Se obtiene el valor de la última fila y se agrega uno para añadir nuevos datos
+            int rownum = mySheet.getLastRowNum();
+            Row headerRow = mySheet.createRow(rownum++);
+
+            // Se defienen las cabeceras de las columnas
+            String[] columns = {"Lugar", "Cantidad de personas que estuvieron", "Personas que estuvieron"};
+            for (int i = 0; i < columns.length; i++) {
+                Cell cell = headerRow.createCell(i);
+                cell.setCellValue(columns[i]);
+            }
+
+            // Se procede a escribir los datos recabados
+            // Se crea la nueva fila
+            Row row = mySheet.createRow(rownum++);
+            // Se escribe primero el lugar, que es el mismo en
+            // en toda la lista
+            row.createCell(0)
+                    .setCellValue(matchList.get(0).getCamera().getValue());
+            for (Match match : matchList) {
+                // Se descartan los desconocidos
+                int count = 0;
+                if(!match.getPerson().getUnknown()){
+                    row.createCell(2 + count)
+                            .setCellValue(match.getPerson().getLastName());
+                    count += 1;
+                }
+                row.createCell(1)
+                        .setCellValue(count+"");
+            }
+            for (int i = 0; i < columns.length; i++) {
+                mySheet.autoSizeColumn(i);
+            }
+            return mySheet;
+        }catch (Exception e){
+            throw new ExportFileException("Cant create excel file with the data", e);
         }
     }
 }

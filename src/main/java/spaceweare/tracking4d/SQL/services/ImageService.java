@@ -150,7 +150,7 @@ public class ImageService {
 
     public Object getAllFaces() {
         List<Map<Object, Object>> faces = new ArrayList<>();
-        List<Person> people = personDao.findAllByUnknownAndDeleted(false, false);
+        List<Person> people = personDao.findAllByDeleted(false);
         for (Person person : people
         ) {
             Map<Object, Object> face = new HashMap<>();
@@ -395,22 +395,6 @@ public class ImageService {
     private boolean havePrincipalImage(Person person){
         Image principalImage = imageDao.findImageById(imageDao.findImageByPrincipalEquals(person));
         return principalImage != null;
-    }
-
-    //get the image url for display in a web browser
-    public String getImageUrl(Person person){
-        String url = "http://104.131.15.22:8080/backend-tracking4d";
-        String rut = "";
-        String rutReplaced = "";
-        if(havePrincipalImage(person)){
-            rut = person.getRut();
-            rutReplaced = rut.replaceAll("[^a-zA-Z0-9]", "");
-            System.out.println("Rut: " +  rut + " rutReplaced: " + rutReplaced);
-            return url.concat("/persons/web/image/preview/" + rutReplaced);
-        }
-        else{
-            return "";
-        }
     }
 
     private ImageResponse mapToImageResponse(Image image){

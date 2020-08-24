@@ -309,7 +309,7 @@ public class PersonController {
         if (matches.size() == 0) {
             return ResponseEntity
                     .status(HttpStatus.NO_CONTENT)
-                    .body("No existen clientes");
+                    .body("\"No se captaron clientes este día");
         }
         //Path path = fileStorageService.getFileStorageLocation();
         Path filePath = fileStorageService.getFileStorageLocation().resolve("output.xlsx").normalize();
@@ -340,5 +340,19 @@ public class PersonController {
                 .contentType(MediaType.parseMediaType(contentType))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @PostMapping("/createUnknown")
+    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseBody
+    public ResponseEntity createUnknown (@RequestParam("photoUnknown") String photoUnknown,
+                                         @RequestParam("descriptors") List<Float> descriptors){
+        try{
+            return ResponseEntity.ok(personService.createUnknown(photoUnknown, descriptors));
+        }
+        catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
     }
 }

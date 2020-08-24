@@ -139,7 +139,7 @@ public class PersonService {
             String path = "";
 
             Row headerRow = mySheet.createRow(rownum++);
-            String[] columns = {"Nombre", "Apellido", "Rut", "Género", "Usuario", "Correo", "Celular", "Zona de trabajo", "Cámara", "Ingreso", "Salida", "Estadía", "Contactos"};
+            String[] columns = {"Nombre", "Apellido", "Rut", "Género", "Usuario", "Correo", "Celular", "Zona de trabajo", "Cámara", "Ingreso", "Salida", "Estadía", "Nº contactos", "Contactos"};
             for (int i = 0; i < columns.length; i++) {
                 Cell cell = headerRow.createCell(i);
                 cell.setCellValue(columns[i]);
@@ -147,12 +147,9 @@ public class PersonService {
 
             for (Match match : matchList) {
                 if(!match.getPerson().getUnknown()){
-                    System.out.println("Creando");
                     List<Match> inOut = matchService.getIncomeOutcome(day, match.getPerson().getId());
                     Row row = mySheet.createRow(rownum++);
                     Hyperlink link = (Hyperlink) createHelper.createHyperlink(HyperlinkType.URL);
-                    //path = URLEncoder.encode(path, "UTF-8");
-                    //link.setAddress(match.getPerson().getFirstName());
                     row.createCell(0)
                             .setCellValue(match.getPerson().getFirstName());
                     row.createCell(1)
@@ -219,12 +216,14 @@ public class PersonService {
                             ) {
                                 if(!matchContact.getPerson().getId().equals(personId) && !ready.contains(matchContact.getPerson()) )
                                 {
-                                    row.createCell(12 + count)
+                                    row.createCell(13 + count)
                                             .setCellValue(matchContact.getPerson().getFirstName());
                                     count++;
                                     ready.add(matchContact.getPerson());
                                 }
                             }
+                            row.createCell(12)
+                                    .setCellValue(count+"");
                         }
                     }
                 }
@@ -236,28 +235,6 @@ public class PersonService {
         }catch (Exception e){
             throw new ExportFileException("Cant create excel file with the data", e);
         }
-    }
-
-    private boolean personWrite(List<Person> readies, Person person) {
-        for (Person ready :readies
-                ) {
-            if(person.getId().equals(ready.getId())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private List<Match> getListOfContacts(List<Match> matches, Person person) {
-        List<Match> matchListWithoutPerson = new ArrayList<>();
-        for (Match match:matches
-             ) {
-            if(!match.getPerson().getId().equals(person.getId()))
-            {
-                matchListWithoutPerson.add(match);
-            }
-        }
-        return  matchListWithoutPerson;
     }
 
     public  List<Contact> contactsBetweenPersons(Date hour) {
@@ -335,5 +312,36 @@ public class PersonService {
             return imageService.pathsWithOnePerson(personDao.findPersonByActual(true).get());
         }
         return null;
+    }
+
+    private List<Match> getListOfContacts(List<Match> matches, Person person) {
+        List<Match> matchListWithoutPerson = new ArrayList<>();
+        for (Match match:matches
+        ) {
+            if(!match.getPerson().getId().equals(person.getId()))
+            {
+                matchListWithoutPerson.add(match);
+            }
+        }
+        return  matchListWithoutPerson;
+    }
+
+    public Object createUnknown(String photoUnknown, List<Float> descriptors) throws IOException {
+        Person unknown = new Person();
+        unknown.setDeleted(false);
+        unknown.setToTrain(false);
+        unknown.setUnknown(true);
+        personDao.save(unknown);
+        String unknownID = "unknown"+unknown.getId();
+        unknown.setFirstName(unknownID);
+        unknown.setRut(unknownID);
+        personDao.save(unknown);
+        Path absoluteFilePath = fileStorageService.getFileStorageLocation();
+        String directory = absoluteFilePath + "/users/" + unknown.getRut();
+        File directoryFile = new File(directory);
+        if (! directoryFile.exists()){
+            directoryFile.mkdir();
+        }
+        return imageService.chargeData(descriptors, imageService.uploadPhotos(unknown, photoUnknown), unknown.getRut());
     }
 }
