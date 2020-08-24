@@ -1,6 +1,7 @@
 package spaceweare.tracking4d.SQL.controllers;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -74,6 +75,17 @@ public class PixelController {
             return ResponseEntity.ok(pixelService.delete(id));
         }
         catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PostMapping("/saveTemperature")
+    @ResponseBody
+    public ResponseEntity python(@RequestParam("pixels") List<Float> pixels,
+                                 @RequestParam("date") String date) {
+        try {
+            return ResponseEntity.ok(pixelService.saveTemperature(pixels, date));
+        } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
     }

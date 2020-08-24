@@ -1,16 +1,28 @@
 package spaceweare.tracking4d.SQL.services;
 
 import org.springframework.stereotype.Service;
+import spaceweare.tracking4d.SQL.dao.MatchDao;
 import spaceweare.tracking4d.SQL.dao.PixelDao;
-import spaceweare.tracking4d.SQL.models.Pixel;
+import spaceweare.tracking4d.SQL.dao.TemperatureDao;
+import spaceweare.tracking4d.SQL.models.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class PixelService {
 
     private final PixelDao pixelDao;
-    public PixelService(PixelDao pixelDao) {
+    private final MatchDao matchDao;
+    private final TemperatureDao temperatureDao;
+    private final TemperatureService temperatureService;
+    public PixelService(PixelDao pixelDao, MatchDao matchDao, TemperatureDao temperatureDao, TemperatureService temperatureService) {
         this.pixelDao = pixelDao;
+        this.matchDao = matchDao;
+        this.temperatureDao = temperatureDao;
+        this.temperatureService = temperatureService;
     }
 
     public Pixel create(Pixel pixel){
@@ -48,5 +60,30 @@ public class PixelService {
         else {
             return null;
         }
+    }
+
+    public Object saveTemperature(List<Float> pixels, String date) {
+        // Cambiar de string a localdatetime
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        LocalDateTime localDate = LocalDateTime.parse(date, formatter);
+        //Definir la temperatura
+        Temperature temperature = new Temperature();
+        temperature.setDetectedHour(localDate);
+        temperatureDao.save(temperature);
+        //Encontrar el match correspondiente
+        Match match = temperatureService.highTemperature();
+        match.setTemperature(temperature);
+        matchDao.save(match);
+        for (Float value: pixels
+        ) {
+            Pixel pixel = new Pixel();
+            pixel.setTemperature(temperature);
+            pixel.setValue(value);
+        }
+        // Se maneja el retorno
+        Map<Object, Object> json = new HashMap<>();
+        json.put("match", match);
+        json.put("temperature", temperature);
+        return json;
     }
 }

@@ -76,7 +76,7 @@ public class TemperatureService {
         return temperatureDao.findTemperatureByDetectedHourBetween(firstCurrentLocal, secondCurrentLocal);
     }
 
-    public Object highTemperature() {
+    public Match highTemperature() {
         List<Temperature> temperatureList;
         List<Match> matchList;
         for (int i = 5; i > 0; i--) {
@@ -90,22 +90,5 @@ public class TemperatureService {
             }
         }
         return null;
-    }
-
-    public Object python(List<Float> pixels, String date) {
-        Map<Object, Object> json = new HashMap<>();
-       /* Float total;
-        for (Float temperature: pixels
-             ) {
-            total += temperature;
-        }
-        Float mean = total / pixels.size();*/
-        //System.out.println(mean);
-        Float last = pixels.get(pixels.size()-1);
-        System.out.println(last);
-        json.put("last", last);
-        json.put("pixels", pixels);
-        json.put("date", date);
-        return json;
     }
 }
