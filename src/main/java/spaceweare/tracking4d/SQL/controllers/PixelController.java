@@ -79,11 +79,12 @@ public class PixelController {
         }
     }
 
-    @RequestMapping(value = "/saveTemperature", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping("/saveTemperature")
     @ResponseBody
     public ResponseEntity python(@RequestParam("pixels") List<Float> pixels,
                                  @RequestParam("date") String date) {
         try {
+            System.out.println(date);
             return ResponseEntity.ok(pixelService.saveTemperature(pixels, date));
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
