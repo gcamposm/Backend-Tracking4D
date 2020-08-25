@@ -10,4 +10,5 @@ import java.util.List;
 public interface MatchDao extends JpaRepository<Match, Integer> {
     List<Match> findMatchByHourBetween(LocalDateTime firstDate, LocalDateTime secondDate);
     List<Match> findAllByContact(Contact contact);
+    List<Match> findAllByHighTemperature(Boolean highTemperature);
 }

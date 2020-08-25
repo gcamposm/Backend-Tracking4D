@@ -83,6 +83,7 @@ public class TemperatureService {
             matchList = matchService.findMatchByInterval(i);
             if( matchList.size() == 1){
                 Match match = matchList.get(0);
+                match.setHighTemperature(true);
                 match.setTemperature(temperature);
                 return matchDao.save(match);
             }

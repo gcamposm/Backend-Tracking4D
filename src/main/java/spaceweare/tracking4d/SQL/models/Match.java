@@ -47,4 +47,5 @@ public class Match {
     private String name;
     private LocalDateTime hour;
     private String emotion;
+    private Boolean highTemperature;
 }
