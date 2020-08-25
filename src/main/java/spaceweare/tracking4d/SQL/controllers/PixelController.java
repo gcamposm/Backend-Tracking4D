@@ -79,7 +79,7 @@ public class PixelController {
         }
     }
 
-    @PostMapping("/saveTemperature")
+    @RequestMapping(value = "/saveTemperature", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseBody
     public ResponseEntity python(@RequestParam("pixels") List<Float> pixels,
                                  @RequestParam("date") String date) {
