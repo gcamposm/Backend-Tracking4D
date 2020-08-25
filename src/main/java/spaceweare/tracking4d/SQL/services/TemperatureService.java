@@ -76,19 +76,18 @@ public class TemperatureService {
         return temperatureDao.findTemperatureByDetectedHourBetween(firstCurrentLocal, secondCurrentLocal);
     }
 
-    public Match highTemperature() {
-        List<Temperature> temperatureList;
+    public Match highTemperature(Temperature temperature) {
         List<Match> matchList;
+        System.out.println("here 5");
         for (int i = 5; i > 0; i--) {
-            temperatureList = findTemperatureByInterval(i);
             matchList = matchService.findMatchByInterval(i);
-            if(temperatureList.size() == 1 && matchList.size() == 1){
-                Temperature temperature = temperatureList.get(0);
+            if( matchList.size() == 1){
                 Match match = matchList.get(0);
                 match.setTemperature(temperature);
                 return matchDao.save(match);
             }
         }
+        System.out.println("here 9");
         return null;
     }
 }

@@ -77,17 +77,4 @@ public class TemperatureController {
             return ResponseEntity.badRequest().build();
         }
     }
-
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @PostMapping("/highTemperature")
-    @ResponseStatus(HttpStatus.CREATED)
-    @ResponseBody
-    public ResponseEntity highTemperature (){
-        try{
-            return ResponseEntity.ok(temperatureService.highTemperature());
-        }
-        catch (Exception e){
-            return ResponseEntity.badRequest().build();
-        }
-    }
 }

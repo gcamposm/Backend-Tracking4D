@@ -119,10 +119,11 @@ public class MatchService {
     }
 
     public List<Match> findMatchByInterval(Integer interval){
+        System.out.println("here 7");
         Calendar currentCalendar = Calendar.getInstance();
         Date secondCurrentDate = currentCalendar.getTime();
-        Integer minute = currentCalendar.get(Calendar.MINUTE);
-        currentCalendar.set(Calendar.MINUTE, minute - interval);
+        Integer second = currentCalendar.get(Calendar.SECOND);
+        currentCalendar.set(Calendar.SECOND, second - interval);
         Date firstCurrentDate = currentCalendar.getTime();
 
         Instant firstCurrentInstant = firstCurrentDate.toInstant();
