@@ -2,8 +2,10 @@ package spaceweare.tracking4d.SQL.services;
 
 import org.springframework.stereotype.Service;
 import spaceweare.tracking4d.SQL.dao.MatchDao;
+import spaceweare.tracking4d.SQL.dao.PersonDao;
 import spaceweare.tracking4d.SQL.dao.TemperatureDao;
 import spaceweare.tracking4d.SQL.models.Match;
+import spaceweare.tracking4d.SQL.models.Person;
 import spaceweare.tracking4d.SQL.models.Temperature;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -15,11 +17,13 @@ public class TemperatureService {
 
     private final TemperatureDao temperatureDao;
     private final MatchDao matchDao;
+    private final PersonDao personDao;
     private final MatchService matchService;
-    public TemperatureService(TemperatureDao temperatureDao, MatchDao matchDao, MatchService matchService) {
+    public TemperatureService(TemperatureDao temperatureDao, MatchDao matchDao, MatchService matchService, PersonDao personDao) {
         this.temperatureDao = temperatureDao;
         this.matchDao = matchDao;
         this.matchService = matchService;
+        this.personDao = personDao;
     }
 
     public Temperature create(Temperature temperature){
@@ -78,16 +82,18 @@ public class TemperatureService {
 
     public Match highTemperature(Temperature temperature) {
         List<Match> matchList;
-        System.out.println("here 5");
         for (int i = 5; i > 0; i--) {
             matchList = matchService.findMatchByInterval(i);
             if( matchList.size() == 1){
                 Match match = matchList.get(0);
+                match.setHighTemperature(true);
                 match.setTemperature(temperature);
+                Person person = match.getPerson();
+                person.setCovid(true);
+                personDao.save(person);
                 return matchDao.save(match);
             }
         }
-        System.out.println("here 9");
         return null;
     }
 }

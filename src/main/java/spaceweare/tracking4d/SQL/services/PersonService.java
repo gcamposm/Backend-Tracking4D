@@ -119,7 +119,7 @@ public class PersonService {
         }
     }
 
-    public XSSFWorkbook writeOutputFile(List<Match> matchList, Date day, List<Contact> contacts){
+    public XSSFWorkbook writeOutputFile(List<Match> matchList, Date day, List<Contact> contacts, Boolean covid){
         try {
             XSSFWorkbook myWorkBook = new XSSFWorkbook();
             myWorkBook.createSheet("Sheet1");
@@ -146,84 +146,170 @@ public class PersonService {
             }
 
             for (Match match : matchList) {
-                if(!match.getPerson().getUnknown()){
-                    List<Match> inOut = matchService.getIncomeOutcome(day, match.getPerson().getId());
-                    Row row = mySheet.createRow(rownum++);
-                    Hyperlink link = (Hyperlink) createHelper.createHyperlink(HyperlinkType.URL);
-                    row.createCell(0)
-                            .setCellValue(match.getPerson().getFirstName());
-                    row.createCell(1)
-                            .setCellValue(match.getPerson().getLastName());
-                    row.createCell(2)
-                            .setCellValue(match.getPerson().getRut());
-                    //INT VALUES
-                    row.createCell(3)
-                            .setCellValue(match.getPerson().getGenre());
-                    if(match.getPerson().getUser() != null)
-                    {
-                        row.createCell(4)
-                                .setCellValue( match.getPerson().getUser().getUsername());
-                    }
-                    else{
-                        row.createCell(4)
-                                .setCellValue("");
-                    }
-                    row.createCell(5)
-                            .setCellValue(match.getPerson().getMail());
-                    row.createCell(6)
-                            .setCellValue(match.getPerson().getPhoneNumber());
-                    row.createCell(7)
-                            .setCellValue(match.getPerson().getActivity());
-                    if(match.getCamera()!= null)
-                    {
-                        row.createCell(8)
-                                .setCellValue(match.getCamera().getValue());
-                    }
-                    else{
-                        row.createCell(8)
-                                .setCellValue("");
-                    }
-                    if(inOut.size()>0)
-                    {
-                        row.createCell(9)
-                                .setCellValue(inOut.get(0).getHour().toString());
-                    }
-                    else{
-                        row.createCell(9)
-                                .setCellValue("");
-                    }
-                    if(inOut.size()>1)
-                    {
-                        row.createCell(10)
-                                .setCellValue(inOut.get(1).getHour().toString());
-                        row.createCell(11)
-                                .setCellValue(Duration.between(inOut.get(0).getHour(), inOut.get(1).getHour()).toHours());
-                    }
-                    else{
-                        row.createCell(10)
-                                .setCellValue("");
-                        row.createCell(11)
-                                .setCellValue("");
-                    }
-                    for (Contact contact:contacts
-                         ) {
-                        if(contact.getMatches().size()>1)
+                if(covid)
+                {
+                    if( (!match.getPerson().getUnknown()) && match.getPerson().getCovid()){
+                        List<Match> inOut = matchService.getIncomeOutcome(day, match.getPerson().getId());
+                        Row row = mySheet.createRow(rownum++);
+                        Hyperlink link = (Hyperlink) createHelper.createHyperlink(HyperlinkType.URL);
+                        row.createCell(0)
+                                .setCellValue(match.getPerson().getFirstName());
+                        row.createCell(1)
+                                .setCellValue(match.getPerson().getLastName());
+                        row.createCell(2)
+                                .setCellValue(match.getPerson().getRut());
+                        //INT VALUES
+                        row.createCell(3)
+                                .setCellValue(match.getPerson().getGenre());
+                        if(match.getPerson().getUser() != null)
                         {
-                            List<Person> ready = new ArrayList<>();
-                            Integer personId = match.getPerson().getId();
-                            int count = 0;
-                            for (Match matchContact:contact.getMatches()
-                            ) {
-                                if(!matchContact.getPerson().getId().equals(personId) && !ready.contains(matchContact.getPerson()) )
-                                {
-                                    row.createCell(13 + count)
-                                            .setCellValue(matchContact.getPerson().getFirstName());
-                                    count++;
-                                    ready.add(matchContact.getPerson());
+                            row.createCell(4)
+                                    .setCellValue( match.getPerson().getUser().getUsername());
+                        }
+                        else{
+                            row.createCell(4)
+                                    .setCellValue("");
+                        }
+                        row.createCell(5)
+                                .setCellValue(match.getPerson().getMail());
+                        row.createCell(6)
+                                .setCellValue(match.getPerson().getPhoneNumber());
+                        row.createCell(7)
+                                .setCellValue(match.getPerson().getActivity());
+                        if(match.getCamera()!= null)
+                        {
+                            row.createCell(8)
+                                    .setCellValue(match.getCamera().getValue());
+                        }
+                        else{
+                            row.createCell(8)
+                                    .setCellValue("");
+                        }
+                        if(inOut.size()>0)
+                        {
+                            row.createCell(9)
+                                    .setCellValue(inOut.get(0).getHour().toString());
+                        }
+                        else{
+                            row.createCell(9)
+                                    .setCellValue("");
+                        }
+                        if(inOut.size()>1)
+                        {
+                            row.createCell(10)
+                                    .setCellValue(inOut.get(1).getHour().toString());
+                            row.createCell(11)
+                                    .setCellValue(Duration.between(inOut.get(0).getHour(), inOut.get(1).getHour()).toHours());
+                        }
+                        else{
+                            row.createCell(10)
+                                    .setCellValue("");
+                            row.createCell(11)
+                                    .setCellValue("");
+                        }
+                        for (Contact contact:contacts
+                        ) {
+                            if(contact.getMatches().size()>1)
+                            {
+                                List<Person> ready = new ArrayList<>();
+                                Integer personId = match.getPerson().getId();
+                                int count = 0;
+                                for (Match matchContact:contact.getMatches()
+                                ) {
+                                    if(!matchContact.getPerson().getId().equals(personId) && !ready.contains(matchContact.getPerson()) )
+                                    {
+                                        row.createCell(13 + count)
+                                                .setCellValue(matchContact.getPerson().getFirstName());
+                                        count++;
+                                        ready.add(matchContact.getPerson());
+                                    }
                                 }
+                                row.createCell(12)
+                                        .setCellValue(count+"");
                             }
-                            row.createCell(12)
-                                    .setCellValue(count+"");
+                        }
+                    }
+                }
+                else{
+                    if(!match.getPerson().getUnknown()){
+                        List<Match> inOut = matchService.getIncomeOutcome(day, match.getPerson().getId());
+                        Row row = mySheet.createRow(rownum++);
+                        Hyperlink link = (Hyperlink) createHelper.createHyperlink(HyperlinkType.URL);
+                        row.createCell(0)
+                                .setCellValue(match.getPerson().getFirstName());
+                        row.createCell(1)
+                                .setCellValue(match.getPerson().getLastName());
+                        row.createCell(2)
+                                .setCellValue(match.getPerson().getRut());
+                        //INT VALUES
+                        row.createCell(3)
+                                .setCellValue(match.getPerson().getGenre());
+                        if(match.getPerson().getUser() != null)
+                        {
+                            row.createCell(4)
+                                    .setCellValue( match.getPerson().getUser().getUsername());
+                        }
+                        else{
+                            row.createCell(4)
+                                    .setCellValue("");
+                        }
+                        row.createCell(5)
+                                .setCellValue(match.getPerson().getMail());
+                        row.createCell(6)
+                                .setCellValue(match.getPerson().getPhoneNumber());
+                        row.createCell(7)
+                                .setCellValue(match.getPerson().getActivity());
+                        if(match.getCamera()!= null)
+                        {
+                            row.createCell(8)
+                                    .setCellValue(match.getCamera().getValue());
+                        }
+                        else{
+                            row.createCell(8)
+                                    .setCellValue("");
+                        }
+                        if(inOut.size()>0)
+                        {
+                            row.createCell(9)
+                                    .setCellValue(inOut.get(0).getHour().toString());
+                        }
+                        else{
+                            row.createCell(9)
+                                    .setCellValue("");
+                        }
+                        if(inOut.size()>1)
+                        {
+                            row.createCell(10)
+                                    .setCellValue(inOut.get(1).getHour().toString());
+                            row.createCell(11)
+                                    .setCellValue(Duration.between(inOut.get(0).getHour(), inOut.get(1).getHour()).toHours());
+                        }
+                        else{
+                            row.createCell(10)
+                                    .setCellValue("");
+                            row.createCell(11)
+                                    .setCellValue("");
+                        }
+                        for (Contact contact:contacts
+                        ) {
+                            if(contact.getMatches().size()>1)
+                            {
+                                List<Person> ready = new ArrayList<>();
+                                Integer personId = match.getPerson().getId();
+                                int count = 0;
+                                for (Match matchContact:contact.getMatches()
+                                ) {
+                                    if(!matchContact.getPerson().getId().equals(personId) && !ready.contains(matchContact.getPerson()) )
+                                    {
+                                        row.createCell(13 + count)
+                                                .setCellValue(matchContact.getPerson().getFirstName());
+                                        count++;
+                                        ready.add(matchContact.getPerson());
+                                    }
+                                }
+                                row.createCell(12)
+                                        .setCellValue(count+"");
+                            }
                         }
                     }
                 }
@@ -265,7 +351,7 @@ public class PersonService {
         return contacts;
     }
 
-    public  void writeXlsx(List<Match> matchList, String path, Date day) throws IOException {
+    public  void writeXlsx(List<Match> matchList, String path, Date day, Boolean covid) throws IOException {
         try{
             List<Contact> contacts = contactsBetweenPersons(day);
             List<Match> matchesFilteredByCostumers = new ArrayList<>();
@@ -276,7 +362,7 @@ public class PersonService {
                     matchesFilteredByCostumers.add(match);
                 }
             }
-            XSSFWorkbook myWorkBook = writeOutputFile(matchesFilteredByCostumers, day, contacts);
+            XSSFWorkbook myWorkBook = writeOutputFile(matchesFilteredByCostumers, day, contacts, covid);
             System.out.println("Path: " + path);
             FileOutputStream os = new FileOutputStream(path);
             myWorkBook.write(os);

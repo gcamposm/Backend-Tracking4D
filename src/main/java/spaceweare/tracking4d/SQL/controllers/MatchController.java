@@ -1,6 +1,8 @@
 package spaceweare.tracking4d.SQL.controllers;
 
 import org.apache.commons.math3.stat.descriptive.summary.Product;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
@@ -10,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import spaceweare.tracking4d.FileManagement.service.FileStorageService;
+import spaceweare.tracking4d.SQL.dao.MatchDao;
 import spaceweare.tracking4d.SQL.models.Match;
 import spaceweare.tracking4d.SQL.services.MatchService;
 
@@ -17,6 +20,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 
@@ -25,10 +31,14 @@ import java.util.List;
 @RequestMapping("/matches")
 public class MatchController {
 
+    private static final Logger logger = LoggerFactory.getLogger(PersonController.class);
     private final MatchService matchService;
-
-    public MatchController(MatchService matchService) {
+    private final MatchDao matchDao;
+    private final FileStorageService fileStorageService;
+    public MatchController(MatchService matchService, FileStorageService fileStorageService, MatchDao matchDao) {
         this.matchService = matchService;
+        this.matchDao = matchDao;
+        this.fileStorageService = fileStorageService;
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
@@ -178,5 +188,66 @@ public class MatchController {
                                           @RequestParam("personId") Integer personId){
 
         return ResponseEntity.ok(matchService.getIncomeOutcome(day, personId));
+    }
+
+    @GetMapping("/alerts")
+    public ResponseEntity alerts(){
+        return ResponseEntity.ok(matchService.alerts());
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @RequestMapping(value = "/writePlaceReport", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Object> writePlaceReport(@RequestParam("firstDay") @DateTimeFormat(pattern = "yyyy-MM-dd") Date firstDay,
+                                                   @RequestParam("lastDay") @DateTimeFormat(pattern = "yyyy-MM-dd") Date lastDay) throws IOException
+    {
+        // Se planifican las fechas, las cuales son la fecha solicitada y un día
+        // después, para adquirir toda la información del día actual completo
+        Instant firstCurrent = firstDay.toInstant();
+        Instant secondCurrent = lastDay.toInstant();
+        LocalDateTime firstLocalDate = LocalDateTime.ofInstant(firstCurrent,
+                ZoneId.systemDefault());
+        LocalDateTime secondLocalDate = LocalDateTime.ofInstant(secondCurrent,
+                ZoneId.systemDefault()).plusDays(1);
+
+        //Se verifica si existen matchs, si es así existen datos de interes
+        List<Match> matches = matchDao.findMatchByHourBetween(firstLocalDate, secondLocalDate);
+        if (matches.size() == 0) {
+            return ResponseEntity
+                    .status(HttpStatus.NO_CONTENT)
+                    .body("No se captaron clientes este día");
+        }
+
+        // Si se llega a este punto es porque existen datos de interes, por lo tanto,
+        // se procede a escribir el archivo
+
+        //se vuelve a enviar solo el día de entrada, ya que luego se utilizará en el servicio del match
+        Path filePath = fileStorageService.getFileStorageLocation().resolve("output.xlsx").normalize();
+        matchService.writeXlsx(matches, filePath.toString());
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body("Se creó el archivo de salida.");
+
+    }
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @GetMapping("/download")
+    public ResponseEntity<Resource> downloadProductExcel(HttpServletRequest request){
+        Resource resource = fileStorageService.loadFileAsResource("output.xlsx");
+        // Try to determine file's content type
+        String contentType = null;
+        try {
+            contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
+        } catch (IOException ex) {
+            logger.info("Could not determine file type.");
+        }
+
+        // Fallback to the default content type if type could not be determined
+        if(contentType == null) {
+            contentType = "application/octet-stream";
+        }
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                .body(resource);
     }
 }

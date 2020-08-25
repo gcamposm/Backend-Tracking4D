@@ -84,8 +84,6 @@ public class PixelController {
     public ResponseEntity python(@RequestParam("pixels") List<Float> pixels,
                                  @RequestParam("date") String date) {
         try {
-            System.out.println("here 1");
-            System.out.println(date);
             return ResponseEntity.ok(pixelService.saveTemperature(pixels, date));
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
