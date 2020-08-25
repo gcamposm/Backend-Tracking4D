@@ -68,7 +68,6 @@ public class PixelService {
         date = parts[0];
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime localDate = LocalDateTime.parse(date, formatter);
-        //System.out.println(localDate.toString());
         //Definir la temperatura
         Temperature temperature = new Temperature();
         temperature.setDetectedHour(localDate);

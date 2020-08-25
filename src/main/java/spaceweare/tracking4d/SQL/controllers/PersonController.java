@@ -295,7 +295,8 @@ public class PersonController {
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @RequestMapping(value = "/write", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Object> writeFile(@RequestParam("day") @DateTimeFormat(pattern = "yyyy-MM-dd") Date day) throws IOException
+    public ResponseEntity<Object> writeFile(@RequestParam("day") @DateTimeFormat(pattern = "yyyy-MM-dd") Date day,
+                                            @RequestParam("covid") Boolean covid) throws IOException
     {
         Instant firstCurrent = day.toInstant();
         Instant secondCurrent = day.toInstant();
@@ -313,7 +314,7 @@ public class PersonController {
         }
         //Path path = fileStorageService.getFileStorageLocation();
         Path filePath = fileStorageService.getFileStorageLocation().resolve("output.xlsx").normalize();
-        personService.writeXlsx(matches, filePath.toString(), day);
+        personService.writeXlsx(matches, filePath.toString(), day, covid);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body("Se creó el archivo de salida.");

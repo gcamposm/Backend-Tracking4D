@@ -57,5 +57,6 @@ public class Person {
     private Boolean deleted;
     private Boolean actual;
     private Boolean toTrain;
+    private Boolean covid;
     private String activity;
 }

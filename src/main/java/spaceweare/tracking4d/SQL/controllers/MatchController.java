@@ -197,12 +197,13 @@ public class MatchController {
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @RequestMapping(value = "/writePlaceReport", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Object> writePlaceReport(@RequestParam("day") @DateTimeFormat(pattern = "yyyy-MM-dd") Date day) throws IOException
+    public ResponseEntity<Object> writePlaceReport(@RequestParam("firstDay") @DateTimeFormat(pattern = "yyyy-MM-dd") Date firstDay,
+                                                   @RequestParam("lastDay") @DateTimeFormat(pattern = "yyyy-MM-dd") Date lastDay) throws IOException
     {
         // Se planifican las fechas, las cuales son la fecha solicitada y un día
         // después, para adquirir toda la información del día actual completo
-        Instant firstCurrent = day.toInstant();
-        Instant secondCurrent = day.toInstant();
+        Instant firstCurrent = firstDay.toInstant();
+        Instant secondCurrent = lastDay.toInstant();
         LocalDateTime firstLocalDate = LocalDateTime.ofInstant(firstCurrent,
                 ZoneId.systemDefault());
         LocalDateTime secondLocalDate = LocalDateTime.ofInstant(secondCurrent,
@@ -221,7 +222,7 @@ public class MatchController {
 
         //se vuelve a enviar solo el día de entrada, ya que luego se utilizará en el servicio del match
         Path filePath = fileStorageService.getFileStorageLocation().resolve("output.xlsx").normalize();
-        matchService.writeXlsx(matches, filePath.toString(), day);
+        matchService.writeXlsx(matches, filePath.toString());
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body("Se creó el archivo de salida.");

@@ -228,7 +228,7 @@ public class MatchService {
         return personList;
     }
 
-    public  void writeXlsx(List<Match> matchList, String path, Date day) throws IOException {
+    public  void writeXlsx(List<Match> matchList, String path) throws IOException {
         try{
             // Se inicializa el archivo a para escribir
             XSSFWorkbook myWorkBook = new XSSFWorkbook();
@@ -244,21 +244,8 @@ public class MatchService {
 
             // Se realiza un filtrado para obtener a las personas
             // captadas en un lugar
-            List<Match> matchesFilteredByCostumers = new ArrayList<>();
-            List<Person> people = new ArrayList<>();
-            for (Camera camera: cameraDao.findAll()
-            ) {
-                for (Match match:camera.getMatchList()
-                ) {
-                    if(!people.contains(match.getPerson())) {
-                        people.add(match.getPerson());
-                        matchesFilteredByCostumers.add(match);
-                    }
-                }
-                mySheet = writeOutputFile(matchesFilteredByCostumers, day, mySheet);
-                matchesFilteredByCostumers.clear();
-                people.clear();
-            }
+                mySheet = writeOutputFile(matchList, mySheet);
+
 
             FileOutputStream os = new FileOutputStream(path);
             myWorkBook.write(os);
@@ -269,7 +256,7 @@ public class MatchService {
         }
         System.out.println("Writing on XLSX file Finished ...");
     }
-    public XSSFSheet writeOutputFile(List<Match> matchList, Date day, XSSFSheet mySheet){
+    public XSSFSheet writeOutputFile(List<Match> matchList, XSSFSheet mySheet){
         try {
             // Se obtiene el valor de la última fila y se agrega uno para añadir nuevos datos
             int rownum = mySheet.getLastRowNum();
