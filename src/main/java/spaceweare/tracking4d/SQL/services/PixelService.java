@@ -64,26 +64,38 @@ public class PixelService {
 
     public Object saveTemperature(List<Float> pixels, String date) {
         // Cambiar de string a localdatetime
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        String[] parts = date.split("\\.");
+        date = parts[0];
+        System.out.println(date);
+        String str = "1986-04-08 12:30";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime localDate = LocalDateTime.parse(date, formatter);
+        //System.out.println(localDate.toString());
         //Definir la temperatura
+        System.out.println("here 2");
         Temperature temperature = new Temperature();
         temperature.setDetectedHour(localDate);
         temperatureDao.save(temperature);
+        System.out.println("here 3");
         //Encontrar el match correspondiente
-        Match match = temperatureService.highTemperature();
-        match.setTemperature(temperature);
-        matchDao.save(match);
-        for (Float value: pixels
-        ) {
-            Pixel pixel = new Pixel();
-            pixel.setTemperature(temperature);
-            pixel.setValue(value);
+        Match match = temperatureService.highTemperature(temperature);
+        if(match != null)
+        {
+            System.out.println("here 4");
+            for (Float value: pixels
+            ) {
+                Pixel pixel = new Pixel();
+                pixel.setTemperature(temperature);
+                pixel.setValue(value);
+            }
+            // Se maneja el retorno
+            Map<Object, Object> json = new HashMap<>();
+            json.put("match", match);
+            json.put("temperature", temperature);
+            return json;
         }
-        // Se maneja el retorno
-        Map<Object, Object> json = new HashMap<>();
-        json.put("match", match);
-        json.put("temperature", temperature);
-        return json;
+        else{
+            return null;
+        }
     }
 }
