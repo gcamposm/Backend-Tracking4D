@@ -295,16 +295,16 @@ public class PersonController {
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @RequestMapping(value = "/write", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Object> writeFile(@RequestParam("firstDay") @DateTimeFormat(pattern = "yyyy-MM-dd") Date firstDay,
-                                            @RequestParam("lastDay") @DateTimeFormat(pattern = "yyyy-MM-dd") Date lastDay,
+    public ResponseEntity<Object> writeFile(@RequestParam("firstDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date firstDay,
+                                            @RequestParam("secondDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date lastDay,
                                             @RequestParam("covid") Boolean covid) throws IOException
     {
         Instant firstCurrent = firstDay.toInstant();
         Instant secondCurrent = lastDay.toInstant();
         LocalDateTime firstLocalDate = LocalDateTime.ofInstant(firstCurrent,
-                ZoneId.systemDefault());
+                ZoneId.systemDefault()).plusDays(-1);
         LocalDateTime secondLocalDate = LocalDateTime.ofInstant(secondCurrent,
-                ZoneId.systemDefault());
+                ZoneId.systemDefault()).plusDays(1);
         /*LocalDateTime secondLocalDate = LocalDateTime.ofInstant(secondCurrent,
                 ZoneId.systemDefault()).plusDays(1);*/
         List<Match> matches;
@@ -322,6 +322,7 @@ public class PersonController {
         }
         //Path path = fileStorageService.getFileStorageLocation();
         Path filePath = fileStorageService.getFileStorageLocation().resolve("output.xlsx").normalize();
+        System.out.println("dir: "+filePath.toString());
         personService.writeXlsx(matches, filePath.toString(), lastDay, covid);
         return ResponseEntity
                 .status(HttpStatus.OK)
