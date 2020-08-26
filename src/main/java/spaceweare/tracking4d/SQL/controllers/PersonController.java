@@ -295,18 +295,26 @@ public class PersonController {
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @RequestMapping(value = "/write", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Object> writeFile(@RequestParam("day") @DateTimeFormat(pattern = "yyyy-MM-dd") Date day,
+    public ResponseEntity<Object> writeFile(@RequestParam("firstDay") @DateTimeFormat(pattern = "yyyy-MM-dd") Date firstDay,
+                                            @RequestParam("lastDay") @DateTimeFormat(pattern = "yyyy-MM-dd") Date lastDay,
                                             @RequestParam("covid") Boolean covid) throws IOException
     {
-        Instant firstCurrent = day.toInstant();
-        Instant secondCurrent = day.toInstant();
+        Instant firstCurrent = firstDay.toInstant();
+        Instant secondCurrent = lastDay.toInstant();
         LocalDateTime firstLocalDate = LocalDateTime.ofInstant(firstCurrent,
                 ZoneId.systemDefault());
         LocalDateTime secondLocalDate = LocalDateTime.ofInstant(secondCurrent,
-                ZoneId.systemDefault()).plusDays(1);
-        List<Match> matches = matchDao.findMatchByHourBetween(firstLocalDate, secondLocalDate);
-
-
+                ZoneId.systemDefault());
+        /*LocalDateTime secondLocalDate = LocalDateTime.ofInstant(secondCurrent,
+                ZoneId.systemDefault()).plusDays(1);*/
+        List<Match> matches;
+        if(covid)
+        {
+            matches = matchDao.findAll();
+        }
+        else{
+            matches = matchDao.findMatchByHourBetween(firstLocalDate, secondLocalDate);
+        }
         if (matches.size() == 0) {
             return ResponseEntity
                     .status(HttpStatus.NO_CONTENT)
@@ -314,7 +322,7 @@ public class PersonController {
         }
         //Path path = fileStorageService.getFileStorageLocation();
         Path filePath = fileStorageService.getFileStorageLocation().resolve("output.xlsx").normalize();
-        personService.writeXlsx(matches, filePath.toString(), day, covid);
+        personService.writeXlsx(matches, filePath.toString(), lastDay, covid);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body("Se creó el archivo de salida.");
