@@ -132,14 +132,18 @@ public class ImageService {
     private Image createDescriptorWithImage(Person person, List<Float> descriptorList, Image image) {
         image.setPerson(person);
         imageDao.save(image);
-        for (Float descriptorFor: descriptorList
-        ) {
-            Detection detection = new Detection();
-            detection.setImage(image);
-            detection.setValue(descriptorFor);
-            detectionDao.save(detection);
+        if(image.getDetections().size() == 0)
+        {
+            for (Float descriptorFor: descriptorList
+            ) {
+                Detection detection = new Detection();
+                detection.setImage(image);
+                detection.setValue(descriptorFor);
+                detectionDao.save(detection);
+            }
+            return imageDao.save(image);
         }
-        return imageDao.save(image);
+        return null;
     }
 
     public String chargeFaces(List<Map<Object, Object>> faces) {
