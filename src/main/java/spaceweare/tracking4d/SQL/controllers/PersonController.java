@@ -310,7 +310,7 @@ public class PersonController {
         List<Match> matches;
         if(covid)
         {
-            matches = matchDao.findAll();
+            matches = matchDao.findAllByHighTemperature(true);
         }
         else{
             matches = matchDao.findMatchByHourBetween(firstLocalDate, secondLocalDate);
