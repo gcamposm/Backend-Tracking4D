@@ -137,19 +137,28 @@ public class MatchService {
         return matchDao.findMatchByHourBetween(firstLocalDate, secondLocalDate);
     }
 
-    public List<Match> findMatchByInterval(Integer interval){
-        Calendar currentCalendar = Calendar.getInstance();
-        Date secondCurrentDate = currentCalendar.getTime();
-        Integer second = currentCalendar.get(Calendar.SECOND);
-        currentCalendar.set(Calendar.SECOND, second - interval);
-        Date firstCurrentDate = currentCalendar.getTime();
-        Instant firstCurrentInstant = firstCurrentDate.toInstant();
-        Instant secondCurrentInstant = secondCurrentDate.toInstant();
-        LocalDateTime firstCurrentLocal = LocalDateTime.ofInstant(firstCurrentInstant,
-                ZoneId.systemDefault());
-        LocalDateTime secondCurrentLocal = LocalDateTime.ofInstant(secondCurrentInstant,
-                ZoneId.systemDefault());
-        return matchDao.findMatchByHourBetween(firstCurrentLocal, secondCurrentLocal);
+    public List<Match> findMatchByInterval(Integer interval, String dateString) throws ParseException {
+        // Según el intervalo se definen las fechas de búsqueda
+        // Se maneja la hora actual
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date secondDate = formatter.parse(dateString);
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(secondDate);
+        Integer second = cal.get(Calendar.SECOND);
+        cal.set(Calendar.SECOND, second - interval);
+        Date firstDate = cal.getTime();
+        LocalDateTime firstCurrentDate = LocalDateTime.ofInstant(firstDate.toInstant(), ZoneId.systemDefault());
+        LocalDateTime secondCurrentDate = LocalDateTime.ofInstant(secondDate.toInstant(), ZoneId.systemDefault());
+        // Se buscan los matchs que coincidan
+        List<Match> matchListByDate = matchDao.findMatchByHourBetween(firstCurrentDate, secondCurrentDate);
+        List<Match> matchListByDateAndCovid = new ArrayList<>();
+        for (Match match:matchListByDate
+             ) {
+            if (match.getCamera().getIsCovidCamera()){
+                matchListByDateAndCovid.add(match);
+            }
+        }
+        return matchListByDateAndCovid;
     }
 
     public List<Match> filterByPerson(List<Match> matchListPerDay, Integer personId) {

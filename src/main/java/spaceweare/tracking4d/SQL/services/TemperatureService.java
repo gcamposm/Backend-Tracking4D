@@ -7,6 +7,8 @@ import spaceweare.tracking4d.SQL.dao.TemperatureDao;
 import spaceweare.tracking4d.SQL.models.Match;
 import spaceweare.tracking4d.SQL.models.Person;
 import spaceweare.tracking4d.SQL.models.Temperature;
+
+import java.text.ParseException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -80,10 +82,10 @@ public class TemperatureService {
         return temperatureDao.findTemperatureByDetectedHourBetween(firstCurrentLocal, secondCurrentLocal);
     }
 
-    public Match highTemperature(Temperature temperature) {
+    public Match highTemperature(Temperature temperature, String date) throws ParseException {
         List<Match> matchList;
-        for (int i = 5; i > 0; i--) {
-            matchList = matchService.findMatchByInterval(i);
+        for (int i = 1; i < 5; i++) {
+            matchList = matchService.findMatchByInterval(i, date);
             if( matchList.size() == 1){
                 Match match = matchList.get(0);
                 match.setHighTemperature(true);

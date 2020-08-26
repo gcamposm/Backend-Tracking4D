@@ -5,6 +5,8 @@ import spaceweare.tracking4d.SQL.dao.MatchDao;
 import spaceweare.tracking4d.SQL.dao.PixelDao;
 import spaceweare.tracking4d.SQL.dao.TemperatureDao;
 import spaceweare.tracking4d.SQL.models.*;
+
+import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -62,18 +64,18 @@ public class PixelService {
         }
     }
 
-    public Object saveTemperature(List<Float> pixels, String date) {
+    public Object saveTemperature(List<Float> pixels, String date) throws ParseException {
         // Cambiar de string a localdatetime
         String[] parts = date.split("\\.");
         date = parts[0];
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime localDate = LocalDateTime.parse(date, formatter);
-        //Definir la temperatura
+        //Inicializar la temperatura
         Temperature temperature = new Temperature();
         temperature.setDetectedHour(localDate);
         temperatureDao.save(temperature);
         //Encontrar el match correspondiente
-        Match match = temperatureService.highTemperature(temperature);
+        Match match = temperatureService.highTemperature(temperature, date);
         if(match != null)
         {
             for (Float value: pixels

@@ -289,7 +289,6 @@ public class ImageController {
                                       @RequestParam("imageValue") String imageValue){
         try{
             if(personDao.findPersonByRut(personRut).isPresent()) {
-                System.out.println("Persona encontrada");
                 return ResponseEntity.status(200).body(imageService.uploadPhotos(personDao.findPersonByRut(personRut).get(), imageValue));
             }else{
                 return ResponseEntity.status(500).body("The person with rut: " + personRut + " could not be found");
