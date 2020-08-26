@@ -94,7 +94,6 @@ public class ImageService {
             Path absoluteFilePath = fileStorageService.getFileStorageLocation();
             //String fileName = getImageName(personToUpdate);
             String directory = absoluteFilePath + "/users/" + image.getPerson().getRut() + "/" + image.getName() + image.getExtension();
-            System.out.println(directory);
             File fileToDelete = new File(directory);
             fileToDelete.delete();
             return pathsOnePerson(image.getPerson());
@@ -144,7 +143,6 @@ public class ImageService {
     }
 
     public String chargeFaces(List<Map<Object, Object>> faces) {
-        System.out.println(faces.toArray().toString());
         return faces.toArray().toString();
     }
 
@@ -207,7 +205,6 @@ public class ImageService {
             List<String> paths = new ArrayList<>();
             for (MultipartFile file : fileList
             ) {
-                System.out.println("OriginalFileName: " + file.getOriginalFilename());
                 paths.add(uploadImage(person, file.getOriginalFilename(), file.getBytes()));
             }
             return paths;
@@ -270,11 +267,9 @@ public class ImageService {
 
     //GET THE IMAGE BYTE ARRAY FROM PERSON Name AND INDEX
     public byte[] getImageFromPersonNameAndIndex(String personName, Integer index) {
-        System.out.println(personName);
         String[] data = personName.split(" ");
         String firstName = data[0];
         String lastName = data[1];
-        System.out.println(firstName + " " + lastName);
         Person person = personDao.findPersonByFirstNameAndLastName(firstName, lastName).get();
         Path absoluteFilePath = fileStorageService.getFileStorageLocation();
 
@@ -357,7 +352,6 @@ public class ImageService {
         Path absoluteFilePath = fileStorageService.getFileStorageLocation();
         String fileName = getImageName(personToUpdate);
         String directory = absoluteFilePath + "/users/" + personToUpdate.getRut();
-        System.out.println(directory);
         File convertFile = new File(directory + "/" + fileName + ext);
         try(FileOutputStream fos = new FileOutputStream(convertFile)) {
             fos.write(fileBytes);
@@ -372,13 +366,11 @@ public class ImageService {
     }
 
     public String uploadPhotos(Person personToUpdate, String imageValue) throws IOException {
-        System.out.println(imageValue);
         byte[] imageByte= Base64.decodeBase64(imageValue);
         String ext = ".jpg";
         Path absoluteFilePath = fileStorageService.getFileStorageLocation();
         String fileName = getImageName(personToUpdate);
         String directory = absoluteFilePath + "/users/" + personToUpdate.getRut();
-        System.out.println(directory);
         File convertFile = new File(directory + "/" + fileName + ext);
         try(FileOutputStream fos = new FileOutputStream(convertFile)) {
             fos.write(imageByte);

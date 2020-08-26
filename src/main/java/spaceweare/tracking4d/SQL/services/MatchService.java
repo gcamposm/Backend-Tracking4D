@@ -18,6 +18,8 @@ import spaceweare.tracking4d.SQL.models.Match;
 import java.awt.*;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -100,15 +102,20 @@ public class MatchService {
     }
 
     public List<Match> withFilteredMatches(List<String> rutList, Integer cameraId) {
+        // Se maneja la hora actual
+        Calendar cal = Calendar.getInstance();
+        Integer hour = cal.get(Calendar.HOUR);
+        cal.set(Calendar.HOUR, hour - 1);
+        Date date = cal.getTime();
+        LocalDateTime now = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+        // Se crean los match según los ruts de las personas detectadas
         List<Match> matches = new ArrayList<>();
-        System.out.println("cameraID "+cameraId);
         for (String rut:rutList
              ) {
             if(personDao.findPersonByRut(rut).isPresent()){
                 Match match = new Match();
-                //match.setCompany();
                 match.setPerson(personDao.findPersonByRut(rut).get());
-                match.setHour(LocalDateTime.now());
+                match.setHour(now);
                 if(cameraDao.findCameraById(cameraId).isPresent())
                 {
                     match.setCamera(cameraDao.findCameraById(cameraId).get());
@@ -130,19 +137,28 @@ public class MatchService {
         return matchDao.findMatchByHourBetween(firstLocalDate, secondLocalDate);
     }
 
-    public List<Match> findMatchByInterval(Integer interval){
-        Calendar currentCalendar = Calendar.getInstance();
-        Date secondCurrentDate = currentCalendar.getTime();
-        Integer second = currentCalendar.get(Calendar.SECOND);
-        currentCalendar.set(Calendar.SECOND, second - interval);
-        Date firstCurrentDate = currentCalendar.getTime();
-        Instant firstCurrentInstant = firstCurrentDate.toInstant();
-        Instant secondCurrentInstant = secondCurrentDate.toInstant();
-        LocalDateTime firstCurrentLocal = LocalDateTime.ofInstant(firstCurrentInstant,
-                ZoneId.systemDefault());
-        LocalDateTime secondCurrentLocal = LocalDateTime.ofInstant(secondCurrentInstant,
-                ZoneId.systemDefault());
-        return matchDao.findMatchByHourBetween(firstCurrentLocal, secondCurrentLocal);
+    public List<Match> findMatchByInterval(Integer interval, String dateString) throws ParseException {
+        // Según el intervalo se definen las fechas de búsqueda
+        // Se maneja la hora actual
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date secondDate = formatter.parse(dateString);
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(secondDate);
+        Integer second = cal.get(Calendar.SECOND);
+        cal.set(Calendar.SECOND, second - interval);
+        Date firstDate = cal.getTime();
+        LocalDateTime firstCurrentDate = LocalDateTime.ofInstant(firstDate.toInstant(), ZoneId.systemDefault());
+        LocalDateTime secondCurrentDate = LocalDateTime.ofInstant(secondDate.toInstant(), ZoneId.systemDefault());
+        // Se buscan los matchs que coincidan
+        List<Match> matchListByDate = matchDao.findMatchByHourBetween(firstCurrentDate, secondCurrentDate);
+        List<Match> matchListByDateAndCovid = new ArrayList<>();
+        for (Match match:matchListByDate
+             ) {
+            if (match.getCamera().getIsCovidCamera()){
+                matchListByDateAndCovid.add(match);
+            }
+        }
+        return matchListByDateAndCovid;
     }
 
     public List<Match> filterByPerson(List<Match> matchListPerDay, Integer personId) {

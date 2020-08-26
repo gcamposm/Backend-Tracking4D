@@ -27,4 +27,5 @@ public class Camera {
     private List<Image> images = new ArrayList<>();
     //Attributes
     private String value;
+    private Boolean isCovidCamera;
 }
