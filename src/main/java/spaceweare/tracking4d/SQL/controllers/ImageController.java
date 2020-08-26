@@ -109,6 +109,10 @@ public class ImageController {
                                      @RequestParam("path") String path,
                                      @RequestParam("rut") String personRut){
         try{
+            if(descriptorList.size() != 128)
+            {
+                return ResponseEntity.badRequest().build();
+            }
             return ResponseEntity.ok(imageService.chargeData(descriptorList, path, personRut));
         }
         catch (Exception e){
