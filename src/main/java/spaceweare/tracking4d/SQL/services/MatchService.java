@@ -18,6 +18,8 @@ import spaceweare.tracking4d.SQL.models.Match;
 import java.awt.*;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -100,15 +102,20 @@ public class MatchService {
     }
 
     public List<Match> withFilteredMatches(List<String> rutList, Integer cameraId) {
+        // Se maneja la hora actual
+        Calendar cal = Calendar.getInstance();
+        Integer hour = cal.get(Calendar.HOUR);
+        cal.set(Calendar.HOUR, hour - 1);
+        Date date = cal.getTime();
+        LocalDateTime now = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+        // Se crean los match según los ruts de las personas detectadas
         List<Match> matches = new ArrayList<>();
-        System.out.println("cameraID "+cameraId);
         for (String rut:rutList
              ) {
             if(personDao.findPersonByRut(rut).isPresent()){
                 Match match = new Match();
-                //match.setCompany();
                 match.setPerson(personDao.findPersonByRut(rut).get());
-                match.setHour(LocalDateTime.now());
+                match.setHour(now);
                 if(cameraDao.findCameraById(cameraId).isPresent())
                 {
                     match.setCamera(cameraDao.findCameraById(cameraId).get());
