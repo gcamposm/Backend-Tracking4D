@@ -365,4 +365,18 @@ public class PersonController {
             return ResponseEntity.badRequest().build();
         }
     }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @PostMapping("/prueba")
+    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseBody
+    public ResponseEntity prueba (@RequestParam("day") String day,
+                                  @RequestParam("personId") Integer personId){
+        try{
+            return ResponseEntity.ok(personService.prueba(day, personId));
+        }
+        catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
 }

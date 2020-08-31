@@ -19,6 +19,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -139,7 +142,7 @@ public class PersonService {
             String path = "";
 
             Row headerRow = mySheet.createRow(rownum++);
-            String[] columns = {"Nombre", "Apellido", "Rut", "Género", "Usuario", "Correo", "Celular", "Zona de trabajo", "Cámara", "Ingreso", "Salida", "Estadía", "Nº contactos", "Contactos"};
+            String[] columns = {"Nombre", "Apellido", "Rut", "Género", "Usuario", "Correo", "Celular", "Zona de trabajo", "Cámara", "Ingreso", "Salida", "Estadía (minutos)", "Nº contactos", "Contactos"};
             for (int i = 0; i < columns.length; i++) {
                 Cell cell = headerRow.createCell(i);
                 cell.setCellValue(columns[i]);
@@ -199,7 +202,7 @@ public class PersonService {
                             row.createCell(10)
                                     .setCellValue(inOut.get(1).getHour().toString());
                             row.createCell(11)
-                                    .setCellValue(Duration.between(inOut.get(0).getHour(), inOut.get(1).getHour()).toHours());
+                                    .setCellValue(Duration.between(inOut.get(0).getHour(), inOut.get(1).getHour()).toMinutes());
                         }
                         else{
                             row.createCell(10)
@@ -218,8 +221,9 @@ public class PersonService {
                                 ) {
                                     if(!matchContact.getPerson().getId().equals(personId) && !ready.contains(matchContact.getPerson()) )
                                     {
+                                        String contactCell = matchContact.getPerson().getFirstName() + " (" + matchContact.getPerson().getRut() + ")";
                                         row.createCell(13 + count)
-                                                .setCellValue(matchContact.getPerson().getFirstName());
+                                                .setCellValue(contactCell);
                                         count++;
                                         ready.add(matchContact.getPerson());
                                     }
@@ -282,7 +286,7 @@ public class PersonService {
                             row.createCell(10)
                                     .setCellValue(inOut.get(1).getHour().toString());
                             row.createCell(11)
-                                    .setCellValue(Duration.between(inOut.get(0).getHour(), inOut.get(1).getHour()).toHours());
+                                    .setCellValue(Duration.between(inOut.get(0).getHour(), inOut.get(1).getHour()).toMinutes());
                         }
                         else{
                             row.createCell(10)
@@ -301,8 +305,9 @@ public class PersonService {
                                 ) {
                                     if(!matchContact.getPerson().getId().equals(personId) && !ready.contains(matchContact.getPerson()) )
                                     {
+                                        String contactCell = matchContact.getPerson().getFirstName() + " (" + matchContact.getPerson().getRut() + ")";
                                         row.createCell(13 + count)
-                                                .setCellValue(matchContact.getPerson().getFirstName());
+                                                .setCellValue(contactCell);
                                         count++;
                                         ready.add(matchContact.getPerson());
                                     }
@@ -429,5 +434,18 @@ public class PersonService {
             directoryFile.mkdir();
         }
         return imageService.chargeData(descriptors, imageService.uploadPhotos(unknown, photoUnknown), unknown.getRut());
+    }
+
+    public Object prueba(String day, Integer personId) throws ParseException {
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = format.parse(day);
+        System.out.println("formatie la fecha");
+        List<Match> inOut = matchService.getIncomeOutcome(date, personId);
+        System.out.println("Entrada "+inOut.get(0).getHour());
+        System.out.println("Salida "+inOut.get(1).getHour());
+        Duration duration = Duration.between(inOut.get(0).getHour(), inOut.get(1).getHour());
+        System.out.println("string "+ duration.toString());
+        long minutes = Duration.between(inOut.get(0).getHour(), inOut.get(1).getHour()).toMinutes();
+        return minutes;
     }
 }
