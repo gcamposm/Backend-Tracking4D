@@ -173,6 +173,7 @@ public class MatchService {
     }
 
     public List<Match> getIncomeOutcome(Date day, Integer personId) {
+        System.out.println(("La fecha es: "+ day.toString()));
         List<Match> matchListPerDay = getMatchesByDate(day, day);
         List<Match> matchListByPerson = filterByPerson(matchListPerDay, personId);
         Integer matchIdIn = 0;
