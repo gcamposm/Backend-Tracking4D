@@ -43,7 +43,7 @@ public class BackendApplication {
 
   private Connector createStandardConnector() {
     Connector connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
-    connector.setPort(8082);
+    connector.setPort(8093);
     return connector;
   }
 
