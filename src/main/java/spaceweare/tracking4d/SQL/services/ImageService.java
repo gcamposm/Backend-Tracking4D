@@ -152,7 +152,7 @@ public class ImageService {
 
     public Object getAllFaces() {
         List<Map<Object, Object>> faces = new ArrayList<>();
-        List<Person> people = personDao.findAllByDeleted(false);
+        List<Person> people = personDao.findAll();
         for (Person person : people
         ) {
             Map<Object, Object> face = new HashMap<>();

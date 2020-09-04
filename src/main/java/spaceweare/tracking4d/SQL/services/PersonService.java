@@ -448,4 +448,8 @@ public class PersonService {
         long minutes = Duration.between(inOut.get(0).getHour(), inOut.get(1).getHour()).toMinutes();
         return minutes;
     }
+
+    public List<Person> getUnknowns() {
+        return personDao.findAllByDeleted(true);
+    }
 }

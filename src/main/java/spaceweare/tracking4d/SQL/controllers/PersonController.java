@@ -379,4 +379,15 @@ public class PersonController {
             return ResponseEntity.badRequest().build();
         }
     }
+
+    @GetMapping("/getUnknowns")
+    @ResponseBody
+    public ResponseEntity<List<Person>> getUnknowns(){
+        try{
+            return ResponseEntity.ok(personService.getUnknowns());
+        }
+        catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
 }
