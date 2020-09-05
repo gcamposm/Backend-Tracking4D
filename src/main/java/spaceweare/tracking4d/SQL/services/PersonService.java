@@ -433,7 +433,8 @@ public class PersonService {
         if (! directoryFile.exists()){
             directoryFile.mkdir();
         }
-        return imageService.chargeData(descriptors, imageService.uploadPhotos(unknown, photoUnknown), unknown.getRut());
+        //return imageService.chargeData(descriptors, imageService.uploadPhotos(unknown, photoUnknown), unknown.getRut());
+        return imageService.getAllFaces();
     }
 
     public Object prueba(String day, Integer personId) throws ParseException {
