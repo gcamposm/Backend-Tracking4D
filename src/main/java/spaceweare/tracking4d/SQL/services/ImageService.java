@@ -175,6 +175,10 @@ public class ImageService {
             face.put("user", person.getRut());
             faces.add(face);
         }
+        if(faces.size() == 0)
+        {
+            return null;
+        }
         return faces;
     }
 
