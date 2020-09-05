@@ -17,33 +17,18 @@ public class EmailAlertController {
     public ResponseEntity sendMail(@RequestParam("user") String user,
                                    @RequestParam("name") String name,
                                    @RequestParam("mail") String mail,
+                                   @RequestParam("mailTo") String mailTo,
                                    @RequestParam("msg") String msg,
                                    @RequestParam("subject") String subject) {
         try {
             EmailAlertValidator mailValidator = EmailAlertValidator.getInstance();
-            String alias = user;
-            if ("guillermo.campos19@gmail.com".equals(user)) {
-                alias = "guillermo.campos19@gmail.com";
-            }
             if (mailValidator.isValidEmailAddress(user)) {
-                Runnable emailSender = new EmailAlertSender(user, alias, name, mail, msg, subject);
+                Runnable emailSender = new EmailAlertSender(user, mailTo, name, mail, msg, subject);
                 emailSender.run();
                 return ResponseEntity.status(HttpStatus.OK).body("Mensaje enviado con exito.");
             } else {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La dirección de correo ingresada no es válida.");
             }
-        } catch (EmailSenderException e) {
-            throw new EmailSenderException("Can not send the email, please try again", e);
-        }
-    }
-    @RequestMapping(value = "/mujersocial/{name}/{email}/{phone}/{subject}/{commune}/{message}", method = RequestMethod.POST)
-    @ResponseStatus(HttpStatus.CREATED)
-    @ResponseBody
-    public ResponseEntity sendMailMujerSocial(@PathVariable("name") String name, @PathVariable("email") String email, @PathVariable("phone") String phone, @PathVariable("subject") String subject, @PathVariable("commune") String commune, @PathVariable("message") String message) {
-        try {
-            message = createMscMessage(phone, commune, message);
-            sendMail("asesoriapersonalizada@gmail.com", name, email, message, subject);
-            return ResponseEntity.status(HttpStatus.OK).body("Mensaje enviado con exito.");
         } catch (EmailSenderException e) {
             throw new EmailSenderException("Can not send the email, please try again", e);
         }
