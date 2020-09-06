@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import spaceweare.tracking4d.SQL.models.Person;
 import spaceweare.tracking4d.SQL.models.PersonType;
 import spaceweare.tracking4d.SQL.services.PersonTypeService;
 import java.util.List;
@@ -72,6 +73,31 @@ public class PersonTypeController {
     public ResponseEntity<String> delete (@PathVariable Integer id){
         try{
             return ResponseEntity.ok(personTypeService.delete(id));
+        }
+        catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping("/getAll/names")
+    @ResponseBody
+    public ResponseEntity<Object> getNames(){
+        try{
+            return ResponseEntity.ok(personTypeService.getNames());
+        }
+        catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @PostMapping("/personWithType")
+    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseBody
+    public ResponseEntity<Person> personWithType (@RequestParam("personType") String personType,
+                                                  @RequestParam("personRut") String personRut){
+        try{
+            return ResponseEntity.ok(personTypeService.personWithType(personType, personRut));
         }
         catch (Exception e){
             return ResponseEntity.badRequest().build();
