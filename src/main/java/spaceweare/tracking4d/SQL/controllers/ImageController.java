@@ -248,7 +248,7 @@ public class ImageController {
             try {
                 Image principalImage = imageDao.findImageById(imageDao.findImageByPrincipalEquals(person));
                 if(principalImage == null){
-                    Path path = Paths.get(absoluteFilePath + "/nodisponible.png");
+                    Path path = Paths.get(absoluteFilePath + "/nodisponible.jpg");
                     byte[] data = Files.readAllBytes(path);
                     return data;
                 }

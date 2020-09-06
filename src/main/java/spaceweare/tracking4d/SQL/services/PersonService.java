@@ -433,7 +433,7 @@ public class PersonService {
         if (! directoryFile.exists()){
             directoryFile.mkdir();
         }
-        //return imageService.chargeData(descriptors, imageService.uploadPhotos(unknown, photoUnknown), unknown.getRut());
+        imageService.chargeData(descriptors, imageService.uploadPhotos(unknown, photoUnknown), unknown.getRut());
         return imageService.getAllFaces();
     }
 
@@ -451,6 +451,18 @@ public class PersonService {
     }
 
     public List<Person> getUnknowns() {
-        return personDao.findAllByDeleted(true);
+        return personDao.findAllByUnknownAndDeleted(true, false);
+    }
+
+    public Person updateUnknown(Person personToUpdate, Integer id) {
+        Person person = personDao.findById(id).get();
+        person.setFirstName(personToUpdate.getFirstName());
+        person.setLastName(personToUpdate.getLastName());
+        person.setRut(personToUpdate.getRut());
+        person.setActivity(personToUpdate.getActivity());
+        person.setMail(personToUpdate.getMail());
+        person.setPhoneNumber(personToUpdate.getPhoneNumber());
+        person.setUnknown(false);
+        return personDao.save(person);
     }
 }

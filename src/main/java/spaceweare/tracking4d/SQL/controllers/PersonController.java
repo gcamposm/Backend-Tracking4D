@@ -390,4 +390,17 @@ public class PersonController {
             return ResponseEntity.badRequest().build();
         }
     }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @PutMapping("/updateUnknown/{id}")
+    @ResponseBody
+    public ResponseEntity<Person> updateUnknown (@PathVariable("id") Integer id,
+                                                 @RequestBody Person person){
+        try{
+            return ResponseEntity.ok(personService.updateUnknown(person, id));
+        }
+        catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
 }
