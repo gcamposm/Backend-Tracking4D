@@ -193,6 +193,11 @@ public class MatchController {
         return ResponseEntity.ok(matchService.alerts());
     }
 
+    @GetMapping("/activeAlerts")
+    public ResponseEntity activeAlerts(){
+        return ResponseEntity.ok(matchService.activeAlerts());
+    }
+
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @RequestMapping(value = "/writePlaceReport", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Object> writePlaceReport(@RequestParam("firstDay") @DateTimeFormat(pattern = "yyyy-MM-dd") Date firstDay,
