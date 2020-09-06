@@ -17,13 +17,15 @@ public class EmailAlertController {
     public ResponseEntity sendMail(@RequestParam("user") String user,
                                    @RequestParam("name") String name,
                                    @RequestParam("mail") String mail,
+                                   @RequestParam("rut") String rut,
+                                   @RequestParam("phone") String phone,
                                    @RequestParam("mailTo") String mailTo,
                                    @RequestParam("msg") String msg,
                                    @RequestParam("subject") String subject) {
         try {
             EmailAlertValidator mailValidator = EmailAlertValidator.getInstance();
             if (mailValidator.isValidEmailAddress(user)) {
-                Runnable emailSender = new EmailAlertSender(user, mailTo, name, mail, msg, subject);
+                Runnable emailSender = new EmailAlertSender(user, mailTo, name, mail, msg, subject, rut, phone);
                 emailSender.run();
                 return ResponseEntity.status(HttpStatus.OK).body("Mensaje enviado con exito.");
             } else {
