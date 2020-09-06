@@ -403,4 +403,17 @@ public class PersonController {
             return ResponseEntity.badRequest().build();
         }
     }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @PostMapping("/deleteAlert/{personRut}")
+    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseBody
+    public ResponseEntity deleteAlert (@PathVariable("personRut") String personRut){
+        try{
+            return ResponseEntity.ok(personService.deleteAlert(personRut));
+        }
+        catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
 }

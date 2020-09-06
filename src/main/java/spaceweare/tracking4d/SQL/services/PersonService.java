@@ -465,4 +465,10 @@ public class PersonService {
         person.setUnknown(false);
         return personDao.save(person);
     }
+
+    public Person deleteAlert(String personRut) {
+        Person person = personDao.findPersonByRut(personRut).get();
+        person.setNewAlert(false);
+        return personDao.save(person);
+    }
 }
