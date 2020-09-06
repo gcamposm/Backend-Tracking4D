@@ -1,6 +1,7 @@
 package spaceweare.tracking4d.SQL.services;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.poi.util.IOUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import spaceweare.tracking4d.Exceptions.FileDeleteException;
@@ -19,6 +20,7 @@ import spaceweare.tracking4d.SQL.models.Image;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -232,7 +234,7 @@ public class ImageService {
                     Path path = Paths.get(absoluteFilePath + "/nodisponible.png");
                     return Files.readAllBytes(path);
                 }
-                String rpath =  absoluteFilePath + "/" + principalImage.getName() + principalImage.getExtension(); // whatever path you used for storing the file
+                String rpath =  absoluteFilePath + "/users/" + person.getRut() + "/" + principalImage.getName() + principalImage.getExtension(); // whatever path you used for storing the file
                 Path path = Paths.get(rpath);
                 return Files.readAllBytes(path);
             } catch (IOException x) {
