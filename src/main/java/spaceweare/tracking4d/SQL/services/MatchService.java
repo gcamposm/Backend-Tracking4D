@@ -245,6 +245,19 @@ public class MatchService {
         return personList;
     }
 
+    public Object activeAlerts() {
+        List<Match> matchList = matchDao.findAllByHighTemperature(true);
+        List<Person> personList = new ArrayList<>();
+        for (Match match:matchList
+        ) {
+            if(!personList.contains(match.getPerson()) && match.getPerson().getNewAlert())
+            {
+                personList.add(match.getPerson());
+            }
+        }
+        return personList;
+    }
+
     public  void writeXlsx(List<Match> matchList, String path) throws IOException {
         try{
             // Se inicializa el archivo a para escribir

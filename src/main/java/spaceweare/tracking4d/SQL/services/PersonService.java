@@ -31,16 +31,14 @@ import java.util.*;
 @Service
 public class PersonService {
 
-    private final ImageDao imageDao;
     private final PersonDao personDao;
     private final MatchDao matchDao;
     private final ContactDao contactDao;
     private final MatchService matchService;
     private final ImageService imageService;
     private final FileStorageService fileStorageService;
-    public PersonService(PersonDao personDao, ImageDao imageDao, MatchDao matchDao, ContactDao contactDao, FileStorageService fileStorageService, MatchService matchService, ImageService imageService) {
+    public PersonService(PersonDao personDao, MatchDao matchDao, ContactDao contactDao, FileStorageService fileStorageService, MatchService matchService, ImageService imageService) {
         this.personDao = personDao;
-        this.imageDao = imageDao;
         this.fileStorageService = fileStorageService;
         this.matchService = matchService;
         this.matchDao = matchDao;
@@ -147,7 +145,6 @@ public class PersonService {
                 Cell cell = headerRow.createCell(i);
                 cell.setCellValue(columns[i]);
             }
-
             for (Match match : matchList) {
                 if(covid)
                 {
@@ -433,7 +430,7 @@ public class PersonService {
         if (! directoryFile.exists()){
             directoryFile.mkdir();
         }
-        //return imageService.chargeData(descriptors, imageService.uploadPhotos(unknown, photoUnknown), unknown.getRut());
+        imageService.chargeData(descriptors, imageService.uploadPhotos(unknown, photoUnknown), unknown.getRut());
         return imageService.getAllFaces();
     }
 
@@ -451,6 +448,24 @@ public class PersonService {
     }
 
     public List<Person> getUnknowns() {
-        return personDao.findAllByDeleted(true);
+        return personDao.findAllByUnknownAndDeleted(true, false);
+    }
+
+    public Person updateUnknown(Person personToUpdate, Integer id) {
+        Person person = personDao.findById(id).get();
+        person.setFirstName(personToUpdate.getFirstName());
+        person.setLastName(personToUpdate.getLastName());
+        person.setRut(personToUpdate.getRut());
+        person.setActivity(personToUpdate.getActivity());
+        person.setMail(personToUpdate.getMail());
+        person.setPhoneNumber(personToUpdate.getPhoneNumber());
+        person.setUnknown(false);
+        return personDao.save(person);
+    }
+
+    public Person deleteAlert(String personRut) {
+        Person person = personDao.findPersonByRut(personRut).get();
+        person.setNewAlert(false);
+        return personDao.save(person);
     }
 }

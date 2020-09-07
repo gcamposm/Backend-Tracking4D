@@ -1,15 +1,18 @@
 package spaceweare.tracking4d.SQL.controllers;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.math3.stat.descriptive.summary.Product;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import spaceweare.tracking4d.FileManagement.service.FileStorageService;
 import spaceweare.tracking4d.SQL.dao.PersonDao;
 import spaceweare.tracking4d.SQL.dao.ImageDao;
 import spaceweare.tracking4d.SQL.models.Image;
+import spaceweare.tracking4d.SQL.models.Person;
 import spaceweare.tracking4d.SQL.services.ImageService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,6 +20,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
@@ -28,11 +34,12 @@ public class ImageController {
     private final ImageService imageService;
     private final ImageDao imageDao;
     private final PersonDao personDao;
-
-    public ImageController(ImageService imageService, ImageDao imageDao, PersonDao personDao) {
+    private final FileStorageService fileStorageService;
+    public ImageController(ImageService imageService, ImageDao imageDao, PersonDao personDao, FileStorageService fileStorageService) {
         this.imageService = imageService;
         this.imageDao = imageDao;
         this.personDao = personDao;
+        this.fileStorageService = fileStorageService;
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
@@ -227,6 +234,36 @@ public class ImageController {
             return ResponseEntity.status(200).body(imageService.getPrincipalImageFromPerson(personRut));
         }catch (Exception e){
             return ResponseEntity.status(500).body("Could not get the principal image");
+        }
+    }
+
+    @RequestMapping(value = "web/{personRut}/getprincipalimage", method = RequestMethod.GET)
+    public byte[] getprincipalimageForWeb(@PathVariable String personRut) {
+        //String relativeWebPath = "WEB-INF/classes/static/imagenes";
+        //String absoluteFilePath = context.getRealPath(relativeWebPath);
+        //String absoluteFilePath =  "src/main/resources/static/imagenes/";
+        Path absoluteFilePath = fileStorageService.getFileStorageLocation();
+        Person person = personDao.findByRut(personRut);
+        if (person != null) {
+            try {
+                Image principalImage = imageDao.findImageById(imageDao.findImageByPrincipalEquals(person));
+                if(principalImage == null){
+                    Path path = Paths.get(absoluteFilePath + "/nodisponible.jpg");
+                    byte[] data = Files.readAllBytes(path);
+                    return data;
+                }
+                String rpath =  absoluteFilePath + "/users/" + person.getRut() + "/" + principalImage.getName() + principalImage.getExtension(); // whatever path you used for storing the file
+                Path path = Paths.get(rpath);
+                byte[] data = Files.readAllBytes(path);
+                return data;
+            } catch (IOException x) {
+                System.err.format("IOException: %s%n", x);
+                byte[] data = {0};
+                return data;
+            }
+        }else {
+            byte[] data = {0};
+            return data;
         }
     }
 

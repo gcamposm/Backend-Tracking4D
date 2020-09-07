@@ -92,6 +92,7 @@ public class TemperatureService {
                 match.setTemperature(temperature);
                 Person person = match.getPerson();
                 person.setCovid(true);
+                person.setNewAlert(true);
                 personDao.save(person);
                 return matchDao.save(match);
             }

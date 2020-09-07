@@ -9,7 +9,7 @@ import java.util.Properties;
 @SuppressWarnings("Duplicates")
 public class EmailAlertSender implements Runnable {
 
-    public EmailAlertSender(String user, String mailTo, String name, String mail, String msg, String subject) {
+    public EmailAlertSender(String user, String mailTo, String name, String mail, String msg, String subject, String rut, String phone) {
         this.user = user;
         switch (user) {
             case "guillermo.campos19@gmail.com":
@@ -27,6 +27,8 @@ public class EmailAlertSender implements Runnable {
         this.mail = mail;
         this.msg = msg;
         this.subject = subject;
+        this.phone = phone;
+        this.rut = rut;
     }
 
     private String user;
@@ -36,14 +38,19 @@ public class EmailAlertSender implements Runnable {
     private String mail;
     private String msg;
     private String subject;
+    private String phone;
+    private String rut;
 
     public String createMessage() {
         String message;
         switch (user) {
             case "guillermo.campos19@gmail.com":
-                message = "<h1 style=\"color: #5e9ca0;\">&nbsp;Alerta de temperatura</h1>\n" +
+                message = "<h1 style=\"color: #FF0000;\">&nbsp;Alerta de temperatura</h1>\n" +
+                        "<p>Datos de la persona en alerta" +
                         "<p>Nombre: " + name +
+                        "</p>\n" + "<p>Rut: " + rut +
                         "</p>\n" + "<p>Correo: " + mail +
+                        "</p>\n" + "<p>Celular: " + phone +
                         "</p>\n" + "<p>Comentario: " + msg + "</p>\n";
                 break;
             case "asesoriapersonalizada@gmail.com":
