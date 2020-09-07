@@ -31,16 +31,14 @@ import java.util.*;
 @Service
 public class PersonService {
 
-    private final ImageDao imageDao;
     private final PersonDao personDao;
     private final MatchDao matchDao;
     private final ContactDao contactDao;
     private final MatchService matchService;
     private final ImageService imageService;
     private final FileStorageService fileStorageService;
-    public PersonService(PersonDao personDao, ImageDao imageDao, MatchDao matchDao, ContactDao contactDao, FileStorageService fileStorageService, MatchService matchService, ImageService imageService) {
+    public PersonService(PersonDao personDao, MatchDao matchDao, ContactDao contactDao, FileStorageService fileStorageService, MatchService matchService, ImageService imageService) {
         this.personDao = personDao;
-        this.imageDao = imageDao;
         this.fileStorageService = fileStorageService;
         this.matchService = matchService;
         this.matchDao = matchDao;
@@ -147,7 +145,6 @@ public class PersonService {
                 Cell cell = headerRow.createCell(i);
                 cell.setCellValue(columns[i]);
             }
-
             for (Match match : matchList) {
                 if(covid)
                 {
