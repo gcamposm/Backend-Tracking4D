@@ -12,6 +12,8 @@ public class Pixel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private Float value;
+    private Integer x;
+    private Integer y;
 
     @ManyToOne
     @JoinColumn

@@ -20,7 +20,6 @@ import spaceweare.tracking4d.SQL.models.Person;
 import spaceweare.tracking4d.SQL.models.Image;
 import spaceweare.tracking4d.SQL.models.Match;
 import spaceweare.tracking4d.SQL.services.PersonService;
-
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;

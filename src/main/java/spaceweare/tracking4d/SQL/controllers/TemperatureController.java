@@ -77,4 +77,20 @@ public class TemperatureController {
             return ResponseEntity.badRequest().build();
         }
     }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @PostMapping("/getDetectionTemperature")
+    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseBody
+    public ResponseEntity<String> getDetectionTemperature (@RequestParam Integer x,
+                                                                @RequestParam Integer y,
+                                                                @RequestParam Integer height,
+                                                                @RequestParam Integer width){
+        try{
+            return ResponseEntity.ok(temperatureService.getDetectionTemperature(x, y, height, width));
+        }
+        catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
 }
