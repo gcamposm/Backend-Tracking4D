@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface TemperatureDao extends JpaRepository<Temperature, Integer> {
     List<Temperature> findTemperatureByDetectedHourBetween(LocalDateTime firstDate, LocalDateTime secondDate);
+    Temperature findFirstByOrderByIdDesc();
 }

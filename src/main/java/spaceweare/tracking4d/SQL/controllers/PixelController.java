@@ -7,7 +7,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import spaceweare.tracking4d.SQL.models.Pixel;
 import spaceweare.tracking4d.SQL.services.PixelService;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
@@ -84,6 +87,23 @@ public class PixelController {
     public ResponseEntity python(@RequestParam("pixels") List<Float> pixels,
                                  @RequestParam("date") String date) {
         try {
+            return ResponseEntity.ok(pixelService.saveTemperature(pixels, date));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PostMapping("/aux")
+    @ResponseBody
+    public ResponseEntity aux(@RequestParam("date") String date) {
+        try {
+            List<Float> pixels = new ArrayList<>();
+            Random r = new Random();
+            int count = 0;
+            while (count<768){
+                pixels.add(37 + r.nextFloat() * (2));
+                count++;
+            }
             return ResponseEntity.ok(pixelService.saveTemperature(pixels, date));
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();

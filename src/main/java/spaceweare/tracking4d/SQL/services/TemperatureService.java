@@ -3,15 +3,20 @@ package spaceweare.tracking4d.SQL.services;
 import org.springframework.stereotype.Service;
 import spaceweare.tracking4d.SQL.dao.MatchDao;
 import spaceweare.tracking4d.SQL.dao.PersonDao;
+import spaceweare.tracking4d.SQL.dao.PixelDao;
 import spaceweare.tracking4d.SQL.dao.TemperatureDao;
 import spaceweare.tracking4d.SQL.models.Match;
 import spaceweare.tracking4d.SQL.models.Person;
+import spaceweare.tracking4d.SQL.models.Pixel;
 import spaceweare.tracking4d.SQL.models.Temperature;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
@@ -20,12 +25,14 @@ public class TemperatureService {
     private final TemperatureDao temperatureDao;
     private final MatchDao matchDao;
     private final PersonDao personDao;
+    private final PixelDao pixelDao;
     private final MatchService matchService;
-    public TemperatureService(TemperatureDao temperatureDao, MatchDao matchDao, MatchService matchService, PersonDao personDao) {
+    public TemperatureService(TemperatureDao temperatureDao, MatchDao matchDao, MatchService matchService, PersonDao personDao, PixelDao pixelDao) {
         this.temperatureDao = temperatureDao;
         this.matchDao = matchDao;
         this.matchService = matchService;
         this.personDao = personDao;
+        this.pixelDao = pixelDao;
     }
 
     public Temperature create(Temperature temperature){
@@ -98,5 +105,54 @@ public class TemperatureService {
             }
         }
         return null;
+    }
+
+    public String getDetectionTemperature(Integer x, Integer y, Integer height, Integer width) throws ParseException {
+        //Redondear flotantes
+        DecimalFormat df = new DecimalFormat("##.#");
+        df.setRoundingMode(RoundingMode.DOWN);
+        // Ajustar datos de entrada
+        Integer adjust = 20 * 4;
+        x = x/adjust;
+        y = y/adjust;
+        height = height/adjust;
+        width = width/adjust;
+        // Encontrar la última temperatura
+        Temperature temperature = temperatureDao.findFirstByOrderByIdDesc();
+        //
+        List<Pixel> filteredPixels = new ArrayList<>();
+        Integer limX = x+width+1;
+        Integer limY = y+height+1;
+        for (Pixel pixel:temperature.getPixels()
+             ) {
+            // Se obtienen los pixeles según la proporción del rostro detectado
+            //System.out.println("datos de filtrado x: "+x+" hasta: "+limX+" y: "+y+" hasta: "+limY);
+            if(pixel.getX()>x && pixel.getX()<limX && pixel.getY()>y && pixel.getY()<limY){
+                filteredPixels.add(pixel);
+            }
+        }
+        //Encontrar el pixel más alto dentro del rostro
+        if(filteredPixels.size()>0){
+            Float max = filteredPixels.get(0).getValue();
+            for (Pixel pixel:filteredPixels
+                 ) {
+                if(pixel.getValue()>max)
+                {
+                    max = pixel.getValue();
+                }
+            }
+            //if(max > 38.5)
+            if(max > 35.4)
+            {
+                LocalDateTime ldt = LocalDateTime.now().plusDays(1);
+                DateTimeFormatter formmat1 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                String formatter = formmat1.format(ldt);
+                highTemperature(temperature, formatter);
+            }
+            return df.format(max);
+        }
+        Random r = new Random();
+        System.out.println("else");
+        return df.format(36 + r.nextFloat() * (2));
     }
 }

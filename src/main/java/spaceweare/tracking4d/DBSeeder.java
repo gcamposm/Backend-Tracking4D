@@ -64,9 +64,11 @@ public class DBSeeder implements CommandLineRunner {
     public void seedCameras(){
         Camera camera1 = new Camera();
         camera1.setValue("1");
+        camera1.setIsCovidCamera(true);
         cameraDao.save(camera1);
         Camera camera2 = new Camera();
         camera2.setValue("2");
+        camera2.setIsCovidCamera(false);
         cameraDao.save(camera2);
     }
 

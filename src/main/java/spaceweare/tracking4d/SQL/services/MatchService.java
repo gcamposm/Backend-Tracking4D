@@ -149,6 +149,7 @@ public class MatchService {
         Date firstDate = cal.getTime();
         LocalDateTime firstCurrentDate = LocalDateTime.ofInstant(firstDate.toInstant(), ZoneId.systemDefault());
         LocalDateTime secondCurrentDate = LocalDateTime.ofInstant(secondDate.toInstant(), ZoneId.systemDefault());
+        System.out.println("Here 4");
         // Se buscan los matchs que coincidan
         List<Match> matchListByDate = matchDao.findMatchByHourBetween(firstCurrentDate, secondCurrentDate);
         List<Match> matchListByDateAndCovid = new ArrayList<>();
