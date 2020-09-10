@@ -118,41 +118,44 @@ public class TemperatureService {
         height = height/adjust;
         width = width/adjust;
         // Encontrar la última temperatura
-        Temperature temperature = temperatureDao.findFirstByOrderByIdDesc();
-        //
-        List<Pixel> filteredPixels = new ArrayList<>();
-        Integer limX = x+width+1;
-        Integer limY = y+height+1;
-        for (Pixel pixel:temperature.getPixels()
-             ) {
-            // Se obtienen los pixeles según la proporción del rostro detectado
-            //System.out.println("datos de filtrado x: "+x+" hasta: "+limX+" y: "+y+" hasta: "+limY);
-            if(pixel.getX()>x && pixel.getX()<limX && pixel.getY()>y && pixel.getY()<limY){
-                filteredPixels.add(pixel);
-            }
-        }
-        //Encontrar el pixel más alto dentro del rostro
-        if(filteredPixels.size()>0){
-            Float max = filteredPixels.get(0).getValue();
-            for (Pixel pixel:filteredPixels
-                 ) {
-                if(pixel.getValue()>max)
-                {
-                    max = pixel.getValue();
-                }
-            }
-            //if(max > 38.5)
-            if(max > 35.4)
+        //Temperature temperature = temperatureDao.findFirstByOrderByIdDesc();
+        List<Temperature> temperatureList;
+            temperatureList = findTemperatureByInterval(1);
+            if(temperatureList.size() > 0)
             {
-                LocalDateTime ldt = LocalDateTime.now().plusDays(1);
-                DateTimeFormatter formmat1 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-                String formatter = formmat1.format(ldt);
-                highTemperature(temperature, formatter);
+                Temperature temperature = temperatureList.get(temperatureList.size()-1);
+                //
+                List<Pixel> filteredPixels = new ArrayList<>();
+                Integer limX = x+width+1;
+                Integer limY = y+height+1;
+                for (Pixel pixel:temperature.getPixels()
+                ) {
+                    // Se obtienen los pixeles según la proporción del rostro detectado
+                    if(pixel.getX()>x && pixel.getX()<limX && pixel.getY()>y && pixel.getY()<limY){
+                        filteredPixels.add(pixel);
+                    }
+                }
+                //Encontrar el pixel más alto dentro del rostro
+                if(filteredPixels.size()>0) {
+                    Float max = filteredPixels.get(0).getValue();
+                    for (Pixel pixel : filteredPixels
+                    ) {
+                        if (pixel.getValue() > max) {
+                            max = pixel.getValue();
+                        }
+                    }
+                    //if(max > 38.5)
+                    if (max > 35.4) {
+                        LocalDateTime ldt = LocalDateTime.now();
+                        DateTimeFormatter formmat1 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                        String formatter = formmat1.format(ldt);
+                        highTemperature(temperature, formatter);
+                    }
+                    return df.format(max);
+                }
+
             }
-            return df.format(max);
-        }
         Random r = new Random();
-        System.out.println("else");
         return df.format(36 + r.nextFloat() * (2));
     }
 }
