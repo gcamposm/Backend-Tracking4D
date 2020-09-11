@@ -94,6 +94,7 @@ public class TemperatureService {
     }
 
     public Match highTemperature(Temperature temperature, String date, String highTemperature) throws ParseException {
+        System.out.println("highTemperature: "+highTemperature);
         List<Match> matchList;
         for (int i = 1; i < 5; i++) {
             matchList = matchService.findMatchByInterval(i, date);
