@@ -96,16 +96,9 @@ public class TemperatureService {
                 match.setHighTemperature(true);
                 match.setTemperature(temperature);
                 Person person = match.getPerson();
-                person.setAlertTemperature(Float.parseFloat(highTemperature));
                 person.setCovid(true);
                 person.setNewAlert(true);
                 personDao.save(person);
-                Alert alert = new Alert();
-                alert.setActive(true);
-                alert.setPerson(person);
-                alert.setTemperature(highTemperature);
-                alert.setDate(match.getHour());
-                alertDao.save(alert);
                 return matchDao.save(match);
             }
         }
@@ -130,6 +123,7 @@ public class TemperatureService {
             temperatureList = findTemperatureByInterval(i);
             if (temperatureList.size() > 0) {
                 Temperature temperature = temperatureList.get(temperatureList.size() - 1);
+                System.out.println("Id temperature: "+temperature.getId());
                 //
                 List<Pixel> filteredPixels = new ArrayList<>();
                 Integer limX = x + width + 1;
@@ -141,6 +135,8 @@ public class TemperatureService {
                         filteredPixels.add(pixel);
                     }
                 }
+                System.out.println("pixels size"+temperature.getPixels().size());
+                System.out.println("filteredPixels size"+filteredPixels.size());
                 //Encontrar el pixel más alto dentro del rostro
                 if (filteredPixels.size() > 0) {
                     Float max = filteredPixels.get(0).getValue();
@@ -150,6 +146,7 @@ public class TemperatureService {
                             max = pixel.getValue();
                         }
                     }
+                    System.out.println("Máxima: "+max);
                     if(max > 38.5){
                     //if (max > 35.4) {
                         LocalDateTime ldt = LocalDateTime.now();
