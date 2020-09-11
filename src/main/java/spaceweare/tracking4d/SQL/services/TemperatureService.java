@@ -86,6 +86,7 @@ public class TemperatureService {
                 ZoneId.systemDefault());
         LocalDateTime secondCurrentLocal = LocalDateTime.ofInstant(secondCurrentInstant,
                 ZoneId.systemDefault());
+        System.out.println("Buscando temperatura entre "+firstCurrentDate+" "+secondCurrentDate);
         return temperatureDao.findTemperatureByDetectedHourBetween(firstCurrentLocal, secondCurrentLocal);
     }
 
@@ -104,6 +105,7 @@ public class TemperatureService {
                 return matchDao.save(match);
             }
         }
+
         return null;
     }
 
@@ -120,23 +122,24 @@ public class TemperatureService {
         // Encontrar la última temperatura
         //Temperature temperature = temperatureDao.findFirstByOrderByIdDesc();
         List<Temperature> temperatureList;
-            temperatureList = findTemperatureByInterval(1);
-            if(temperatureList.size() > 0)
-            {
-                Temperature temperature = temperatureList.get(temperatureList.size()-1);
+        for (int i = 0; i < 5; i++) {
+            temperatureList = findTemperatureByInterval(i);
+            System.out.println("Temperature size: "+temperatureList.size());
+            if (temperatureList.size() > 0) {
+                Temperature temperature = temperatureList.get(temperatureList.size() - 1);
                 //
                 List<Pixel> filteredPixels = new ArrayList<>();
-                Integer limX = x+width+1;
-                Integer limY = y+height+1;
-                for (Pixel pixel:temperature.getPixels()
+                Integer limX = x + width + 1;
+                Integer limY = y + height + 1;
+                for (Pixel pixel : temperature.getPixels()
                 ) {
                     // Se obtienen los pixeles según la proporción del rostro detectado
-                    if(pixel.getX()>x && pixel.getX()<limX && pixel.getY()>y && pixel.getY()<limY){
+                    if (pixel.getX() > x && pixel.getX() < limX && pixel.getY() > y && pixel.getY() < limY) {
                         filteredPixels.add(pixel);
                     }
                 }
                 //Encontrar el pixel más alto dentro del rostro
-                if(filteredPixels.size()>0) {
+                if (filteredPixels.size() > 0) {
                     Float max = filteredPixels.get(0).getValue();
                     for (Pixel pixel : filteredPixels
                     ) {
@@ -155,6 +158,7 @@ public class TemperatureService {
                 }
 
             }
+        }
         Random r = new Random();
         return df.format(36 + r.nextFloat() * (2));
     }
