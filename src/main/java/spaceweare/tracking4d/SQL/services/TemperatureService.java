@@ -90,7 +90,6 @@ public class TemperatureService {
                 ZoneId.systemDefault());
         LocalDateTime secondCurrentLocal = LocalDateTime.ofInstant(secondCurrentInstant,
                 ZoneId.systemDefault());
-        System.out.println("Buscando temperatura entre "+firstCurrentDate+" "+secondCurrentDate);
         return temperatureDao.findTemperatureByDetectedHourBetween(firstCurrentLocal, secondCurrentLocal);
     }
 
@@ -99,7 +98,7 @@ public class TemperatureService {
         for (int i = 0; i < 5; i++) {
             matchList = matchService.findMatchByInterval(i, date);
             if( matchList.size() > 0){
-                Match match = matchList.get(matchList.size()-1);
+                Match match = matchList.get(0);
                 match.setHighTemperature(true);
                 match.setTemperature(temperature);
                 Person person = match.getPerson();

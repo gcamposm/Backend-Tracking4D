@@ -83,6 +83,7 @@ public class PixelService {
         Integer y = 0;
         if(match != null)
         {
+            System.out.println("Se encontró un match");
             //Reducir el número de pixeles
             List<Pixel> filteredPixels = new ArrayList<>();
             for (int i = 0; i < 32; i = i+4)
