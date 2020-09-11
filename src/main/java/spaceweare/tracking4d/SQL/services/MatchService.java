@@ -144,8 +144,9 @@ public class MatchService {
         Date secondDate = formatter.parse(dateString);
         Calendar cal = Calendar.getInstance();
         cal.setTime(secondDate);
-        Integer second = cal.get(Calendar.SECOND);
-        cal.set(Calendar.SECOND, second - interval);
+        Integer minute = cal.get(Calendar.MINUTE);
+        cal.set(Calendar.MINUTE, minute + 1);
+        cal.set(Calendar.MINUTE, minute - interval);
         Date firstDate = cal.getTime();
         LocalDateTime firstCurrentDate = LocalDateTime.ofInstant(firstDate.toInstant(), ZoneId.systemDefault());
         LocalDateTime secondCurrentDate = LocalDateTime.ofInstant(secondDate.toInstant(), ZoneId.systemDefault());
