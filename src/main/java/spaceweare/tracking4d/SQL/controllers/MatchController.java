@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.text.ParseException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -252,5 +253,13 @@ public class MatchController {
                 .contentType(MediaType.parseMediaType(contentType))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
+    }
+
+
+    @PostMapping("/findMatchByInterval")
+    public ResponseEntity findMatchByInterval(@RequestParam("date") String date,
+                                              @RequestParam("i") Integer i) throws ParseException {
+
+        return ResponseEntity.ok(matchService.findMatchByInterval(i, date));
     }
 }

@@ -95,10 +95,10 @@ public class TemperatureService {
 
     public Match highTemperature(Temperature temperature, String date) throws ParseException {
         List<Match> matchList;
-        for (int t = 0; t < 5; t++) {
-            matchList = matchService.findMatchByInterval(t, date);
+        for (int i = 1; i < 5; i++) {
+            matchList = matchService.findMatchByInterval(i, date);
             if( matchList.size() > 0){
-                Match match = matchList.get(0);
+                Match match = matchList.get(matchList.size()-1);
                 match.setHighTemperature(true);
                 match.setTemperature(temperature);
                 Person person = match.getPerson();
