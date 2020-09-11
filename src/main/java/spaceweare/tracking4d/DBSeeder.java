@@ -9,7 +9,6 @@ import org.json.simple.JSONValue;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-
 import java.io.FileReader;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
