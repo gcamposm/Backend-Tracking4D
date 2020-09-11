@@ -1,15 +1,8 @@
 package spaceweare.tracking4d.SQL.services;
 
 import org.springframework.stereotype.Service;
-import spaceweare.tracking4d.SQL.dao.MatchDao;
-import spaceweare.tracking4d.SQL.dao.PersonDao;
-import spaceweare.tracking4d.SQL.dao.PixelDao;
-import spaceweare.tracking4d.SQL.dao.TemperatureDao;
-import spaceweare.tracking4d.SQL.models.Match;
-import spaceweare.tracking4d.SQL.models.Person;
-import spaceweare.tracking4d.SQL.models.Pixel;
-import spaceweare.tracking4d.SQL.models.Temperature;
-
+import spaceweare.tracking4d.SQL.dao.*;
+import spaceweare.tracking4d.SQL.models.*;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -25,14 +18,14 @@ public class TemperatureService {
     private final TemperatureDao temperatureDao;
     private final MatchDao matchDao;
     private final PersonDao personDao;
-    private final PixelDao pixelDao;
+    private final AlertDao alertDao;
     private final MatchService matchService;
-    public TemperatureService(TemperatureDao temperatureDao, MatchDao matchDao, MatchService matchService, PersonDao personDao, PixelDao pixelDao) {
+    public TemperatureService(TemperatureDao temperatureDao, MatchDao matchDao, MatchService matchService, PersonDao personDao, AlertDao alertDao) {
         this.temperatureDao = temperatureDao;
         this.matchDao = matchDao;
         this.matchService = matchService;
         this.personDao = personDao;
-        this.pixelDao = pixelDao;
+        this.alertDao = alertDao;
     }
 
     public Temperature create(Temperature temperature){
@@ -107,6 +100,12 @@ public class TemperatureService {
                 person.setCovid(true);
                 person.setNewAlert(true);
                 personDao.save(person);
+                Alert alert = new Alert();
+                alert.setActive(true);
+                alert.setPerson(person);
+                alert.setTemperature(highTemperature);
+                alert.setDate(match.getHour());
+                alertDao.save(alert);
                 return matchDao.save(match);
             }
         }
