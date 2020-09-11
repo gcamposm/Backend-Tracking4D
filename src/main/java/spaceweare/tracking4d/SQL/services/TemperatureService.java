@@ -75,6 +75,8 @@ public class TemperatureService {
 
     public List<Temperature> findTemperatureByInterval(Integer interval){
         Calendar currentCalendar = Calendar.getInstance();
+        Integer hour = currentCalendar.get(Calendar.HOUR);
+        currentCalendar.set(Calendar.HOUR, hour - 3);
         Date secondCurrentDate = currentCalendar.getTime();
         Integer minute = currentCalendar.get(Calendar.MINUTE);
         currentCalendar.set(Calendar.MINUTE, minute - interval);
