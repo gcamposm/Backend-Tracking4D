@@ -78,13 +78,8 @@ public class PixelService {
         temperature.setDetectedHour(localDate);
         temperatureDao.save(temperature);
         //Encontrar el match correspondiente
-        System.out.println("A encontrar el match");
-        Match match = temperatureService.highTemperature(temperature, date);
         Integer x = 0;
         Integer y = 0;
-        if(match != null)
-        {
-            System.out.println("Se encontró un match");
             //Reducir el número de pixeles
             List<Pixel> filteredPixels = new ArrayList<>();
             for (int i = 0; i < 32; i = i+4)
@@ -122,12 +117,7 @@ public class PixelService {
             }
             // Se maneja el retorno
             Map<Object, Object> json = new HashMap<>();
-            json.put("match", match);
             json.put("temperature", temperature);
             return json;
-        }
-        else{
-            return null;
-        }
     }
 }

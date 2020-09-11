@@ -149,9 +149,8 @@ public class TemperatureService {
                             max = pixel.getValue();
                         }
                     }
-                    System.out.println(max);
-                    //if(max > 38.5)
-                    if (max > 38.5) {
+                    if(max > 38.5){
+                    //if (max > 35.4) {
                         LocalDateTime ldt = LocalDateTime.now();
                         DateTimeFormatter formmat1 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
                         String formatter = formmat1.format(ldt);
