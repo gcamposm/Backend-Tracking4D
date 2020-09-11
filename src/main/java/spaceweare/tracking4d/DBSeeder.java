@@ -14,8 +14,8 @@ import java.io.FileReader;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 
-//@Component
-//@Order(2)
+@Component
+@Order(2)
 public class DBSeeder implements CommandLineRunner {
 
     private final RegionDao regionDao;
