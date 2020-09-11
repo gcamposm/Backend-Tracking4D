@@ -60,5 +60,5 @@ public class Person {
     private Boolean covid;
     private Boolean newAlert;
     private String activity;
-    private String temperature;
+    private Float alertTemperature;
 }
