@@ -77,6 +77,8 @@ public class TemperatureService {
         Calendar currentCalendar = Calendar.getInstance();
         Integer hour = currentCalendar.get(Calendar.HOUR);
         currentCalendar.set(Calendar.HOUR, hour - 3);
+        Integer minuteToPlus = currentCalendar.get(Calendar.MINUTE);
+        currentCalendar.set(Calendar.MINUTE, minuteToPlus + 1);
         Date secondCurrentDate = currentCalendar.getTime();
         Integer minute = currentCalendar.get(Calendar.MINUTE);
         currentCalendar.set(Calendar.MINUTE, minute - interval);
@@ -94,10 +96,10 @@ public class TemperatureService {
 
     public Match highTemperature(Temperature temperature, String date) throws ParseException {
         List<Match> matchList;
-        for (int i = 1; i < 5; i++) {
+        for (int i = 0; i < 5; i++) {
             matchList = matchService.findMatchByInterval(i, date);
-            if( matchList.size() == 1){
-                Match match = matchList.get(0);
+            if( matchList.size() > 0){
+                Match match = matchList.get(matchList.size()-1);
                 match.setHighTemperature(true);
                 match.setTemperature(temperature);
                 Person person = match.getPerson();
@@ -129,6 +131,7 @@ public class TemperatureService {
             System.out.println("Temperature size: "+temperatureList.size());
             if (temperatureList.size() > 0) {
                 Temperature temperature = temperatureList.get(temperatureList.size() - 1);
+                System.out.println("Temperature id: "+temperature.getId());
                 //
                 List<Pixel> filteredPixels = new ArrayList<>();
                 Integer limX = x + width + 1;
@@ -149,8 +152,9 @@ public class TemperatureService {
                             max = pixel.getValue();
                         }
                     }
+                    System.out.println(max);
                     //if(max > 38.5)
-                    if (max > 35.4) {
+                    if (max > 38.5) {
                         LocalDateTime ldt = LocalDateTime.now();
                         DateTimeFormatter formmat1 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
                         String formatter = formmat1.format(ldt);
