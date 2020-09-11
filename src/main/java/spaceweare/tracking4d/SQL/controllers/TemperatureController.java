@@ -83,9 +83,9 @@ public class TemperatureController {
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
     public ResponseEntity<String> getDetectionTemperature (@RequestParam Integer x,
-                                                                @RequestParam Integer y,
-                                                                @RequestParam Integer height,
-                                                                @RequestParam Integer width){
+                                                           @RequestParam Integer y,
+                                                           @RequestParam Integer height,
+                                                           @RequestParam Integer width){
         try{
             return ResponseEntity.ok(temperatureService.getDetectionTemperature(x, y, height, width));
         }

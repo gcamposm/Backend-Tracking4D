@@ -152,6 +152,7 @@ public class MatchService {
         // Se buscan los matchs que coincidan
         List<Match> matchListByDate = matchDao.findMatchByHourBetween(firstCurrentDate, secondCurrentDate);
         List<Match> matchListByDateAndCovid = new ArrayList<>();
+        System.out.println("Buscando matchs entre: "+firstCurrentDate + " "+secondCurrentDate);
         for (Match match:matchListByDate
              ) {
             if (match.getCamera().getIsCovidCamera()){
