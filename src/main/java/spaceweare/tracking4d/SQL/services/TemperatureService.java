@@ -94,7 +94,7 @@ public class TemperatureService {
         return temperatureDao.findTemperatureByDetectedHourBetween(firstCurrentLocal, secondCurrentLocal);
     }
 
-    public Match highTemperature(Temperature temperature, String date) throws ParseException {
+    public Match highTemperature(Temperature temperature, String date, String highTemperature) throws ParseException {
         List<Match> matchList;
         for (int i = 1; i < 5; i++) {
             matchList = matchService.findMatchByInterval(i, date);
@@ -105,6 +105,7 @@ public class TemperatureService {
                 Person person = match.getPerson();
                 person.setCovid(true);
                 person.setNewAlert(true);
+                person.setTemperature(highTemperature);
                 personDao.save(person);
                 return matchDao.save(match);
             }
@@ -156,7 +157,7 @@ public class TemperatureService {
                         LocalDateTime ldt = LocalDateTime.now();
                         DateTimeFormatter formmat1 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
                         String formatter = formmat1.format(ldt);
-                        highTemperature(temperature, formatter);
+                        highTemperature(temperature, formatter, df.format(max));
                     }
                     return df.format(max);
                 }
