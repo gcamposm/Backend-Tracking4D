@@ -151,7 +151,7 @@ public class MatchService {
         LocalDateTime firstCurrentDate = LocalDateTime.ofInstant(firstDate.toInstant(), ZoneId.systemDefault());
         LocalDateTime secondCurrentDate = LocalDateTime.ofInstant(secondDate.toInstant(), ZoneId.systemDefault());
         // Se buscan los matchs que coincidan
-        System.out.println("Buscar match entre "+firstCurrentDate+" "+secondCurrentDate);
+        
         List<Match> matchListByDate = matchDao.findMatchByHourBetween(firstCurrentDate, secondCurrentDate);
         List<Match> matchListByDateAndCovid = new ArrayList<>();
         for (Match match:matchListByDate
@@ -175,7 +175,7 @@ public class MatchService {
     }
 
     public List<Match> getIncomeOutcome(Date day, Integer personId) {
-        System.out.println(("La fecha es: "+ day.toString()));
+        
         List<Match> matchListPerDay = getMatchesByDate(day, day);
         List<Match> matchListByPerson = filterByPerson(matchListPerDay, personId);
         Integer matchIdIn = 0;

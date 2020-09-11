@@ -90,11 +90,11 @@ public class TemperatureService {
                 ZoneId.systemDefault());
         LocalDateTime secondCurrentLocal = LocalDateTime.ofInstant(secondCurrentInstant,
                 ZoneId.systemDefault());
-        System.out.println("Buscando temperatura entre "+firstCurrentDate+" "+secondCurrentDate);
         return temperatureDao.findTemperatureByDetectedHourBetween(firstCurrentLocal, secondCurrentLocal);
     }
 
     public Match highTemperature(Temperature temperature, String date, String highTemperature) throws ParseException {
+        System.out.println("highTemperature: "+highTemperature);
         List<Match> matchList;
         for (int i = 1; i < 5; i++) {
             matchList = matchService.findMatchByInterval(i, date);
@@ -129,7 +129,6 @@ public class TemperatureService {
         List<Temperature> temperatureList;
         for (int i = 0; i < 5; i++) {
             temperatureList = findTemperatureByInterval(i);
-            System.out.println("Temperature size: "+temperatureList.size());
             if (temperatureList.size() > 0) {
                 Temperature temperature = temperatureList.get(temperatureList.size() - 1);
                 //

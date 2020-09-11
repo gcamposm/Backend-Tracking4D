@@ -221,7 +221,6 @@ public class ReportService {
             table.addCell(hcell);
 
             for (Match match : matchesFilteredByCostumers) {
-                System.out.println("Escribiendo celda");
                 Person person = match.getPerson();
                 List<Match> inOut = matchService.getIncomeOutcome(lastDay, match.getPerson().getId());
 
@@ -312,7 +311,6 @@ public class ReportService {
             PdfWriter.getInstance(document, out);
             document.open();
             document.add(table);
-            System.out.println("A guardar el pdf");
             Path filePath = fileStorageService.getFileStorageLocation().resolve("output.pdf").normalize();
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(out.toByteArray());
             IOUtils.copy(byteArrayInputStream, new FileOutputStream(filePath.toString()));

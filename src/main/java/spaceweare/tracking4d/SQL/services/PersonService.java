@@ -365,7 +365,7 @@ public class PersonService {
                 }
             }
             XSSFWorkbook myWorkBook = writeOutputFile(matchesFilteredByCostumers, day, contacts, covid);
-            System.out.println("Path: " + path);
+            
             FileOutputStream os = new FileOutputStream(path);
             myWorkBook.write(os);
             os.close();
@@ -437,12 +437,8 @@ public class PersonService {
     public Object prueba(String day, Integer personId) throws ParseException {
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         Date date = format.parse(day);
-        System.out.println("formatie la fecha");
         List<Match> inOut = matchService.getIncomeOutcome(date, personId);
-        System.out.println("Entrada "+inOut.get(0).getHour());
-        System.out.println("Salida "+inOut.get(1).getHour());
         Duration duration = Duration.between(inOut.get(0).getHour(), inOut.get(1).getHour());
-        System.out.println("string "+ duration.toString());
         long minutes = Duration.between(inOut.get(0).getHour(), inOut.get(1).getHour()).toMinutes();
         return minutes;
     }

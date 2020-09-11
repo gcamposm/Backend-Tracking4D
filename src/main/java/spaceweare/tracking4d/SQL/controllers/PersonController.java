@@ -321,7 +321,7 @@ public class PersonController {
         }
         //Path path = fileStorageService.getFileStorageLocation();
         Path filePath = fileStorageService.getFileStorageLocation().resolve("output.xlsx").normalize();
-        System.out.println("dir: "+filePath.toString());
+        
         personService.writeXlsx(matches, filePath.toString(), lastDay, covid);
         return ResponseEntity
                 .status(HttpStatus.OK)

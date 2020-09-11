@@ -105,17 +105,12 @@ public class DetectionService {
     private DetectionDayStat getStat(LocalDateTime date){
 
         LocalDateTime datePlus1Day = date.plusDays(1);
-        System.out.println("Date: " + date);
-        System.out.println("Date + 1: " + datePlus1Day);
         List<Detection> detectionList = detectionDao.findDetectionByclockBetween(date, datePlus1Day);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         String formatDateTime = date.format(formatter);
-        System.out.println("---------------------------");
         DetectionDayStat detectionDayStat = getTotalByDay(detectionList.size(), matchDao.findMatchByHourBetween(date, datePlus1Day).size());
         detectionDayStat.setDay(date);
         detectionDayStat.setFormattedDate(formatDateTime);
-        System.out.println(detectionDayStat);
-        System.out.println("---------------------------");
         return detectionDayStat;
 
     }
