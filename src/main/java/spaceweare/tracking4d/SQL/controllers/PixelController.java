@@ -86,7 +86,7 @@ public class PixelController {
 
     @PostMapping("/saveTemperature")
     @ResponseBody
-    public ResponseEntity python(@RequestParam("pixels") List<Float> pixels,
+    public ResponseEntity saveTemperature(@RequestParam("pixels") List<Float> pixels,
                                  @RequestParam("date") String date) {
         try {
             return ResponseEntity.ok(pixelService.saveTemperature(pixels, date));

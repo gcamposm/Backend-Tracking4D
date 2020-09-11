@@ -105,7 +105,7 @@ public class MatchService {
         // Se maneja la hora actual
         Calendar cal = Calendar.getInstance();
         Integer hour = cal.get(Calendar.HOUR);
-        cal.set(Calendar.HOUR, hour - 1);
+        cal.set(Calendar.HOUR, hour - 3);
         Date date = cal.getTime();
         LocalDateTime now = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
         // Se crean los match según los ruts de las personas detectadas

@@ -75,6 +75,10 @@ public class TemperatureService {
 
     public List<Temperature> findTemperatureByInterval(Integer interval){
         Calendar currentCalendar = Calendar.getInstance();
+        Integer hour = currentCalendar.get(Calendar.HOUR);
+        currentCalendar.set(Calendar.HOUR, hour - 3);
+        Integer minuteToPlus = currentCalendar.get(Calendar.MINUTE);
+        currentCalendar.set(Calendar.MINUTE, minuteToPlus + 1);
         Date secondCurrentDate = currentCalendar.getTime();
         Integer minute = currentCalendar.get(Calendar.MINUTE);
         currentCalendar.set(Calendar.MINUTE, minute - interval);
@@ -147,8 +151,8 @@ public class TemperatureService {
                             max = pixel.getValue();
                         }
                     }
-                    //if(max > 38.5)
-                    if (max > 35.4) {
+                    if(max > 38.5){
+                    //if (max > 35.4) {
                         LocalDateTime ldt = LocalDateTime.now();
                         DateTimeFormatter formmat1 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
                         String formatter = formmat1.format(ldt);
