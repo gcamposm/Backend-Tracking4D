@@ -95,8 +95,8 @@ public class TemperatureService {
 
     public Match highTemperature(Temperature temperature, String date) throws ParseException {
         List<Match> matchList;
-        for (int i = 0; i < 5; i++) {
-            matchList = matchService.findMatchByInterval(i, date);
+        for (int t = 0; t < 5; t++) {
+            matchList = matchService.findMatchByInterval(t, date);
             if( matchList.size() > 0){
                 Match match = matchList.get(0);
                 match.setHighTemperature(true);
@@ -127,10 +127,8 @@ public class TemperatureService {
         List<Temperature> temperatureList;
         for (int i = 0; i < 5; i++) {
             temperatureList = findTemperatureByInterval(i);
-            System.out.println("Temperature size: "+temperatureList.size());
             if (temperatureList.size() > 0) {
                 Temperature temperature = temperatureList.get(temperatureList.size() - 1);
-                System.out.println("Temperature id: "+temperature.getId());
                 //
                 List<Pixel> filteredPixels = new ArrayList<>();
                 Integer limX = x + width + 1;

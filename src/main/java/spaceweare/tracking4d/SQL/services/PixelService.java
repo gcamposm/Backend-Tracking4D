@@ -78,6 +78,7 @@ public class PixelService {
         temperature.setDetectedHour(localDate);
         temperatureDao.save(temperature);
         //Encontrar el match correspondiente
+        System.out.println("A encontrar el match");
         Match match = temperatureService.highTemperature(temperature, date);
         Integer x = 0;
         Integer y = 0;
