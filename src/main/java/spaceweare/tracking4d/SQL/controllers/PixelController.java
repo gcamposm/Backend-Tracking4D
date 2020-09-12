@@ -89,7 +89,11 @@ public class PixelController {
     public ResponseEntity saveTemperature(@RequestParam("pixels") List<Float> pixels,
                                  @RequestParam("date") String date) {
         try {
-            return ResponseEntity.ok(pixelService.saveTemperature(pixels, date));
+            if(pixels.size() == 768)
+            {
+                return ResponseEntity.ok(pixelService.saveTemperature(pixels, date));
+            }
+            return ResponseEntity.badRequest().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
@@ -106,7 +110,7 @@ public class PixelController {
                 pixels.add(37 + r.nextFloat() * (2));
                 count++;
             }
-            LocalDateTime ldt = LocalDateTime.now();
+            LocalDateTime ldt = LocalDateTime.now().minusHours(3);
             DateTimeFormatter formmat1 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             String formatter = formmat1.format(ldt);
             return ResponseEntity.ok(pixelService.saveTemperature(pixels, formatter));
