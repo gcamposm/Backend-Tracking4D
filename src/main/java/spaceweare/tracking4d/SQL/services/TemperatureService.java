@@ -87,13 +87,11 @@ public class TemperatureService {
     }
 
     public Alert highTemperature(Temperature temperature, String date, String highTemperature) throws ParseException {
-        System.out.println("highTemperature: "+Float.parseFloat(highTemperature));
         List<Match> matchList;
         for (int i = 1; i < 5; i++) {
             matchList = matchService.findMatchByInterval(i, date);
             if( matchList.size() > 0){
                 Match match = matchList.get(matchList.size()-1);
-                System.out.println("Match id: "+match.getId());
                 match.setHighTemperature(true);
                 match.setTemperature(temperature);
                 matchDao.save(match);
@@ -104,7 +102,6 @@ public class TemperatureService {
                 return alertService.alertHighTemperature(person, highTemperature, match.getHour());
             }
         }
-        System.out.println("No encontré match");
     return null;
     }
 
