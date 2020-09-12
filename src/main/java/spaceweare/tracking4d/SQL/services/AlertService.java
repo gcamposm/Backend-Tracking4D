@@ -71,7 +71,6 @@ public class AlertService {
     }
 
     public Alert alertHighTemperature(Person person, String highTemperature, LocalDateTime hour) {
-        System.out.println("Creando la alerta");
         Alert alert = new Alert();
         alert.setActive(true);
         alert.setTemperature(highTemperature);
