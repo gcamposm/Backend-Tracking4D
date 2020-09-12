@@ -91,13 +91,10 @@ public class PixelController {
         try {
             if(pixels.size() == 768)
             {
-                System.out.println("Si tiene 768 pixeles");
                 return ResponseEntity.ok(pixelService.saveTemperature(pixels, date));
             }
-            System.out.println("No tiene 768 pixeles");
             return ResponseEntity.badRequest().build();
         } catch (Exception e) {
-            System.out.println("Ocurrio otro error");
             return ResponseEntity.badRequest().build();
         }
     }

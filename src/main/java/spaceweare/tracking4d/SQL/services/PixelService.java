@@ -9,10 +9,7 @@ import spaceweare.tracking4d.SQL.models.*;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class PixelService {
@@ -79,7 +76,7 @@ public class PixelService {
         Integer x = 0;
         Integer y = 0;
         //Reducir el número de pixeles
-        List<Pixel> filteredPixels = new ArrayList<>();
+        List<Float> filteredPixels = new ArrayList<>();
         for (int i = 0; i < 32; i = i+4)
         {
             for (int j = 0; j < 24; j=j+4)
@@ -89,12 +86,32 @@ public class PixelService {
                 pixel.setY(y);
                 pixel.setTemperature(temperature);
                 // Manejo de ubicaciones
-                Float sum = pixels.get(((i*24)+0)+(j+0)) + pixels.get(((i*24)+1)+(j+0))+ pixels.get(((i*24)+2)+(j+0))+ pixels.get(((i*24)+3)+(j+0))+
+                filteredPixels.add(pixels.get(((i*24)+0)+(j+0)));
+                filteredPixels.add(pixels.get(((i*24)+1)+(j+0)));
+                filteredPixels.add(pixels.get(((i*24)+2)+(j+0)));
+                filteredPixels.add(pixels.get(((i*24)+3)+(j+0)));
+                filteredPixels.add(pixels.get(((i*24)+0)+(j+1)));
+                filteredPixels.add(pixels.get(((i*24)+1)+(j+1)));
+                filteredPixels.add(pixels.get(((i*24)+2)+(j+1)));
+                filteredPixels.add(pixels.get(((i*24)+3)+(j+1)));
+                filteredPixels.add(pixels.get(((i*24)+0)+(j+2)));
+                filteredPixels.add(pixels.get(((i*24)+1)+(j+2)));
+                filteredPixels.add(pixels.get(((i*24)+2)+(j+2)));
+                filteredPixels.add(pixels.get(((i*24)+3)+(j+2)));
+                filteredPixels.add(pixels.get(((i*24)+0)+(j+3)));
+                filteredPixels.add(pixels.get(((i*24)+1)+(j+3)));
+                filteredPixels.add(pixels.get(((i*24)+2)+(j+3)));
+                filteredPixels.add(pixels.get(((i*24)+3)+(j+3)));
+
+                pixel.setValue(Collections.max(filteredPixels));
+
+
+                /*Float sum = pixels.get(((i*24)+0)+(j+0)) + pixels.get(((i*24)+1)+(j+0))+ pixels.get(((i*24)+2)+(j+0))+ pixels.get(((i*24)+3)+(j+0))+
                             pixels.get(((i*24)+0)+(j+1)) + pixels.get(((i*24)+1)+(j+1))+ pixels.get(((i*24)+2)+(j+1))+ pixels.get(((i*24)+3)+(j+1))+
                             pixels.get(((i*24)+0)+(j+2)) + pixels.get(((i*24)+1)+(j+2))+ pixels.get(((i*24)+2)+(j+2))+ pixels.get(((i*24)+3)+(j+2))+
                             pixels.get(((i*24)+0)+(j+3)) + pixels.get(((i*24)+1)+(j+3))+ pixels.get(((i*24)+2)+(j+3))+ pixels.get(((i*24)+3)+(j+3));
                 pixel.setValue(sum/16);
-                System.out.println("El valor a guardar es: "+(sum/16));
+                System.out.println("El valor a guardar es: "+(sum/16));*/
                 /*Float sum = pixels.get(((i*24)+0)+(j+0)) + pixels.get(((i*24)+1)+(j+0))+ pixels.get(((i*24)+2)+(j+0))+ pixels.get(((i*24)+3)+(j+0))+ pixels.get(((i*24)+4)+(j+0)) + pixels.get(((i*24)+5)+(j+0))+ pixels.get(((i*24)+6)+(j+0))+ pixels.get(((i*24)+7)+(j+0))+
                         pixels.get(((i*24)+0)+(j+1)) + pixels.get(((i*24)+1)+(j+1))+ pixels.get(((i*24)+2)+(j+1))+ pixels.get(((i*24)+3)+(j+1))+ pixels.get(((i*24)+4)+(j+1)) + pixels.get(((i*24)+5)+(j+1))+ pixels.get(((i*24)+6)+(j+1))+ pixels.get(((i*24)+7)+(j+1))+
                         pixels.get(((i*24)+0)+(j+2)) + pixels.get(((i*24)+1)+(j+2))+ pixels.get(((i*24)+2)+(j+2))+ pixels.get(((i*24)+3)+(j+2))+ pixels.get(((i*24)+4)+(j+2)) + pixels.get(((i*24)+5)+(j+2))+ pixels.get(((i*24)+6)+(j+2))+ pixels.get(((i*24)+7)+(j+2))+
@@ -111,7 +128,6 @@ public class PixelService {
                     y++;
                 }
                 pixelDao.save(pixel);
-                filteredPixels.add(pixel);
             }
         }
         // Se maneja el retorno
