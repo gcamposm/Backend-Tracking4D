@@ -86,7 +86,7 @@ public class TemperatureService {
         return temperatureDao.findTemperatureByDetectedHourBetween(firstCurrentLocal, secondCurrentLocal);
     }
 
-    public Match highTemperature(Temperature temperature, String date, String highTemperature) throws ParseException {
+    public void highTemperature(Temperature temperature, String date, String highTemperature) throws ParseException {
         System.out.println("highTemperature: "+Float.parseFloat(highTemperature));
         List<Match> matchList;
         for (int i = 1; i < 5; i++) {
@@ -99,11 +99,10 @@ public class TemperatureService {
                 person.setCovid(true);
                 person.setNewAlert(true);
                 personDao.save(person);
-                return matchDao.save(match);
+                matchDao.save(match);
             }
         }
 
-        return null;
     }
 
     public String getDetectionTemperature(Integer x, Integer y, Integer height, Integer width) throws ParseException {
@@ -147,8 +146,9 @@ public class TemperatureService {
                         }
                     }
                     System.out.println("Máxima: "+max);
-                    if(max > 38.5){
-                    //if (max > 35.4) {
+                    float high = Float.parseFloat("38.5");
+                    if(Float.compare(max, high) > 0){
+                        System.out.println("Alerta alta temperatura");
                         LocalDateTime ldt = LocalDateTime.now();
                         DateTimeFormatter formmat1 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
                         String formatter = formmat1.format(ldt);
