@@ -144,8 +144,12 @@ public class MatchService {
         Date secondDate = formatter.parse(dateString);
         Calendar cal = Calendar.getInstance();
         cal.setTime(secondDate);
+        //Se quitan las 3 horas por la hora de chile
         Integer hour = cal.get(Calendar.HOUR);
         cal.set(Calendar.HOUR, hour-3);
+        secondDate = cal.getTime();
+        
+
         Integer minute = cal.get(Calendar.MINUTE);
         cal.set(Calendar.MINUTE, minute + 1);
         cal.set(Calendar.MINUTE, minute - interval);
