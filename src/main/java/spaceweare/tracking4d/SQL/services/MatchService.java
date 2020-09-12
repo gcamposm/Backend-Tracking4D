@@ -144,6 +144,8 @@ public class MatchService {
         Date secondDate = formatter.parse(dateString);
         Calendar cal = Calendar.getInstance();
         cal.setTime(secondDate);
+        Integer hour = cal.get(Calendar.HOUR);
+        cal.set(Calendar.HOUR, hour-3);
         Integer minute = cal.get(Calendar.MINUTE);
         cal.set(Calendar.MINUTE, minute + 1);
         cal.set(Calendar.MINUTE, minute - interval);
