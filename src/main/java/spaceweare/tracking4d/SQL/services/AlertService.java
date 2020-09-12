@@ -4,7 +4,9 @@ import org.springframework.stereotype.Service;
 import spaceweare.tracking4d.SQL.dao.AlertDao;
 import spaceweare.tracking4d.SQL.models.Alert;
 import spaceweare.tracking4d.SQL.models.Area;
+import spaceweare.tracking4d.SQL.models.Person;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -66,5 +68,16 @@ public class AlertService {
             return alertDao.save(alert);
         }
         return null;
+    }
+
+    public Alert alertHighTemperature(Person person, String highTemperature, LocalDateTime hour) {
+        System.out.println("Creando la alerta");
+        Alert alert = new Alert();
+        alert.setActive(true);
+        alert.setTemperature(highTemperature);
+        alert.setPerson(person);
+        alert.setDate(hour);
+        alertDao.save(alert);
+        return alert;
     }
 }
