@@ -18,14 +18,14 @@ public class TemperatureService {
     private final TemperatureDao temperatureDao;
     private final MatchDao matchDao;
     private final PersonDao personDao;
-    private final AlertDao alertDao;
+    private final AlertService alertService;
     private final MatchService matchService;
-    public TemperatureService(TemperatureDao temperatureDao, MatchDao matchDao, MatchService matchService, PersonDao personDao, AlertDao alertDao) {
+    public TemperatureService(TemperatureDao temperatureDao, MatchDao matchDao, MatchService matchService, PersonDao personDao, AlertService alertService) {
         this.temperatureDao = temperatureDao;
         this.matchDao = matchDao;
         this.matchService = matchService;
         this.personDao = personDao;
-        this.alertDao = alertDao;
+        this.alertService = alertService;
     }
 
     public Temperature create(Temperature temperature){
@@ -86,7 +86,7 @@ public class TemperatureService {
         return temperatureDao.findTemperatureByDetectedHourBetween(firstCurrentLocal, secondCurrentLocal);
     }
 
-    public void highTemperature(Temperature temperature, String date, String highTemperature) throws ParseException {
+    public Alert highTemperature(Temperature temperature, String date, String highTemperature) throws ParseException {
         System.out.println("highTemperature: "+Float.parseFloat(highTemperature));
         List<Match> matchList;
         for (int i = 1; i < 5; i++) {
@@ -100,15 +100,10 @@ public class TemperatureService {
                 person.setCovid(true);
                 person.setNewAlert(true);
                 personDao.save(person);
-                Alert alert = new Alert();
-                alert.setActive(true);
-                alert.setTemperature(highTemperature);
-                alert.setPerson(person);
-                alert.setDate(match.getHour());
-                alertDao.save(alert);
+                return alertService.alertHighTemperature(person, highTemperature, match.getHour());
             }
         }
-
+    return null;
     }
 
     public String getDetectionTemperature(Integer x, Integer y, Integer height, Integer width) throws ParseException {
