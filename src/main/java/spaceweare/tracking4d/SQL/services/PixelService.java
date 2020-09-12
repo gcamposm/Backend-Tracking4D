@@ -94,6 +94,7 @@ public class PixelService {
                             pixels.get(((i*24)+0)+(j+2)) + pixels.get(((i*24)+1)+(j+2))+ pixels.get(((i*24)+2)+(j+2))+ pixels.get(((i*24)+3)+(j+2))+
                             pixels.get(((i*24)+0)+(j+3)) + pixels.get(((i*24)+1)+(j+3))+ pixels.get(((i*24)+2)+(j+3))+ pixels.get(((i*24)+3)+(j+3));
                 pixel.setValue(sum/16);
+                System.out.println("El valor a guardar es: "+(sum/16));
                 /*Float sum = pixels.get(((i*24)+0)+(j+0)) + pixels.get(((i*24)+1)+(j+0))+ pixels.get(((i*24)+2)+(j+0))+ pixels.get(((i*24)+3)+(j+0))+ pixels.get(((i*24)+4)+(j+0)) + pixels.get(((i*24)+5)+(j+0))+ pixels.get(((i*24)+6)+(j+0))+ pixels.get(((i*24)+7)+(j+0))+
                         pixels.get(((i*24)+0)+(j+1)) + pixels.get(((i*24)+1)+(j+1))+ pixels.get(((i*24)+2)+(j+1))+ pixels.get(((i*24)+3)+(j+1))+ pixels.get(((i*24)+4)+(j+1)) + pixels.get(((i*24)+5)+(j+1))+ pixels.get(((i*24)+6)+(j+1))+ pixels.get(((i*24)+7)+(j+1))+
                         pixels.get(((i*24)+0)+(j+2)) + pixels.get(((i*24)+1)+(j+2))+ pixels.get(((i*24)+2)+(j+2))+ pixels.get(((i*24)+3)+(j+2))+ pixels.get(((i*24)+4)+(j+2)) + pixels.get(((i*24)+5)+(j+2))+ pixels.get(((i*24)+6)+(j+2))+ pixels.get(((i*24)+7)+(j+2))+
