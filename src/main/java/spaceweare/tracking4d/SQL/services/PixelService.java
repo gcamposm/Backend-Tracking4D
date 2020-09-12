@@ -66,8 +66,6 @@ public class PixelService {
     }
 
     public Object saveTemperature(List<Float> pixels, String date) throws ParseException {
-        //ANCHO MALLA DE TEMPERATURA
-        Integer width = 32;
         // Cambiar de string a localdatetime
         String[] parts = date.split("\\.");
         date = parts[0];
@@ -80,44 +78,45 @@ public class PixelService {
         //Encontrar el match correspondiente
         Integer x = 0;
         Integer y = 0;
-            //Reducir el número de pixeles
-            List<Pixel> filteredPixels = new ArrayList<>();
-            for (int i = 0; i < 32; i = i+4)
+        //Reducir el número de pixeles
+        List<Pixel> filteredPixels = new ArrayList<>();
+        for (int i = 0; i < 32; i = i+4)
+        {
+            for (int j = 0; j < 24; j=j+4)
             {
-                for (int j = 0; j < 24; j=j+4)
+                Pixel pixel = new Pixel();
+                pixel.setX(x);
+                pixel.setY(y);
+                pixel.setTemperature(temperature);
+                // Manejo de ubicaciones
+                Float sum = pixels.get(((i*24)+0)+(j+0)) + pixels.get(((i*24)+1)+(j+0))+ pixels.get(((i*24)+2)+(j+0))+ pixels.get(((i*24)+3)+(j+0))+
+                            pixels.get(((i*24)+0)+(j+1)) + pixels.get(((i*24)+1)+(j+1))+ pixels.get(((i*24)+2)+(j+1))+ pixels.get(((i*24)+3)+(j+1))+
+                            pixels.get(((i*24)+0)+(j+2)) + pixels.get(((i*24)+1)+(j+2))+ pixels.get(((i*24)+2)+(j+2))+ pixels.get(((i*24)+3)+(j+2))+
+                            pixels.get(((i*24)+0)+(j+3)) + pixels.get(((i*24)+1)+(j+3))+ pixels.get(((i*24)+2)+(j+3))+ pixels.get(((i*24)+3)+(j+3));
+                pixel.setValue(sum/16);
+                /*Float sum = pixels.get(((i*24)+0)+(j+0)) + pixels.get(((i*24)+1)+(j+0))+ pixels.get(((i*24)+2)+(j+0))+ pixels.get(((i*24)+3)+(j+0))+ pixels.get(((i*24)+4)+(j+0)) + pixels.get(((i*24)+5)+(j+0))+ pixels.get(((i*24)+6)+(j+0))+ pixels.get(((i*24)+7)+(j+0))+
+                        pixels.get(((i*24)+0)+(j+1)) + pixels.get(((i*24)+1)+(j+1))+ pixels.get(((i*24)+2)+(j+1))+ pixels.get(((i*24)+3)+(j+1))+ pixels.get(((i*24)+4)+(j+1)) + pixels.get(((i*24)+5)+(j+1))+ pixels.get(((i*24)+6)+(j+1))+ pixels.get(((i*24)+7)+(j+1))+
+                        pixels.get(((i*24)+0)+(j+2)) + pixels.get(((i*24)+1)+(j+2))+ pixels.get(((i*24)+2)+(j+2))+ pixels.get(((i*24)+3)+(j+2))+ pixels.get(((i*24)+4)+(j+2)) + pixels.get(((i*24)+5)+(j+2))+ pixels.get(((i*24)+6)+(j+2))+ pixels.get(((i*24)+7)+(j+2))+
+                        pixels.get(((i*24)+0)+(j+3)) + pixels.get(((i*24)+1)+(j+3))+ pixels.get(((i*24)+2)+(j+3))+ pixels.get(((i*24)+3)+(j+3))+ pixels.get(((i*24)+4)+(j+3)) + pixels.get(((i*24)+5)+(j+3))+ pixels.get(((i*24)+6)+(j+3))+ pixels.get(((i*24)+7)+(j+3))+
+                        pixels.get(((i*24)+0)+(j+4)) + pixels.get(((i*24)+1)+(j+4))+ pixels.get(((i*24)+2)+(j+4))+ pixels.get(((i*24)+3)+(j+4))+ pixels.get(((i*24)+4)+(j+4)) + pixels.get(((i*24)+5)+(j+4))+ pixels.get(((i*24)+6)+(j+4))+ pixels.get(((i*24)+7)+(j+4))+
+                        pixels.get(((i*24)+0)+(j+5)) + pixels.get(((i*24)+1)+(j+5))+ pixels.get(((i*24)+2)+(j+5))+ pixels.get(((i*24)+3)+(j+5))+ pixels.get(((i*24)+4)+(j+5)) + pixels.get(((i*24)+5)+(j+5))+ pixels.get(((i*24)+6)+(j+5))+ pixels.get(((i*24)+7)+(j+5))+
+                        pixels.get(((i*24)+0)+(j+6)) + pixels.get(((i*24)+1)+(j+6))+ pixels.get(((i*24)+2)+(j+6))+ pixels.get(((i*24)+3)+(j+6))+ pixels.get(((i*24)+4)+(j+6)) + pixels.get(((i*24)+5)+(j+6))+ pixels.get(((i*24)+6)+(j+6))+ pixels.get(((i*24)+7)+(j+6))+
+                        pixels.get(((i*24)+0)+(j+7)) + pixels.get(((i*24)+1)+(j+7))+ pixels.get(((i*24)+2)+(j+7))+ pixels.get(((i*24)+3)+(j+7))+ pixels.get(((i*24)+4)+(j+7)) + pixels.get(((i*24)+5)+(j+7))+ pixels.get(((i*24)+6)+(j+7))+ pixels.get(((i*24)+7)+(j+7));
+                pixel.setValue(sum/64);*/
+                x++;
+                if(x == 8)
                 {
-                    Pixel pixel = new Pixel();
-                    pixel.setX(x);
-                    pixel.setY(y);
-                    pixel.setTemperature(temperature);
-                    // Manejo de ubicaciones
-                    Float sum = pixels.get(((i*24)+0)+(j+0)) + pixels.get(((i*24)+1)+(j+0))+ pixels.get(((i*24)+2)+(j+0))+ pixels.get(((i*24)+3)+(j+0))+
-                                pixels.get(((i*24)+0)+(j+1)) + pixels.get(((i*24)+1)+(j+1))+ pixels.get(((i*24)+2)+(j+1))+ pixels.get(((i*24)+3)+(j+1))+
-                                pixels.get(((i*24)+0)+(j+2)) + pixels.get(((i*24)+1)+(j+2))+ pixels.get(((i*24)+2)+(j+2))+ pixels.get(((i*24)+3)+(j+2))+
-                                pixels.get(((i*24)+0)+(j+3)) + pixels.get(((i*24)+1)+(j+3))+ pixels.get(((i*24)+2)+(j+3))+ pixels.get(((i*24)+3)+(j+3));
-                    pixel.setValue(sum/16);
-                    /*Float sum = pixels.get(((i*24)+0)+(j+0)) + pixels.get(((i*24)+1)+(j+0))+ pixels.get(((i*24)+2)+(j+0))+ pixels.get(((i*24)+3)+(j+0))+ pixels.get(((i*24)+4)+(j+0)) + pixels.get(((i*24)+5)+(j+0))+ pixels.get(((i*24)+6)+(j+0))+ pixels.get(((i*24)+7)+(j+0))+
-                            pixels.get(((i*24)+0)+(j+1)) + pixels.get(((i*24)+1)+(j+1))+ pixels.get(((i*24)+2)+(j+1))+ pixels.get(((i*24)+3)+(j+1))+ pixels.get(((i*24)+4)+(j+1)) + pixels.get(((i*24)+5)+(j+1))+ pixels.get(((i*24)+6)+(j+1))+ pixels.get(((i*24)+7)+(j+1))+
-                            pixels.get(((i*24)+0)+(j+2)) + pixels.get(((i*24)+1)+(j+2))+ pixels.get(((i*24)+2)+(j+2))+ pixels.get(((i*24)+3)+(j+2))+ pixels.get(((i*24)+4)+(j+2)) + pixels.get(((i*24)+5)+(j+2))+ pixels.get(((i*24)+6)+(j+2))+ pixels.get(((i*24)+7)+(j+2))+
-                            pixels.get(((i*24)+0)+(j+3)) + pixels.get(((i*24)+1)+(j+3))+ pixels.get(((i*24)+2)+(j+3))+ pixels.get(((i*24)+3)+(j+3))+ pixels.get(((i*24)+4)+(j+3)) + pixels.get(((i*24)+5)+(j+3))+ pixels.get(((i*24)+6)+(j+3))+ pixels.get(((i*24)+7)+(j+3))+
-                            pixels.get(((i*24)+0)+(j+4)) + pixels.get(((i*24)+1)+(j+4))+ pixels.get(((i*24)+2)+(j+4))+ pixels.get(((i*24)+3)+(j+4))+ pixels.get(((i*24)+4)+(j+4)) + pixels.get(((i*24)+5)+(j+4))+ pixels.get(((i*24)+6)+(j+4))+ pixels.get(((i*24)+7)+(j+4))+
-                            pixels.get(((i*24)+0)+(j+5)) + pixels.get(((i*24)+1)+(j+5))+ pixels.get(((i*24)+2)+(j+5))+ pixels.get(((i*24)+3)+(j+5))+ pixels.get(((i*24)+4)+(j+5)) + pixels.get(((i*24)+5)+(j+5))+ pixels.get(((i*24)+6)+(j+5))+ pixels.get(((i*24)+7)+(j+5))+
-                            pixels.get(((i*24)+0)+(j+6)) + pixels.get(((i*24)+1)+(j+6))+ pixels.get(((i*24)+2)+(j+6))+ pixels.get(((i*24)+3)+(j+6))+ pixels.get(((i*24)+4)+(j+6)) + pixels.get(((i*24)+5)+(j+6))+ pixels.get(((i*24)+6)+(j+6))+ pixels.get(((i*24)+7)+(j+6))+
-                            pixels.get(((i*24)+0)+(j+7)) + pixels.get(((i*24)+1)+(j+7))+ pixels.get(((i*24)+2)+(j+7))+ pixels.get(((i*24)+3)+(j+7))+ pixels.get(((i*24)+4)+(j+7)) + pixels.get(((i*24)+5)+(j+7))+ pixels.get(((i*24)+6)+(j+7))+ pixels.get(((i*24)+7)+(j+7));
-
-                    pixel.setValue(sum/64);*/
-                    x++;
-                    if(x == 8)
-                    {
-                        x = 0;
-                        y++;
-                    }
-                    pixelDao.save(pixel);
+                    x = 0;
+                    y++;
                 }
+                pixelDao.save(pixel);
+                filteredPixels.add(pixel);
             }
-            // Se maneja el retorno
-            Map<Object, Object> json = new HashMap<>();
-            json.put("temperature", temperature);
-            return json;
+        }
+        // Se maneja el retorno
+        Map<Object, Object> json = new HashMap<>();
+        json.put("temperature", temperature);
+        json.put("filteredPixels", filteredPixels);
+        return json;
     }
 }
