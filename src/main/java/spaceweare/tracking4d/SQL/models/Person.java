@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,5 +61,6 @@ public class Person {
     private Boolean covid;
     private Boolean newAlert;
     private String activity;
-    private Float alertTemperature;
+    private String alertTemperature;
+    private LocalDateTime lastMatchTime;
 }

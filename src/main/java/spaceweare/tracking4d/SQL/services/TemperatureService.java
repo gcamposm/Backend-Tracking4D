@@ -17,14 +17,14 @@ public class TemperatureService {
 
     private final TemperatureDao temperatureDao;
     private final MatchDao matchDao;
-    private final PersonDao personDao;
+    private final PersonService personService;
     private final AlertService alertService;
     private final MatchService matchService;
-    public TemperatureService(TemperatureDao temperatureDao, MatchDao matchDao, MatchService matchService, PersonDao personDao, AlertService alertService) {
+    public TemperatureService(TemperatureDao temperatureDao, MatchDao matchDao, MatchService matchService, PersonService personService, AlertService alertService) {
         this.temperatureDao = temperatureDao;
         this.matchDao = matchDao;
         this.matchService = matchService;
-        this.personDao = personDao;
+        this.personService = personService;
         this.alertService = alertService;
     }
 
@@ -96,10 +96,7 @@ public class TemperatureService {
                 match.setHighTemperature(true);
                 match.setTemperature(temperature);
                 matchDao.save(match);
-                Person person = match.getPerson();
-                person.setCovid(true);
-                person.setNewAlert(true);
-                personDao.save(person);
+                Person person = personService.personHighTemperature(match, highTemperature);
                 return alertService.alertHighTemperature(person, highTemperature, match.getHour());
             }
         }
@@ -135,8 +132,6 @@ public class TemperatureService {
                         filteredPixels.add(pixel);
                     }
                 }
-                System.out.println("pixels size"+temperature.getPixels().size());
-                System.out.println("filteredPixels size"+filteredPixels.size());
                 //Encontrar el pixel más alto dentro del rostro
                 if (filteredPixels.size() > 0) {
                     Float max = filteredPixels.get(0).getValue();

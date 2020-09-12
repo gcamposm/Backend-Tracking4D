@@ -419,6 +419,7 @@ public class PersonService {
         unknown.setDeleted(false);
         unknown.setToTrain(false);
         unknown.setUnknown(true);
+        
         personDao.save(unknown);
         String unknownID = "unknown"+unknown.getId();
         unknown.setFirstName(unknownID);
@@ -462,6 +463,15 @@ public class PersonService {
     public Person deleteAlert(String personRut) {
         Person person = personDao.findPersonByRut(personRut).get();
         person.setNewAlert(false);
+        return personDao.save(person);
+    }
+
+    public Person personHighTemperature(Match match, String temperature){
+        Person person = match.getPerson();
+        person.setCovid(true);
+        person.setNewAlert(true);
+        person.setAlertTemperature(temperature);
+        person.setLastMatchTime(match.getHour());
         return personDao.save(person);
     }
 }
