@@ -95,11 +95,17 @@ public class TemperatureService {
                 Match match = matchList.get(matchList.size()-1);
                 match.setHighTemperature(true);
                 match.setTemperature(temperature);
+                matchDao.save(match);
                 Person person = match.getPerson();
                 person.setCovid(true);
                 person.setNewAlert(true);
                 personDao.save(person);
-                matchDao.save(match);
+                Alert alert = new Alert();
+                alert.setActive(true);
+                alert.setTemperature(highTemperature);
+                alert.setPerson(person);
+                alert.setDate(match.getHour());
+                alertDao.save(alert);
             }
         }
 
