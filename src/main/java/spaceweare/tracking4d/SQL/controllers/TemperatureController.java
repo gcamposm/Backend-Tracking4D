@@ -2,6 +2,7 @@ package spaceweare.tracking4d.SQL.controllers;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import spaceweare.tracking4d.SQL.models.Temperature;
@@ -75,6 +76,19 @@ public class TemperatureController {
         }
         catch (Exception e){
             return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @Scheduled(fixedRate = 86400000)
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @DeleteMapping("/deleteAll")
+    @ResponseBody
+    public void deleteAll (){
+        try{
+            ResponseEntity.ok(temperatureService.deleteAll());
+        }
+        catch (Exception e){
+            ResponseEntity.badRequest().build();
         }
     }
 

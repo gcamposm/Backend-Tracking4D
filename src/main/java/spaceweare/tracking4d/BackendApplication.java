@@ -1,5 +1,6 @@
 package spaceweare.tracking4d;
 
+import org.springframework.scheduling.annotation.EnableScheduling;
 import spaceweare.tracking4d.FileManagement.property.FileStorageProperties;
 import spaceweare.tracking4d.SQL.models.User;
 import org.apache.catalina.connector.Connector;
@@ -21,6 +22,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.Optional;
 
 @SpringBootApplication
+@EnableScheduling
 @EnableConfigurationProperties({
         FileStorageProperties.class
 })

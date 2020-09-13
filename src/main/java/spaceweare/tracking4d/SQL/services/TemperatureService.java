@@ -50,7 +50,6 @@ public class TemperatureService {
             Temperature temperatureFound = temperatureDao.findById(id).get();
             temperatureFound.setValue(temperature.getValue());
             temperatureFound.setDetectedHour(temperature.getDetectedHour());
-            temperatureFound.setMatchList(temperature.getMatchList());
             return temperatureDao.save(temperatureFound);
         }
         return null;
@@ -64,6 +63,13 @@ public class TemperatureService {
         else {
             return null;
         }
+    }
+
+    public String deleteAll() {
+        System.out.println("Eliminando temperaturas");
+        List<Temperature> temperatures = temperatureDao.findTemperatureByDetectedHourBefore(LocalDateTime.now().minusHours(4));
+        temperatureDao.deleteAll(temperatures);
+        return "deleted";
     }
 
     public List<Temperature> findTemperatureByInterval(Integer interval){
@@ -94,7 +100,6 @@ public class TemperatureService {
             if( matchList.size() > 0){
                 Match match = matchList.get(matchList.size()-1);
                 match.setHighTemperature(true);
-                match.setTemperature(temperature);
                 matchDao.save(match);
                 Person person = personService.personHighTemperature(match, highTemperature);
                 alertService.alertHighTemperature(person, highTemperature, match.getHour());
