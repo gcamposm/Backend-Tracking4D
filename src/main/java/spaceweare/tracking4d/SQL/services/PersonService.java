@@ -419,7 +419,7 @@ public class PersonService {
         unknown.setDeleted(false);
         unknown.setToTrain(false);
         unknown.setUnknown(true);
-        
+        unknown.setLastMatchTime(LocalDateTime.now().minusHours(3));
         personDao.save(unknown);
         String unknownID = "unknown"+unknown.getId();
         unknown.setFirstName(unknownID);
