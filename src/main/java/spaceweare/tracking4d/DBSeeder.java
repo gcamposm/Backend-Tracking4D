@@ -96,6 +96,9 @@ public class DBSeeder implements CommandLineRunner {
         PersonType unknown = new PersonType();
         unknown.setName("Desconocido");
         personTypeDao.save(unknown);
+        PersonType partner = new PersonType();
+        partner.setName("Socio");
+        personTypeDao.save(partner);
     }
 
     public void seedPersonPositions(){

@@ -138,7 +138,7 @@ public class PersonService {
             String path = "";
 
             Row headerRow = mySheet.createRow(rownum++);
-            String[] columns = {"Nombre", "Apellido", "Rut", "Género", "Usuario", "Correo", "Celular", "Zona de trabajo", "Cámara", "Ingreso", "Salida", "Estadía (minutos)", "Nº contactos", "Contactos"};
+            String[] columns = {"Nombre", "Apellido", "Rut", "Género", "Usuario", "Correo", "Celular", "Zona de trabajo", "Cámara", "TEMP", "Ingreso", "Salida", "Estadía (minutos)", "Nº contactos", "Contactos"};
             for (int i = 0; i < columns.length; i++) {
                 Cell cell = headerRow.createCell(i);
                 cell.setCellValue(columns[i]);
@@ -183,26 +183,35 @@ public class PersonService {
                             row.createCell(8)
                                     .setCellValue("");
                         }
-                        if(inOut.size()>0)
+                        if(match.getPerson().getAlertTemperature() != null)
                         {
                             row.createCell(9)
-                                    .setCellValue(inOut.get(0).getHour().toString());
+                                    .setCellValue(match.getPerson().getAlertTemperature());
                         }
                         else{
                             row.createCell(9)
+                                    .setCellValue("");
+                        }
+                        if(inOut.size()>0)
+                        {
+                            row.createCell(10)
+                                    .setCellValue(inOut.get(0).getHour().toString());
+                        }
+                        else{
+                            row.createCell(10)
                                     .setCellValue("");
                         }
                         if(inOut.size()>1)
                         {
-                            row.createCell(10)
-                                    .setCellValue(inOut.get(1).getHour().toString());
                             row.createCell(11)
+                                    .setCellValue(inOut.get(1).getHour().toString());
+                            row.createCell(12)
                                     .setCellValue(Duration.between(inOut.get(0).getHour(), inOut.get(1).getHour()).toMinutes());
                         }
                         else{
-                            row.createCell(10)
-                                    .setCellValue("");
                             row.createCell(11)
+                                    .setCellValue("");
+                            row.createCell(12)
                                     .setCellValue("");
                         }
                         for (Contact contact:contacts
@@ -217,13 +226,13 @@ public class PersonService {
                                     if(!matchContact.getPerson().getId().equals(personId) && !ready.contains(matchContact.getPerson()) )
                                     {
                                         String contactCell = matchContact.getPerson().getFirstName() + " (" + matchContact.getPerson().getRut() + ")";
-                                        row.createCell(13 + count)
+                                        row.createCell(14 + count)
                                                 .setCellValue(contactCell);
                                         count++;
                                         ready.add(matchContact.getPerson());
                                     }
                                 }
-                                row.createCell(12)
+                                row.createCell(13)
                                         .setCellValue(count+"");
                             }
                         }
@@ -267,26 +276,35 @@ public class PersonService {
                             row.createCell(8)
                                     .setCellValue("");
                         }
-                        if(inOut.size()>0)
+                        if(match.getPerson().getAlertTemperature() != null)
                         {
                             row.createCell(9)
-                                    .setCellValue(inOut.get(0).getHour().toString());
+                                    .setCellValue(match.getPerson().getAlertTemperature());
                         }
                         else{
                             row.createCell(9)
+                                    .setCellValue("");
+                        }
+                        if(inOut.size()>0)
+                        {
+                            row.createCell(10)
+                                    .setCellValue(inOut.get(0).getHour().toString());
+                        }
+                        else{
+                            row.createCell(10)
                                     .setCellValue("");
                         }
                         if(inOut.size()>1)
                         {
-                            row.createCell(10)
-                                    .setCellValue(inOut.get(1).getHour().toString());
                             row.createCell(11)
+                                    .setCellValue(inOut.get(1).getHour().toString());
+                            row.createCell(12)
                                     .setCellValue(Duration.between(inOut.get(0).getHour(), inOut.get(1).getHour()).toMinutes());
                         }
                         else{
-                            row.createCell(10)
-                                    .setCellValue("");
                             row.createCell(11)
+                                    .setCellValue("");
+                            row.createCell(12)
                                     .setCellValue("");
                         }
                         for (Contact contact:contacts
@@ -301,13 +319,13 @@ public class PersonService {
                                     if(!matchContact.getPerson().getId().equals(personId) && !ready.contains(matchContact.getPerson()) )
                                     {
                                         String contactCell = matchContact.getPerson().getFirstName() + " (" + matchContact.getPerson().getRut() + ")";
-                                        row.createCell(13 + count)
+                                        row.createCell(14 + count)
                                                 .setCellValue(contactCell);
                                         count++;
                                         ready.add(matchContact.getPerson());
                                     }
                                 }
-                                row.createCell(12)
+                                row.createCell(13)
                                         .setCellValue(count+"");
                             }
                         }
