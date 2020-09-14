@@ -18,6 +18,7 @@ public class PixelService {
     private final MatchDao matchDao;
     private final TemperatureDao temperatureDao;
     private final TemperatureService temperatureService;
+
     public PixelService(PixelDao pixelDao, MatchDao matchDao, TemperatureDao temperatureDao, TemperatureService temperatureService) {
         this.pixelDao = pixelDao;
         this.matchDao = matchDao;
@@ -25,25 +26,24 @@ public class PixelService {
         this.temperatureService = temperatureService;
     }
 
-    public Pixel create(Pixel pixel){
+    public Pixel create(Pixel pixel) {
         return pixelDao.save(pixel);
     }
 
-    public Pixel readById(Integer id){
-        if(pixelDao.findById(id).isPresent()){
+    public Pixel readById(Integer id) {
+        if (pixelDao.findById(id).isPresent()) {
             return pixelDao.findById(id).get();
-        }
-        else{
-            return  null;
+        } else {
+            return null;
         }
     }
 
-    public List<Pixel> readAll(){
+    public List<Pixel> readAll() {
         return pixelDao.findAll();
     }
 
-    public Pixel update(Pixel pixel, Integer id){
-        if(pixelDao.findById(id).isPresent()){
+    public Pixel update(Pixel pixel, Integer id) {
+        if (pixelDao.findById(id).isPresent()) {
             Pixel pixelFound = pixelDao.findById(id).get();
             pixelFound.setValue(pixel.getValue());
             pixelFound.setTemperature(pixel.getTemperature());
@@ -52,14 +52,18 @@ public class PixelService {
         return null;
     }
 
-    public String delete(Integer id){
-        if(pixelDao.findById(id).isPresent()){
+    public String delete(Integer id) {
+        if (pixelDao.findById(id).isPresent()) {
             pixelDao.delete(pixelDao.findById(id).get());
             return "deleted";
-        }
-        else {
+        } else {
             return null;
         }
+    }
+
+    public String deleteAll() {
+        pixelDao.deleteAll();
+        return "deleted";
     }
 
     public Object saveTemperature(List<Float> pixels, String date) throws ParseException {
@@ -77,31 +81,29 @@ public class PixelService {
         Integer y = 0;
         //Reducir el número de pixeles
         List<Float> filteredPixels = new ArrayList<>();
-        for (int i = 0; i < 32; i = i+4)
-        {
-            for (int j = 0; j < 24; j=j+4)
-            {
+        for (int i = 0; i < 32; i = i + 4) {
+            for (int j = 0; j < 24; j = j + 4) {
                 Pixel pixel = new Pixel();
                 pixel.setX(x);
                 pixel.setY(y);
                 pixel.setTemperature(temperature);
                 // Manejo de ubicaciones
-                filteredPixels.add(pixels.get(((i*24)+0)+(j+0)));
-                filteredPixels.add(pixels.get(((i*24)+1)+(j+0)));
-                filteredPixels.add(pixels.get(((i*24)+2)+(j+0)));
-                filteredPixels.add(pixels.get(((i*24)+3)+(j+0)));
-                filteredPixels.add(pixels.get(((i*24)+0)+(j+1)));
-                filteredPixels.add(pixels.get(((i*24)+1)+(j+1)));
-                filteredPixels.add(pixels.get(((i*24)+2)+(j+1)));
-                filteredPixels.add(pixels.get(((i*24)+3)+(j+1)));
-                filteredPixels.add(pixels.get(((i*24)+0)+(j+2)));
-                filteredPixels.add(pixels.get(((i*24)+1)+(j+2)));
-                filteredPixels.add(pixels.get(((i*24)+2)+(j+2)));
-                filteredPixels.add(pixels.get(((i*24)+3)+(j+2)));
-                filteredPixels.add(pixels.get(((i*24)+0)+(j+3)));
-                filteredPixels.add(pixels.get(((i*24)+1)+(j+3)));
-                filteredPixels.add(pixels.get(((i*24)+2)+(j+3)));
-                filteredPixels.add(pixels.get(((i*24)+3)+(j+3)));
+                filteredPixels.add(pixels.get(((i * 24) + 0) + (j + 0)));
+                filteredPixels.add(pixels.get(((i * 24) + 1) + (j + 0)));
+                filteredPixels.add(pixels.get(((i * 24) + 2) + (j + 0)));
+                filteredPixels.add(pixels.get(((i * 24) + 3) + (j + 0)));
+                filteredPixels.add(pixels.get(((i * 24) + 0) + (j + 1)));
+                filteredPixels.add(pixels.get(((i * 24) + 1) + (j + 1)));
+                filteredPixels.add(pixels.get(((i * 24) + 2) + (j + 1)));
+                filteredPixels.add(pixels.get(((i * 24) + 3) + (j + 1)));
+                filteredPixels.add(pixels.get(((i * 24) + 0) + (j + 2)));
+                filteredPixels.add(pixels.get(((i * 24) + 1) + (j + 2)));
+                filteredPixels.add(pixels.get(((i * 24) + 2) + (j + 2)));
+                filteredPixels.add(pixels.get(((i * 24) + 3) + (j + 2)));
+                filteredPixels.add(pixels.get(((i * 24) + 0) + (j + 3)));
+                filteredPixels.add(pixels.get(((i * 24) + 1) + (j + 3)));
+                filteredPixels.add(pixels.get(((i * 24) + 2) + (j + 3)));
+                filteredPixels.add(pixels.get(((i * 24) + 3) + (j + 3)));
 
                 pixel.setValue(Collections.max(filteredPixels));
 
@@ -122,8 +124,7 @@ public class PixelService {
                         pixels.get(((i*24)+0)+(j+7)) + pixels.get(((i*24)+1)+(j+7))+ pixels.get(((i*24)+2)+(j+7))+ pixels.get(((i*24)+3)+(j+7))+ pixels.get(((i*24)+4)+(j+7)) + pixels.get(((i*24)+5)+(j+7))+ pixels.get(((i*24)+6)+(j+7))+ pixels.get(((i*24)+7)+(j+7));
                 pixel.setValue(sum/64);*/
                 x++;
-                if(x == 8)
-                {
+                if (x == 8) {
                     x = 0;
                     y++;
                 }

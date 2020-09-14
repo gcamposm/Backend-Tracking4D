@@ -356,9 +356,11 @@ public class PersonController {
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
     public ResponseEntity createUnknown (@RequestParam("photoUnknown") String photoUnknown,
-                                         @RequestParam("descriptors") List<Float> descriptors){
+                                         @RequestParam("descriptors") List<Float> descriptors,
+                                         @RequestParam("temperature") String temperature,
+                                         @RequestParam("isTemperature") Boolean isTemperature){
         try{
-            return ResponseEntity.ok(personService.createUnknown(photoUnknown, descriptors));
+            return ResponseEntity.ok(personService.createUnknown(photoUnknown, descriptors, temperature, isTemperature));
         }
         catch (Exception e){
             return ResponseEntity.badRequest().build();
@@ -410,6 +412,20 @@ public class PersonController {
     public ResponseEntity deleteAlert (@PathVariable("personRut") String personRut){
         try{
             return ResponseEntity.ok(personService.deleteAlert(personRut));
+        }
+        catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @PostMapping("/updateTemperature")
+    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseBody
+    public ResponseEntity updateTemperature (@RequestParam("rut") String rut,
+                                            @RequestParam("temperature") String temperature){
+        try{
+            return ResponseEntity.ok(personService.updateTemperature(rut, temperature));
         }
         catch (Exception e){
             return ResponseEntity.badRequest().build();

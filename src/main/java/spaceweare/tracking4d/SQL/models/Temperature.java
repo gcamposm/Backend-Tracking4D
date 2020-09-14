@@ -16,9 +16,6 @@ public class Temperature {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     //Relations
-    @OneToMany(mappedBy = "temperature", cascade = CascadeType.ALL, fetch= FetchType.EAGER)
-    @JsonIgnore
-    private List<Match> matchList = new ArrayList<>();
 
     @OneToMany(mappedBy = "temperature", cascade = CascadeType.ALL)
     @JsonIgnore

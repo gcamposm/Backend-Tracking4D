@@ -17,14 +17,14 @@ public class TemperatureService {
 
     private final TemperatureDao temperatureDao;
     private final MatchDao matchDao;
-    private final PersonDao personDao;
+    private final PersonService personService;
     private final AlertService alertService;
     private final MatchService matchService;
-    public TemperatureService(TemperatureDao temperatureDao, MatchDao matchDao, MatchService matchService, PersonDao personDao, AlertService alertService) {
+    public TemperatureService(TemperatureDao temperatureDao, MatchDao matchDao, MatchService matchService, PersonService personService, AlertService alertService) {
         this.temperatureDao = temperatureDao;
         this.matchDao = matchDao;
         this.matchService = matchService;
-        this.personDao = personDao;
+        this.personService = personService;
         this.alertService = alertService;
     }
 
@@ -50,7 +50,6 @@ public class TemperatureService {
             Temperature temperatureFound = temperatureDao.findById(id).get();
             temperatureFound.setValue(temperature.getValue());
             temperatureFound.setDetectedHour(temperature.getDetectedHour());
-            temperatureFound.setMatchList(temperature.getMatchList());
             return temperatureDao.save(temperatureFound);
         }
         return null;
@@ -64,6 +63,13 @@ public class TemperatureService {
         else {
             return null;
         }
+    }
+
+    public String deleteAll() {
+        System.out.println("Eliminando temperaturas");
+        List<Temperature> temperatures = temperatureDao.findTemperatureByDetectedHourBefore(LocalDateTime.now().minusHours(4));
+        temperatureDao.deleteAll(temperatures);
+        return "deleted";
     }
 
     public List<Temperature> findTemperatureByInterval(Integer interval){
@@ -86,23 +92,19 @@ public class TemperatureService {
         return temperatureDao.findTemperatureByDetectedHourBetween(firstCurrentLocal, secondCurrentLocal);
     }
 
-    public Alert highTemperature(Temperature temperature, String date, String highTemperature) throws ParseException {
+    public void highTemperature(Temperature temperature, String date, String highTemperature) throws ParseException {
+        System.out.println("highTemperature: "+Float.parseFloat(highTemperature));
         List<Match> matchList;
         for (int i = 1; i < 5; i++) {
             matchList = matchService.findMatchByInterval(i, date);
             if( matchList.size() > 0){
                 Match match = matchList.get(matchList.size()-1);
                 match.setHighTemperature(true);
-                match.setTemperature(temperature);
                 matchDao.save(match);
-                Person person = match.getPerson();
-                person.setCovid(true);
-                person.setNewAlert(true);
-                personDao.save(person);
-                return alertService.alertHighTemperature(person, highTemperature, match.getHour());
+                Person person = personService.personHighTemperature(match, highTemperature);
+                alertService.alertHighTemperature(person, highTemperature, match.getHour());
             }
         }
-    return null;
     }
 
     public String getDetectionTemperature(Integer x, Integer y, Integer height, Integer width) throws ParseException {

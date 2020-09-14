@@ -64,7 +64,6 @@ public class MatchService {
             matchFound.setCompany(match.getCompany());
             matchFound.setHour(match.getHour());
             matchFound.setPerson(match.getPerson());
-            matchFound.setTemperature(match.getTemperature());
             return matchDao.save(matchFound);
         }
         return null;

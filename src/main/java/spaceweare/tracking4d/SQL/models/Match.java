@@ -37,10 +37,6 @@ public class Match {
 
     @ManyToOne
     @JoinColumn
-    private Temperature temperature;
-
-    @ManyToOne
-    @JoinColumn
     private Location location;
 
     //Other attributes

@@ -84,6 +84,18 @@ public class PixelController {
         }
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @DeleteMapping("/deleteAll")
+    @ResponseBody
+    public ResponseEntity<String> deleteAll (){
+        try{
+            return ResponseEntity.ok(pixelService.deleteAll());
+        }
+        catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
     @PostMapping("/saveTemperature")
     @ResponseBody
     public ResponseEntity saveTemperature(@RequestParam("pixels") List<Float> pixels,
@@ -101,13 +113,18 @@ public class PixelController {
 
     @PostMapping("/aux")
     @ResponseBody
-    public ResponseEntity aux() {
+    public ResponseEntity aux(@RequestParam("high") Boolean high) {
         try {
+            int base = 37;
+            if(high)
+            {
+                base = 39;
+            }
             List<Float> pixels = new ArrayList<>();
             Random r = new Random();
             int count = 0;
             while (count<768){
-                pixels.add(37 + r.nextFloat() * (2));
+                pixels.add(base + r.nextFloat() * (2));
                 count++;
             }
             LocalDateTime ldt = LocalDateTime.now().minusHours(3);
