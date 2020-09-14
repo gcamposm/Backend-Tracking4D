@@ -2,13 +2,11 @@ package spaceweare.tracking4d.SQL.services;
 
 import org.apache.poi.common.usermodel.HyperlinkType;
 import org.apache.poi.xssf.usermodel.*;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import spaceweare.tracking4d.Exceptions.ExportFileException;
 import spaceweare.tracking4d.FileManagement.service.FileStorageService;
 import spaceweare.tracking4d.SQL.dao.ContactDao;
 import spaceweare.tracking4d.SQL.dao.PersonDao;
-import spaceweare.tracking4d.SQL.dao.ImageDao;
 import spaceweare.tracking4d.SQL.dao.MatchDao;
 import spaceweare.tracking4d.SQL.models.Contact;
 import spaceweare.tracking4d.SQL.models.Person;
@@ -414,11 +412,15 @@ public class PersonService {
         return  matchListWithoutPerson;
     }
 
-    public Object createUnknown(String photoUnknown, List<Float> descriptors) throws IOException {
+    public Object createUnknown(String photoUnknown, List<Float> descriptors, String temperature, Boolean isTemperature) throws IOException {
         Person unknown = new Person();
         unknown.setDeleted(false);
         unknown.setToTrain(false);
         unknown.setUnknown(true);
+        if(isTemperature)
+        {
+            unknown.setAlertTemperature(temperature);
+        }
         unknown.setLastMatchTime(LocalDateTime.now().minusHours(3));
         personDao.save(unknown);
         String unknownID = "unknown"+unknown.getId();
@@ -473,5 +475,15 @@ public class PersonService {
         person.setAlertTemperature(temperature);
         person.setLastMatchTime(match.getHour());
         return personDao.save(person);
+    }
+
+    public Person updateTemperature(String rut, String temperature) {
+        if(personDao.findPersonByRut(rut).isPresent())
+        {
+            Person person = personDao.findPersonByRut(rut).get();
+            person.setAlertTemperature(temperature);
+            return personDao.save(person);
+        }
+        return null;
     }
 }
