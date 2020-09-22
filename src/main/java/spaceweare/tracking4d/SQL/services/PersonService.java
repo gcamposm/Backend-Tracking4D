@@ -34,14 +34,16 @@ public class PersonService {
     private final ContactDao contactDao;
     private final MatchService matchService;
     private final ImageService imageService;
+    private final AlertService alertService;
     private final FileStorageService fileStorageService;
-    public PersonService(PersonDao personDao, MatchDao matchDao, ContactDao contactDao, FileStorageService fileStorageService, MatchService matchService, ImageService imageService) {
+    public PersonService(PersonDao personDao, MatchDao matchDao, ContactDao contactDao, AlertService alertService, FileStorageService fileStorageService, MatchService matchService, ImageService imageService) {
         this.personDao = personDao;
         this.fileStorageService = fileStorageService;
         this.matchService = matchService;
         this.matchDao = matchDao;
         this.contactDao = contactDao;
         this.imageService = imageService;
+        this.alertService = alertService;
     }
 
     public Object create(Person person){
@@ -499,6 +501,10 @@ public class PersonService {
         if(personDao.findPersonByRut(rut).isPresent())
         {
             Person person = personDao.findPersonByRut(rut).get();
+            if(Float.parseFloat(temperature) > 38.5) {
+                System.out.println("Creando alerta en person service");
+                alertService.alertHighTemperature(person, temperature, LocalDateTime.now());
+            }
             person.setAlertTemperature(temperature);
             return personDao.save(person);
         }
