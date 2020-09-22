@@ -57,7 +57,13 @@ public class AlertService {
     }
 
     public List<Alert> active() {
-        return alertDao.findAllByActive(true);
+        List<Alert> alerts = alertDao.findAllByActive(true);
+        for (Alert alert:alerts
+             ) {
+            alert.setActive(false);
+            alertDao.save(alert);
+        }
+        return alerts;
     }
 
     public Alert softDelete(Integer id) {
