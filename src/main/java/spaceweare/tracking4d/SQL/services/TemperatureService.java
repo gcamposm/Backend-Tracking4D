@@ -147,7 +147,7 @@ public class TemperatureService {
                     }
                     System.out.println("Máxima: "+max);
                     float high = Float.parseFloat("38.5");
-                    if(Float.compare(max, high) > 0){
+                    if(max > high){
                         System.out.println("Alerta alta temperatura");
                         LocalDateTime ldt = LocalDateTime.now();
                         DateTimeFormatter formmat1 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");

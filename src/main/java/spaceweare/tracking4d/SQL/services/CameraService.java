@@ -152,7 +152,7 @@ public class CameraService {
         }
     }
 
-    public Camera getDetectionCamWithSplitCam4(Integer x, Integer y, Integer height, Integer width){
+    public Integer getDetectionCamWithSplitCam4(Integer x, Integer y, Integer height, Integer width){
         //System.out.println("x: "+x+" y: "+y+" height: "+height+" width: "+width);
         Integer heightLimit = height/2;
         Integer widthLimit = width/2;
@@ -160,17 +160,18 @@ public class CameraService {
         {
             if(x<widthLimit)
             {
-                return cameraDao.findCameraById(1).get();
+                //return cameraDao.findCameraById(1).get();
+                return 1;
             }
             else{
-                return cameraDao.findCameraById(2).get();
+                return 2;
             }
         }
         else {
             if (x < widthLimit) {
-                return cameraDao.findCameraById(3).get();
+                return 3;
             } else {
-                return cameraDao.findCameraById(4).get();
+                return 4;
             }
         }
     }
