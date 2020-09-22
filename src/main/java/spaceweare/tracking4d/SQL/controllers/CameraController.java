@@ -156,7 +156,7 @@ public class CameraController {
 
     @PostMapping("/getDetectionCamWithSplitCam4")
     @ResponseBody
-    public ResponseEntity<Camera> getDetectionCamWithSplitCam4(@RequestParam("x") Integer x,
+    public ResponseEntity<Integer> getDetectionCamWithSplitCam4(@RequestParam("x") Integer x,
                                                                @RequestParam("y") Integer y,
                                                                @RequestParam("height") Integer height,
                                                                @RequestParam("width") Integer width) {

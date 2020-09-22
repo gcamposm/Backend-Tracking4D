@@ -126,6 +126,27 @@ public class MatchService {
         return matches;
     }
 
+    public Match withMatch(String rut, Integer cameraId) {
+        // Se maneja la hora actual
+        Calendar cal = Calendar.getInstance();
+        Integer hour = cal.get(Calendar.HOUR);
+        cal.set(Calendar.HOUR, hour - 3);
+        Date date = cal.getTime();
+        LocalDateTime now = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+        // Se crean los match según los ruts de las personas detectadas
+            if(personDao.findPersonByRut(rut).isPresent()){
+                Match match = new Match();
+                match.setPerson(personDao.findPersonByRut(rut).get());
+                match.setHour(now);
+                if(cameraDao.findCameraById(cameraId).isPresent())
+                {
+                    match.setCamera(cameraDao.findCameraById(cameraId).get());
+                }
+                return matchDao.save(match);
+        }
+        return null;
+    }
+
     public List<Match> getMatchesByDate(Date firstDate, Date secondDate) {
         Instant firstCurrent = firstDate.toInstant();
         Instant secondCurrent = secondDate.toInstant();

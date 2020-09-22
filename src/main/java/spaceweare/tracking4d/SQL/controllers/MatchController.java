@@ -121,6 +121,17 @@ public class MatchController {
         }
     }
 
+    @RequestMapping(value = "/create/withMatch", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity chargeData(@RequestParam("rut") String rut,
+                                     @RequestParam("cameraId") Integer cameraId){
+        try{
+            return ResponseEntity.ok(matchService.withMatch(rut, cameraId));
+        }
+        catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PostMapping("/createByDetection")
     @ResponseStatus(HttpStatus.CREATED)
