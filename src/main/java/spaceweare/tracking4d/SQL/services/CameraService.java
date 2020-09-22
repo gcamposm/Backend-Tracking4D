@@ -6,19 +6,22 @@ import org.apache.poi.xssf.usermodel.*;
 import org.springframework.stereotype.Service;
 import spaceweare.tracking4d.Exceptions.ExportFileException;
 import spaceweare.tracking4d.SQL.dao.CameraDao;
-import spaceweare.tracking4d.SQL.models.Camera;
-import spaceweare.tracking4d.SQL.models.Contact;
-import spaceweare.tracking4d.SQL.models.Match;
-import spaceweare.tracking4d.SQL.models.Person;
+import spaceweare.tracking4d.SQL.models.*;
 
 import java.awt.*;
 import java.awt.Color;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 @Service
 public class CameraService {
@@ -146,6 +149,56 @@ public class CameraService {
             return mySheet;
         }catch (Exception e){
             throw new ExportFileException("Cant create excel file with the data", e);
+        }
+    }
+
+    public Camera getDetectionCamWithSplitCam4(Integer x, Integer y, Integer height, Integer width){
+        //System.out.println("x: "+x+" y: "+y+" height: "+height+" width: "+width);
+        Integer heightLimit = height/2;
+        Integer widthLimit = width/2;
+        if(y < heightLimit)
+        {
+            if(x<widthLimit)
+            {
+                return cameraDao.findCameraById(1).get();
+            }
+            else{
+                return cameraDao.findCameraById(2).get();
+            }
+        }
+        else {
+            if (x < widthLimit) {
+                return cameraDao.findCameraById(3).get();
+            } else {
+                return cameraDao.findCameraById(4).get();
+            }
+        }
+    }
+
+    public Camera getDetectionCamWithSplitCam5(Integer x, Integer y, Integer height, Integer width){
+        //System.out.println("x: "+x+" y: "+y+" height: "+height+" width: "+width);
+        Integer heightLimit = height/3;
+        Integer widthLimit = width/2;
+        if(y < heightLimit)
+        {
+            if(x<widthLimit)
+            {
+                return cameraDao.findCameraById(1).get();
+            }
+            else{
+                return cameraDao.findCameraById(2).get();
+            }
+        }
+        else {
+            if (y < heightLimit * 2) {
+                if (x < widthLimit) {
+                    return cameraDao.findCameraById(3).get();
+                } else {
+                    return cameraDao.findCameraById(4).get();
+                }
+            } else {
+                return cameraDao.findCameraById(5).get();
+            }
         }
     }
 }

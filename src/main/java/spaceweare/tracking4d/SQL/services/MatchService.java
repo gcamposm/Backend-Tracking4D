@@ -184,14 +184,13 @@ public class MatchService {
         List<Match> matchListByPerson = filterByPerson(matchListPerDay, personId);
         Integer matchIdIn = 0;
         Integer matchIdOut = 0;
+        if(matchListByPerson.size()>0)
+        {
+            matchIdIn = matchListByPerson.get(0).getId();
+            matchIdOut = matchListByPerson.get(0).getId();
+        }
         for (Match match:matchListByPerson
              ) {
-                if (matchIdIn.equals(0)) {
-                    matchIdIn = match.getId();
-                }
-                if (matchIdOut.equals(0)) {
-                    matchIdOut = match.getId();
-                }
                 if (matchDao.findById(matchIdIn).get().getHour().compareTo(match.getHour()) > 0) {
                     matchIdIn = match.getId();
                 }

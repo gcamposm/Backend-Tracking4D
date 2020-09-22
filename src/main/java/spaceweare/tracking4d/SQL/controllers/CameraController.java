@@ -153,4 +153,30 @@ public class CameraController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
     }
+
+    @PostMapping("/getDetectionCamWithSplitCam4")
+    @ResponseBody
+    public ResponseEntity<Camera> getDetectionCamWithSplitCam4(@RequestParam("x") Integer x,
+                                                               @RequestParam("y") Integer y,
+                                                               @RequestParam("height") Integer height,
+                                                               @RequestParam("width") Integer width) {
+        try {
+            return ResponseEntity.ok(cameraService.getDetectionCamWithSplitCam4(x, y, height, width));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PostMapping("/getDetectionCamWithSplitCam5")
+    @ResponseBody
+    public ResponseEntity<Camera> getDetectionCamWithSplitCam5(@RequestParam("x") Integer x,
+                                                              @RequestParam("y") Integer y,
+                                                              @RequestParam("height") Integer height,
+                                                              @RequestParam("width") Integer width) {
+        try {
+                return ResponseEntity.ok(cameraService.getDetectionCamWithSplitCam5(x, y, height, width));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
 }
