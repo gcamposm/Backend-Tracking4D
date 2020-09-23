@@ -14,11 +14,11 @@ public class EmailSenderHelper {
         props.put("mail.smtp.starttls.enable", "true");
         props.put("mail.smtp.host", "smtp.gmail.com");
         props.put("mail.smtp.port", "587");
-        props.setProperty("mail.smtp.user", "guillermo.campos19@gmail.com");
+        props.setProperty("mail.smtp.user", "mail@example.com");
         props.setProperty("mail.smtp.password", "myPassword");
         Session session = Session.getInstance(props, new Authenticator() {
             protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication("guillermo.campos19@gmail.com","myPassword");
+                return new PasswordAuthentication("mail@example.com","myPassword");
             }
         });
         Message msg = new MimeMessage(session);

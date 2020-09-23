@@ -28,13 +28,13 @@ public class EmailController {
             EmailValidator emailValidator = EmailValidator.getInstance();
             Report report = new Report();
             //jasobarzov@gmail.com
-            boolean isEmailValid = emailValidator.isValidEmailAddress("guillermo.campos19@gmail.com");
+            boolean isEmailValid = emailValidator.isValidEmailAddress("mail@example.com");
             if (isEmailValid) {
                 //SEND CLOSE DESK REPORT
                 EmailCloseDeskReport emailCloseDeskReport = new EmailCloseDeskReport(report);
-                EmailSenderHelper.sendMail("guillermo.campos19@gmail.com", emailCloseDeskReport.getVoucher(), "Cierre de caja");
+                EmailSenderHelper.sendMail("mail@example.com", emailCloseDeskReport.getVoucher(), "Cierre de caja");
                 //SEND MOVE STOCK REPORT
-                sendReportMoveStock("guillermo.campos19@gmail.com");
+                sendReportMoveStock("mail@example.com");
 
             } else {
                 return ResponseEntity.badRequest().body("Invalid email address");

@@ -12,11 +12,11 @@ public class EmailAlertSender implements Runnable {
     public EmailAlertSender(String user, String mailTo, String name, String mail, String msg, String subject, String rut, String phone) {
         this.user = user;
         switch (user) {
-            case "guillermo.campos19@gmail.com":
-                this.password = "Scarlett141012";
+            case "mail@example.com":
+                this.password = "mypassword";
                 break;
-            case "asesoriapersonalizada@gmail.com":
-                this.password = "nuncamas2020";
+            case "mail2@example.com":
+                this.password = "mypassword";
                 break;
             default:
                 this.password = "password";
@@ -44,7 +44,7 @@ public class EmailAlertSender implements Runnable {
     public String createMessage() {
         String message;
         switch (user) {
-            case "guillermo.campos19@gmail.com":
+            case "mail@example.com":
                 message = "<h1 style=\"color: #FF0000;\">&nbsp;Alerta de temperatura</h1>\n" +
                         "<p>Datos de la persona en alerta" +
                         "<p>Nombre: " + name +
@@ -53,7 +53,7 @@ public class EmailAlertSender implements Runnable {
                         "</p>\n" + "<p>Celular: " + phone +
                         "</p>\n" + "<p>Comentario: " + msg + "</p>\n";
                 break;
-            case "asesoriapersonalizada@gmail.com":
+            case "mail2@example.com":
                 message = "<h1 style=\"color: #5e9ca0;\">&nbsp;Consulta</h1>\n" +
                         "<p>Nombre: " + name + "</p>\n" +
                         "<p>Correo: " + mail + "</p>\n" +
